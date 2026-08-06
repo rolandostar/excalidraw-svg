@@ -1,0 +1,13 @@
+<!-- Shapes that must be skipped without throwing, next to one that must still
+     be drawn: zero size, zero radius, empty d, single moveto, NaN, 2-point fill. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <rect x="2" y="2" width="0" height="10" fill="#ea4335"/>
+  <rect x="4" y="2" width="10" height="0" fill="#ea4335"/>
+  <circle cx="6" cy="6" r="0" fill="#ea4335"/>
+  <ellipse cx="8" cy="8" rx="4" ry="0" fill="#ea4335"/>
+  <path d="" fill="#ea4335"/>
+  <path d="M5 5" fill="#ea4335"/>
+  <path d="M2 20 L20 20" fill="#ea4335"/>
+  <polygon points="1,1" fill="#ea4335"/>
+  <rect x="6" y="6" width="12" height="12" fill="#4285f4"/>
+</svg>

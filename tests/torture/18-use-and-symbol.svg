@@ -1,0 +1,15 @@
+<!-- <use> with its own x/y and transform, referencing both a plain shape and a
+     group. Expanding it without honouring x/y stacks everything at the origin. -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <g id="blob">
+      <circle cx="0" cy="0" r="2.5" fill="#4285f4"/>
+      <rect x="-1" y="-4.5" width="2" height="2" fill="#ea4335"/>
+    </g>
+    <path id="tri" d="M0 0 L5 0 L2.5 -4 Z" fill="#34a853"/>
+  </defs>
+  <use href="#blob" x="6"  y="6"/>
+  <use href="#blob" x="18" y="6"/>
+  <use xlink:href="#tri" transform="translate(3 22)"/>
+  <use xlink:href="#tri" transform="translate(16 22) scale(1.4)"/>
+</svg>

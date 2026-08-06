@@ -1,0 +1,17 @@
+<!-- A clip and a mask nested on different ancestors. Only the INTERSECTION of
+     the two should show. Taking the nearest one and stopping shows far too much. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <clipPath id="c" clipPathUnits="userSpaceOnUse">
+      <rect x="0" y="6" width="24" height="12"/>
+    </clipPath>
+    <mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+      <rect x="6" y="0" width="12" height="24" fill="#fff"/>
+    </mask>
+  </defs>
+  <g clip-path="url(#c)">
+    <g mask="url(#m)">
+      <rect x="0" y="0" width="24" height="24" fill="#4285f4"/>
+    </g>
+  </g>
+</svg>

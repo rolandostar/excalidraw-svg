@@ -1,0 +1,6 @@
+<!-- Two rings wound the SAME direction. Under evenodd the inner one is a hole.
+     A converter that infers holes from opposite winding fills this solid. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path fill="#4285f4" fill-rule="evenodd"
+        d="M2 2 H22 V22 H2 Z M7 7 H17 V17 H7 Z"/>
+</svg>

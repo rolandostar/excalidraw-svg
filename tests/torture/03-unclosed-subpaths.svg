@@ -1,0 +1,6 @@
+<!-- Compound path whose subpaths have NO Z. SVG closes them implicitly for
+     filling. Dropping the "duplicate" last point deletes a real vertex. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path fill="#34a853" fill-rule="evenodd"
+        d="M2 2 L22 2 L22 22 L2 22 M8 8 L16 8 L16 16 L8 16"/>
+</svg>

@@ -1,0 +1,5 @@
+<!-- Three nesting levels: ring, hole, island inside the hole. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path fill="#fbbc04" fill-rule="evenodd"
+        d="M1 1 H23 V23 H1 Z M5 5 H19 V19 H5 Z M9 9 H15 V15 H9 Z"/>
+</svg>

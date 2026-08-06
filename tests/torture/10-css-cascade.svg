@@ -1,0 +1,10 @@
+<!-- Cascade order: presentation attribute < stylesheet rule < inline style.
+     Expected: left GREEN (class beats attribute), right BLUE (style beats class).
+     A converter that only applies CSS when the attribute is missing shows red. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs><style>.a{fill:#34a853} .b{fill:#ea4335}</style></defs>
+  <g fill="#ea4335">
+    <rect class="a" x="2"  y="2" width="8" height="20" fill="#ea4335"/>
+    <rect class="b" x="14" y="2" width="8" height="20" style="fill:#4285f4"/>
+  </g>
+</svg>

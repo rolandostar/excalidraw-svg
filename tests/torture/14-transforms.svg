@@ -1,0 +1,15 @@
+<!-- Nested transforms, rotate about a point, negative (mirroring) scale, and a
+     raw matrix. Mirroring flips winding, which must not invert hole detection. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <g transform="translate(12 12)">
+    <g transform="rotate(30)">
+      <rect x="-9" y="-3" width="18" height="6" fill="#4285f4"/>
+    </g>
+    <g transform="scale(-1 1)">
+      <path d="M2 -11 L10 -11 L10 -5 Z" fill="#ea4335"/>
+    </g>
+    <g transform="matrix(1 0 0.4 1 -6 4)">
+      <path fill="#fbbc04" fill-rule="evenodd" d="M0 0 H10 V7 H0 Z M3 2 H7 V5 H3 Z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,15 @@
+<!-- Illustrator's luminosity-mask idiom: feFlood white behind a BLACK shape,
+     so the mask means "everything except this circle". Read naively (black =
+     hide all) the artwork disappears entirely. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <filter id="f" x="2" y="2" width="20" height="20" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="m2" maskUnits="userSpaceOnUse" x="2" y="2" width="20" height="20">
+      <circle cx="12" cy="12" r="6" filter="url(#f)"/>
+    </mask>
+  </defs>
+  <rect x="2" y="2" width="20" height="20" fill="#34a853" mask="url(#m2)"/>
+</svg>

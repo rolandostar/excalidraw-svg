@@ -1,0 +1,4 @@
+<!-- Bowtie. evenodd leaves the crossing empty, nonzero fills it. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <polygon points="2,2 22,22 22,2 2,22" fill="#673ab7" fill-rule="evenodd"/>
+</svg>

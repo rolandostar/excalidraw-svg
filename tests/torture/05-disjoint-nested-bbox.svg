@@ -1,0 +1,6 @@
+<!-- A wide U and a small square that sits inside the U's BOUNDING BOX but is
+     geometrically disjoint. Bounding-box hole detection punches it out. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path fill="#4285f4" fill-rule="nonzero"
+        d="M2 2 H7 V18 H17 V2 H22 V22 H2 Z M10 6 H14 V10 H10 Z"/>
+</svg>

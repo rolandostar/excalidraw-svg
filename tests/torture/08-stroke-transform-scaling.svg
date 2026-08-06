@@ -1,0 +1,13 @@
+<!-- Stroke width must be scaled by the element transform AND the viewBox fit.
+     The three bars must end up visibly different thicknesses. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <g fill="none" stroke="#ea4335">
+    <line x1="3" y1="3" x2="21" y2="3" stroke-width="1"/>
+    <g transform="scale(2)">
+      <line x1="1.5" y1="4" x2="10.5" y2="4" stroke-width="1"/>
+    </g>
+    <g transform="translate(0 14) scale(3 1)">
+      <line x1="1" y1="0" x2="7" y2="0" stroke-width="1"/>
+    </g>
+  </g>
+</svg>

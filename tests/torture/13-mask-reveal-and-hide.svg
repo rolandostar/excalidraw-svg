@@ -1,0 +1,12 @@
+<!-- Painter-order mask: white square reveals, black circle then hides part of
+     it, a second white square re-reveals an overlapping corner. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <mask id="m3" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+      <rect x="2" y="2" width="16" height="16" fill="#ffffff"/>
+      <circle cx="10" cy="10" r="5" fill="#000000"/>
+      <rect x="14" y="14" width="8" height="8" fill="#fff"/>
+    </mask>
+  </defs>
+  <rect x="0" y="0" width="24" height="24" fill="#673ab7" mask="url(#m3)"/>
+</svg>

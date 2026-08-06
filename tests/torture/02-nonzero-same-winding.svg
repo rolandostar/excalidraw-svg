@@ -1,0 +1,6 @@
+<!-- Identical geometry to 01 but nonzero: NO hole, must render solid.
+     Any converter that treats "nested ring" as "hole" fails one of these two. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path fill="#ea4335" fill-rule="nonzero"
+        d="M2 2 H22 V22 H2 Z M7 7 H17 V17 H7 Z"/>
+</svg>

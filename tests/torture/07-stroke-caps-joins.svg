@@ -1,0 +1,13 @@
+<!-- Every cap and join, plus a miter that exceeds the limit and must bevel.
+     Excalidraw forces round caps/joins, so these only survive as outlines. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <g fill="none" stroke="#4285f4" stroke-width="3">
+    <polyline points="3,3 8,3"  stroke-linecap="butt"/>
+    <polyline points="3,8 8,8"  stroke-linecap="round"/>
+    <polyline points="3,13 8,13" stroke-linecap="square"/>
+    <polyline points="14,4 20,4 20,10" stroke-linejoin="miter"/>
+    <polyline points="14,12 20,12 20,18" stroke-linejoin="bevel"/>
+    <polyline points="3,21 9,18 15,21" stroke-linejoin="round"/>
+    <polyline points="16,22 21,21 16,20" stroke-linejoin="miter" stroke-miterlimit="1.05"/>
+  </g>
+</svg>

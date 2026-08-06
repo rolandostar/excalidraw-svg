@@ -1,0 +1,10 @@
+<!-- rx only, ry only, over-large radii that must clamp, a pill, and a rect
+     that is genuinely a circle. A "big radius => ellipse" guess breaks these. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <rect x="1"  y="1"  width="10" height="6" rx="2"            fill="#4285f4"/>
+  <rect x="13" y="1"  width="10" height="6" ry="3"            fill="#34a853"/>
+  <rect x="1"  y="9"  width="10" height="6" rx="99" ry="99"   fill="#fbbc04"/>
+  <rect x="13" y="9"  width="10" height="4" rx="2"            fill="#ea4335"/>
+  <rect x="1"  y="17" width="6"  height="6" rx="3"  ry="3"    fill="#673ab7"/>
+  <rect x="13" y="17" width="10" height="6" rx="1"  ry="3"    fill="#00897b"/>
+</svg>

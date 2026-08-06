@@ -1,0 +1,8 @@
+<!-- Non-zero, non-square, fractional viewBox origin. Hard-coding a 24x24
+     artboard or assuming origin 0,0 misplaces everything. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10.5 -4.25 42 21" width="84" height="42">
+  <rect x="-10.5" y="-4.25" width="42" height="21" fill="none" stroke="#dadce0" stroke-width="0.5"/>
+  <circle cx="-4" cy="2" r="3" fill="#4285f4"/>
+  <rect x="4" y="-1" width="10" height="6" fill="#34a853"/>
+  <path d="M20 10 L28 10 L24 2 Z" fill="#ea4335"/>
+</svg>
