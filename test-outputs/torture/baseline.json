@@ -18,5 +18,10 @@
   "17-gradients": 0.279738,
   "18-use-and-symbol": 0,
   "19-degenerate": 0,
-  "20-unsupported-features": 0.580085
+  "20-unsupported-features": 0.580085,
+  "21-clip-objectboundingbox": 0,
+  "22-mask-contentunits-obb": 0,
+  "23-mask-units-obb-tight": 0,
+  "24-luminosity-filterunits-default": 0,
+  "25-obb-degenerate": 0
 }

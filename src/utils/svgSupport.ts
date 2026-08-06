@@ -55,17 +55,12 @@ const RULES: Rule[] = [
     match: doc => Array.from(doc.querySelectorAll('svg')).slice(1),
     detail: 'A nested <svg> establishes its own viewport, which is not modelled.',
   },
-  {
-    severity: 'unsupported',
-    feature: 'objectBoundingBox clip/mask',
-    match: doc =>
-      Array.from(doc.querySelectorAll('clipPath, mask')).filter(
-        el =>
-          el.getAttribute('clipPathUnits') === 'objectBoundingBox' ||
-          el.getAttribute('maskUnits') === 'objectBoundingBox'
-      ),
-    detail: 'Only userSpaceOnUse units are resolved; this clip/mask is ignored.',
-  },
+  // NOTE: `objectBoundingBox` units on clip paths and masks used to be listed
+  // here. They are now resolved properly - see `localBoundingBox` - so
+  // reporting them would be a false alarm. Patterns and gradients can also
+  // carry the attribute, but those are reported on their own terms below:
+  // patterns are unsupported outright and gradients are flattened to a colour,
+  // so in neither case do the units change the outcome.
   {
     severity: 'approximated',
     feature: '<filter>',

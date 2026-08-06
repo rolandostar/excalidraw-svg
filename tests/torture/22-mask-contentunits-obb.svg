@@ -1,0 +1,12 @@
+<!-- maskContentUnits="objectBoundingBox": a 1x1 white rect means "reveal the
+     whole object". Interpreted as user units it is a 1x1 sliver and the shape
+     is erased. The black circle at 0.5,0.5 must punch out the centre. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <mask id="mc" maskContentUnits="objectBoundingBox">
+      <rect x="0" y="0" width="1" height="1" fill="#fff"/>
+      <circle cx="0.5" cy="0.5" r="0.25" fill="#000"/>
+    </mask>
+  </defs>
+  <rect x="3" y="5" width="18" height="14" fill="#34a853" mask="url(#mc)"/>
+</svg>

@@ -1,0 +1,16 @@
+<!-- The luminosity-mask idiom relying on the filterUnits DEFAULT, which is
+     objectBoundingBox (-10%/120%), not userSpaceOnUse. Miss it and the flood
+     rect never appears, the mask becomes empty-minus-circle = empty, and the
+     artwork vanishes entirely. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <filter id="lum">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="lm">
+      <circle cx="12" cy="12" r="5" filter="url(#lum)"/>
+    </mask>
+  </defs>
+  <rect x="3" y="3" width="18" height="18" fill="#673ab7" mask="url(#lm)"/>
+</svg>

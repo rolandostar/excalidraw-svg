@@ -534,11 +534,23 @@ function getInheritedClipRule(el: Element): FillRule {
 }
 
 /** The region a single `<clipPath>` defines, in the referencing element's space. */
-function resolveClipPathRegion(clipEl: Element, referenceMatrix: Matrix2D, tolerance: number): MultiPolygon {
+function resolveClipPathRegion(
+  clipEl: Element,
+  referenceMatrix: Matrix2D,
+  tolerance: number,
+  box: BoundingBox | null
+): MultiPolygon {
+  // `clipPathUnits` defaults to userSpaceOnUse; under objectBoundingBox the
+  // child coordinates are fractions of the referencing element's box.
+  const unitMatrix =
+    (clipEl.getAttribute('clipPathUnits') || 'userSpaceOnUse') === 'objectBoundingBox' && box
+      ? multiplyMatrix(referenceMatrix, boundingBoxMatrix(box))
+      : referenceMatrix;
+
   const regions: MultiPolygon[] = [];
 
   clipEl.querySelectorAll('path, polygon, polyline, rect, circle, ellipse').forEach(shape => {
-    const matrix = multiplyMatrix(referenceMatrix, getCombinedTransformMatrixUntil(shape, clipEl));
+    const matrix = multiplyMatrix(unitMatrix, getCombinedTransformMatrixUntil(shape, clipEl));
     const rings = shapeToRings(shape, tolerance);
     if (rings.length === 0) return;
 
@@ -586,15 +598,116 @@ function paintLuminance(value: string | null): number {
   return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
 }
 
-/** `userSpaceOnUse` x/y/width/height of a `<filter>` or `<mask>`, if fully specified. */
-function explicitRegionRect(el: Element, unitsAttr: string): MultiPolygon | null {
-  if ((el.getAttribute(unitsAttr) || '') !== 'userSpaceOnUse') return null;
-  const x = parseFloat(el.getAttribute('x') || '');
-  const y = parseFloat(el.getAttribute('y') || '');
-  const width = parseFloat(el.getAttribute('width') || '');
-  const height = parseFloat(el.getAttribute('height') || '');
-  if (![x, y, width, height].every(Number.isFinite) || width <= 0 || height <= 0) return null;
-  return rectRegion(x, y, width, height);
+interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Geometry bounding box of `node` in its own user space.
+ *
+ * This is what `objectBoundingBox` units are fractions of. Per spec it covers
+ * geometry only - stroke, markers and clipping are excluded - and it is
+ * expressed in the coordinate system `node` establishes for its children,
+ * which is exactly the space `referenceMatrix` already maps from. Hence each
+ * descendant is transformed only as far up as `node`, never including `node`'s
+ * own transform.
+ *
+ * Returns null when there is no geometry, or when the box is degenerate in
+ * either axis: the unit matrix would be singular, and the spec says such a
+ * reference simply does not apply.
+ */
+function localBoundingBox(node: Element, tolerance: number): BoundingBox | null {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  const consider = (shape: Element) => {
+    // Skip non-rendered containers *inside* `node`, but not ones `node` itself
+    // lives in - a mask child legitimately has a bounding box of its own, and
+    // an unconditional `closest()` test made every such box come back empty.
+    const container = shape.closest('defs, clipPath, mask');
+    if (container && container !== node && node.contains(container)) return;
+
+    const matrix = getCombinedTransformMatrixUntil(shape, node);
+    for (const ring of shapeToRings(shape, tolerance)) {
+      for (const pt of ring) {
+        const [x, y] = applyMatrix(matrix, pt);
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    }
+  };
+
+  const selector = 'path, polygon, polyline, line, rect, circle, ellipse';
+  if (node.matches?.(selector)) consider(node);
+  node.querySelectorAll(selector).forEach(consider);
+
+  if (minX === Infinity) return null;
+  const width = maxX - minX;
+  const height = maxY - minY;
+  if (!(width > 0) || !(height > 0)) return null;
+
+  return { x: minX, y: minY, width, height };
+}
+
+/** Maps the unit square onto a bounding box - the `objectBoundingBox` transform. */
+function boundingBoxMatrix(box: BoundingBox): Matrix2D {
+  return [box.width, 0, 0, box.height, box.x, box.y];
+}
+
+/**
+ * Parses a length that may be a fraction or a percentage.
+ * In `objectBoundingBox` units `-10%` and `-0.1` mean the same thing.
+ */
+function parseFraction(value: string | null, fallback: number): number {
+  if (value === null) return fallback;
+  const text = value.trim();
+  const parsed = text.endsWith('%') ? parseFloat(text) / 100 : parseFloat(text);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+/**
+ * The x/y/width/height region of a `<filter>` or `<mask>`, in user space.
+ *
+ * Both attributes default to `objectBoundingBox`, not `userSpaceOnUse`, with a
+ * default region of -10%/-10%/120%/120%. Requiring an explicit
+ * `userSpaceOnUse` - as this used to - silently skipped the region for every
+ * file that relied on the default. For a mask that is harmless, because the
+ * default region is larger than the object; for the flood rect of a luminosity
+ * mask it collapsed the mask to nothing and deleted the artwork.
+ */
+function explicitRegionRect(el: Element, unitsAttr: string, box: BoundingBox | null): MultiPolygon | null {
+  const units = el.getAttribute(unitsAttr) || 'objectBoundingBox';
+
+  if (units === 'userSpaceOnUse') {
+    const x = parseFloat(el.getAttribute('x') || '');
+    const y = parseFloat(el.getAttribute('y') || '');
+    const width = parseFloat(el.getAttribute('width') || '');
+    const height = parseFloat(el.getAttribute('height') || '');
+    if (![x, y, width, height].every(Number.isFinite) || width <= 0 || height <= 0) return null;
+    return rectRegion(x, y, width, height);
+  }
+
+  if (!box) return null;
+
+  const fx = parseFraction(el.getAttribute('x'), -0.1);
+  const fy = parseFraction(el.getAttribute('y'), -0.1);
+  const fw = parseFraction(el.getAttribute('width'), 1.2);
+  const fh = parseFraction(el.getAttribute('height'), 1.2);
+  if (!(fw > 0) || !(fh > 0)) return null;
+
+  return rectRegion(
+    box.x + fx * box.width,
+    box.y + fy * box.height,
+    fw * box.width,
+    fh * box.height
+  );
 }
 
 /**
@@ -617,25 +730,46 @@ function resolveMaskRegion(
   maskEl: Element,
   referenceMatrix: Matrix2D,
   tolerance: number,
-  doc: Document
+  doc: Document,
+  box: BoundingBox | null
 ): MultiPolygon {
   let visible: MultiPolygon = [];
+
+  // `maskContentUnits` defaults to userSpaceOnUse. Under objectBoundingBox the
+  // children are fractions of the box, so `<rect width="1" height="1"/>` means
+  // "cover the whole object" - read as user units it is a 1x1 sliver that
+  // erases almost everything.
+  const contentMatrix =
+    (maskEl.getAttribute('maskContentUnits') || 'userSpaceOnUse') === 'objectBoundingBox' && box
+      ? multiplyMatrix(referenceMatrix, boundingBoxMatrix(box))
+      : referenceMatrix;
 
   const transformRegion = (region: MultiPolygon): MultiPolygon =>
     region.map(polygon => polygon.map(ring => ring.map(pt => applyMatrix(referenceMatrix, pt))));
 
   maskEl.querySelectorAll('path, polygon, polyline, rect, circle, ellipse').forEach(shape => {
+    const matrix = multiplyMatrix(contentMatrix, getCombinedTransformMatrixUntil(shape, maskEl));
+
     const filterRef = shape.getAttribute('filter')?.match(/#([^'")\s]+)/);
     if (filterRef) {
       const filterEl = doc.querySelector(`filter[id="${filterRef[1]}"]`);
       const flood = filterEl?.querySelector('feFlood');
       if (filterEl && flood && paintLuminance(flood.getAttribute('flood-color')) >= 0.5) {
-        const floodRect = explicitRegionRect(filterEl, 'filterUnits');
-        if (floodRect) visible = unionMultiPolygons([visible, transformRegion(floodRect)]);
+        // A filter region is relative to the element the *filter* is applied
+        // to - this shape - not to the element referencing the mask, and it
+        // lives in that shape's own user space. Using the mask's box and
+        // matrix happened to work only because PubSub's filter is
+        // userSpaceOnUse on an untransformed child.
+        const floodRect = explicitRegionRect(filterEl, 'filterUnits', localBoundingBox(shape, tolerance));
+        if (floodRect) {
+          const placed = floodRect.map(polygon =>
+            polygon.map(ring => ring.map(pt => applyMatrix(matrix, pt)))
+          );
+          visible = unionMultiPolygons([visible, placed]);
+        }
       }
     }
 
-    const matrix = multiplyMatrix(referenceMatrix, getCombinedTransformMatrixUntil(shape, maskEl));
     const rings = shapeToRings(shape, tolerance);
     if (rings.length === 0) return;
 
@@ -653,15 +787,28 @@ function resolveMaskRegion(
   });
 
   // Content outside the mask's own region is not rendered at all.
-  const maskRect = explicitRegionRect(maskEl, 'maskUnits');
+  const maskRect = explicitRegionRect(maskEl, 'maskUnits', box);
   if (maskRect) visible = intersectMultiPolygons([visible, transformRegion(maskRect)]);
 
   return visible;
 }
 
 /**
- * Every region that limits where `el` may paint - `clip-path` and `mask`, at
- * any depth - intersected into one.
+ * Everything that limits where `el` may paint, together with whether we were
+ * able to model all of it.
+ *
+ * `region: null` means unrestricted. `confident: false` means at least one
+ * construct in the chain could not be resolved, which changes how an empty
+ * result must be treated - see `resolveVisibility`.
+ */
+interface Visibility {
+  region: MultiPolygon | null;
+  confident: boolean;
+}
+
+/**
+ * Collects every `clip-path` and `mask` applying to `el`, at any depth,
+ * intersected into one region in root user space.
  *
  * Nesting **intersects**: a shape inside `<g clip-path="A"><g mask="B">` is
  * visible only where A and B overlap. Walking to the nearest ancestor and
@@ -669,38 +816,67 @@ function resolveMaskRegion(
  * is how `Iot-Edge.svg` ended up as a large blue rectangle.
  *
  * Per spec both apply *after* the referencing element's own transform, hence
- * `referenceMatrix x localMatrix`. `objectBoundingBox` units are not modelled;
- * such a reference is ignored rather than guessed at.
+ * `referenceMatrix x localMatrix`, and `objectBoundingBox` units are fractions
+ * of the referencing element's geometry box.
  */
-function getVisibilityRegion(el: Element, doc: Document, tolerance: number): MultiPolygon | null {
+function getVisibilityRegion(el: Element, doc: Document, tolerance: number): Visibility {
   const regions: MultiPolygon[] = [];
+  let confident = true;
   let node: Element | null = el;
 
   while (node && node.tagName.toLowerCase() !== 'svg') {
-    const referenceMatrix = getCombinedTransformMatrix(node);
-
     const clipRef = node.getAttribute('clip-path')?.match(/#([^'")\s]+)/);
-    if (clipRef) {
-      const clipEl = doc.querySelector(`clipPath[id="${clipRef[1]}"]`);
-      if (clipEl && (clipEl.getAttribute('clipPathUnits') || 'userSpaceOnUse') === 'userSpaceOnUse') {
-        regions.push(resolveClipPathRegion(clipEl, referenceMatrix, tolerance));
-      }
-    }
-
     const maskRef = node.getAttribute('mask')?.match(/#([^'")\s]+)/);
-    if (maskRef) {
-      const maskEl = doc.querySelector(`mask[id="${maskRef[1]}"]`);
-      if (maskEl) regions.push(resolveMaskRegion(maskEl, referenceMatrix, tolerance, doc));
+
+    if (clipRef || maskRef) {
+      const referenceMatrix = getCombinedTransformMatrix(node);
+      const reference = node;
+
+      // Only paid for when something actually references the box.
+      let box: BoundingBox | null | undefined;
+      const boxFor = () => (box === undefined ? (box = localBoundingBox(reference, tolerance)) : box);
+
+      if (clipRef) {
+        const clipEl = doc.querySelector(`clipPath[id="${clipRef[1]}"]`);
+        if (!clipEl) {
+          confident = false;
+        } else {
+          const needsBox = (clipEl.getAttribute('clipPathUnits') || '') === 'objectBoundingBox';
+          if (needsBox && !boxFor()) confident = false;
+          else regions.push(resolveClipPathRegion(clipEl, referenceMatrix, tolerance, boxFor()));
+        }
+      }
+
+      if (maskRef) {
+        const maskEl = doc.querySelector(`mask[id="${maskRef[1]}"]`);
+        if (!maskEl) {
+          confident = false;
+        } else {
+          regions.push(resolveMaskRegion(maskEl, referenceMatrix, tolerance, doc, boxFor()));
+        }
+      }
     }
 
     node = node.parentElement;
   }
 
-  if (regions.length === 0) return null;
-  // An empty region hides everything; record it so the shape is correctly
-  // dropped rather than silently left unclipped.
-  if (regions.some(r => r.length === 0)) return [];
-  return intersectMultiPolygons(regions);
+  if (regions.length === 0) return { region: null, confident };
+  if (regions.some(r => r.length === 0)) return { region: [], confident };
+  return { region: intersectMultiPolygons(regions), confident };
+}
+
+/**
+ * Turns a `Visibility` into the region to actually clip against.
+ *
+ * An empty region means "paints nothing". That is correct only when we
+ * understood every construct involved; when we did not, dropping the shape
+ * would delete artwork on the strength of a guess. Over-drawing is recoverable
+ * and visible, silent deletion is neither - so an unconfident empty result
+ * falls back to unrestricted.
+ */
+function resolveVisibility(visibility: Visibility): MultiPolygon | null {
+  if (visibility.region && visibility.region.length === 0 && !visibility.confident) return null;
+  return visibility.region;
 }
 
 /**
@@ -870,7 +1046,7 @@ export function parseSvgToExcalidrawElements(
       // Everything limiting where this element may paint (clip-path, mask),
       // in root user space. Resolved here rather than in the optimizer because
       // this is where the transform stack and the boolean engine live.
-      const clipRegion = getVisibilityRegion(el, doc, flattenTolerance);
+      const clipRegion = resolveVisibility(getVisibilityRegion(el, doc, flattenTolerance));
 
       if (tagName === 'path') {
         const d = el.getAttribute('d') || '';

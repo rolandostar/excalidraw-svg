@@ -1,0 +1,18 @@
+<!-- objectBoundingBox references whose box is unusable: a zero-height line, a
+     group with no geometry at all, and a dangling clip-path id. The unit
+     matrix is singular or absent, so the reference cannot be resolved.
+     Nothing here may be silently deleted - over-draw and warn instead. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <clipPath id="obb2" clipPathUnits="objectBoundingBox">
+      <rect x="0" y="0" width="0.5" height="1"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#obb2)">
+    <line x1="2" y1="4" x2="22" y2="4" stroke="#4285f4" stroke-width="2"/>
+  </g>
+  <rect x="2" y="9" width="20" height="5" fill="#34a853" clip-path="url(#does-not-exist)"/>
+  <g clip-path="url(#obb2)">
+    <rect x="2" y="17" width="20" height="5" fill="#fbbc04"/>
+  </g>
+</svg>

@@ -1,0 +1,11 @@
+<!-- maskUnits="objectBoundingBox" with a TIGHT region. Unlike the -10%/120%
+     default this genuinely crops, so skipping the region bound over-draws the
+     right-hand half. Mask content is in user space (the default). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <mask id="mu" maskUnits="objectBoundingBox" x="0" y="0" width="0.5" height="1">
+      <rect x="0" y="0" width="24" height="24" fill="#fff"/>
+    </mask>
+  </defs>
+  <rect x="2" y="6" width="20" height="12" fill="#ea4335" mask="url(#mu)"/>
+</svg>
