@@ -31,6 +31,10 @@
   
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
+
+  /* Height of the global site header. Every sticky offset derives from it. */
+  --header-h: 56px;
+  --content-max: 1100px;
 }
 
 * {
@@ -100,10 +104,10 @@ body {
   border-radius: var(--radius-lg);
 }
 
-/* Header */
+/* Icon-library toolbar. Sits directly under the global site header. */
 .app-header {
   position: sticky;
-  top: 0;
+  top: var(--header-h);
   z-index: 40;
   background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(16px);
@@ -250,8 +254,8 @@ body {
   gap: 1.25rem;
   padding: 1.25rem;
   position: sticky;
-  top: 90px;
-  height: calc(100vh - 120px);
+  top: calc(var(--header-h) + 90px);
+  height: calc(100vh - var(--header-h) - 120px);
   overflow-y: auto;
 }
 

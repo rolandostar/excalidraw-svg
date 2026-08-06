@@ -1,0 +1,30 @@
+{
+  "builtAt": "2026-08-06T07:04:49.881Z",
+  "thresholds": {
+    "shapeScore": 0.02,
+    "placementErrorPx": 0.5,
+    "regressionSlack": 0.001
+  },
+  "icons": {
+    "name": "icons",
+    "generatedAt": "2026-08-05T23:26:19.322Z",
+    "total": 216,
+    "meanShapeScore": 0.0000049387597926240235,
+    "worstShapeScore": 0.000989282769991756,
+    "meanPlacementErrorPx": 0.09313657407407396,
+    "worstPlacementErrorPx": 0.19999999999999574,
+    "failing": 0,
+    "auditIssueCount": 0
+  },
+  "torture": {
+    "name": "torture",
+    "generatedAt": "2026-08-05T23:27:02.372Z",
+    "total": 25,
+    "meanShapeScore": 0.034392924214972566,
+    "worstShapeScore": 0.5800853249389056,
+    "meanPlacementErrorPx": 0.26044999999999985,
+    "worstPlacementErrorPx": 4.03125,
+    "failing": 3,
+    "auditIssueCount": 0
+  }
+}

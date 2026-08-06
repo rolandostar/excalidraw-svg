@@ -1,0 +1,2261 @@
+{
+  "builtAt": "2026-08-06T07:04:49.881Z",
+  "thresholds": {
+    "shapeScore": 0.02,
+    "placementErrorPx": 0.5,
+    "regressionSlack": 0.001
+  },
+  "icons": {
+    "name": "icons",
+    "generatedAt": "2026-08-05T23:26:19.322Z",
+    "total": 216,
+    "meanShapeScore": 0.0000049387597926240235,
+    "worstShapeScore": 0.000989282769991756,
+    "meanPlacementErrorPx": 0.09313657407407396,
+    "worstPlacementErrorPx": 0.19999999999999574,
+    "failing": 0,
+    "auditIssueCount": 0,
+    "cases": [
+      {
+        "id": "Access-Context-Manager",
+        "label": "Access Context Manager",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false,
+        "image": "icons/Access-Context-Manager.png"
+      },
+      {
+        "id": "Administration",
+        "label": "Administration",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false,
+        "image": "icons/Administration.png"
+      },
+      {
+        "id": "Advanced-Agent-Modeling",
+        "label": "Advanced Agent Modeling",
+        "shapeScore": 0,
+        "placementErrorPx": 0.00999999999999801,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false,
+        "image": "icons/Advanced-Agent-Modeling.png"
+      },
+      {
+        "id": "Advanced-Solutions-Lab",
+        "label": "Advanced Solutions Lab",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 32,
+        "auditIssues": [],
+        "failing": false,
+        "image": "icons/Advanced-Solutions-Lab.png"
+      },
+      {
+        "id": "Agent-Assist",
+        "label": "Agent Assist",
+        "shapeScore": 0,
+        "placementErrorPx": 0.00999999999999801,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AI-Hub",
+        "label": "AI Hub",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AI-Platform-Unified",
+        "label": "AI Platform Unified",
+        "shapeScore": 0,
+        "placementErrorPx": 0.054999999999999716,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AI-Platform",
+        "label": "AI Platform",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Analytics-Hub",
+        "label": "Analytics Hub",
+        "shapeScore": 0,
+        "placementErrorPx": 0.027499999999999858,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Anthos-Config-Management",
+        "label": "Anthos Config Management",
+        "shapeScore": 0,
+        "placementErrorPx": 0.07249999999999801,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Anthos-Service-Mesh",
+        "label": "Anthos Service Mesh",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Anthos",
+        "label": "Anthos",
+        "shapeScore": 0,
+        "placementErrorPx": 0.02499999999999858,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "API-Analytics",
+        "label": "API Analytics",
+        "shapeScore": 0,
+        "placementErrorPx": 0.14499999999999602,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "API-Monetization",
+        "label": "API Monetization",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09000000000000341,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "API",
+        "label": "API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.006250000000001421,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Apigee-API-Platform",
+        "label": "Apigee API Platform",
+        "shapeScore": 0,
+        "placementErrorPx": 0.14000000000000057,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Apigee-Sense",
+        "label": "Apigee Sense",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "App-Engine",
+        "label": "App Engine",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Artifact-Registry",
+        "label": "Artifact Registry",
+        "shapeScore": 0,
+        "placementErrorPx": 0.06875000000000142,
+        "elementCount": 16,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Asset-Inventory",
+        "label": "Asset Inventory",
+        "shapeScore": 0,
+        "placementErrorPx": 0.07249999999999446,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Assured-Workloads",
+        "label": "Assured Workloads",
+        "shapeScore": 0,
+        "placementErrorPx": 0.05375000000000085,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AutoML-Natural-Language",
+        "label": "AutoML Natural Language",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08875000000000455,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AutoML-Tables",
+        "label": "AutoML Tables",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AutoML-Translation",
+        "label": "AutoML Translation",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AutoML-Video-Intelligence",
+        "label": "AutoML Video Intelligence",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AutoML-Vision",
+        "label": "AutoML Vision",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "AutoML",
+        "label": "AutoML",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Bare-Metal-Solutions",
+        "label": "Bare Metal Solutions",
+        "shapeScore": 0,
+        "placementErrorPx": 0.01999999999999602,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Batch",
+        "label": "Batch",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09499999999999886,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Beyondcorp",
+        "label": "BeyondCorp",
+        "shapeScore": 0,
+        "placementErrorPx": 0.05875000000000341,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "BigQuery",
+        "label": "BigQuery",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Bigtable",
+        "label": "Bigtable",
+        "shapeScore": 0,
+        "placementErrorPx": 0.11499999999999488,
+        "elementCount": 19,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Billing",
+        "label": "Billing",
+        "shapeScore": 0,
+        "placementErrorPx": 0.006249999999999645,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Binary-Authorization",
+        "label": "Binary Authorization",
+        "shapeScore": 0,
+        "placementErrorPx": 0.11875000000000568,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Catalog",
+        "label": "Catalog",
+        "shapeScore": 0.000989282769991756,
+        "placementErrorPx": 0.006249999999999645,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false,
+        "image": "icons/Catalog.png"
+      },
+      {
+        "id": "Certificate-Authority-Service",
+        "label": "Certificate Authority Service",
+        "shapeScore": 0,
+        "placementErrorPx": 0.012499999999995737,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Certificate-Manager",
+        "label": "Certificate Manager",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-API-Gateway",
+        "label": "Cloud API Gateway",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1287499999999966,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-APIs",
+        "label": "Cloud APIs",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Armor",
+        "label": "Cloud Armor",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Asset-Inventory",
+        "label": "Cloud Asset Inventory",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08624999999999972,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Audit-Logs",
+        "label": "Cloud Audit Logs",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Build",
+        "label": "Cloud Build",
+        "shapeScore": 0,
+        "placementErrorPx": 0.12125000000000341,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-CDN",
+        "label": "Cloud CDN",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 11,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Code",
+        "label": "Cloud Code",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Composer",
+        "label": "Cloud Composer",
+        "shapeScore": 0,
+        "placementErrorPx": 0.15749999999999886,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Data-Fusion",
+        "label": "Cloud Data Fusion",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Deploy",
+        "label": "Cloud Deploy",
+        "shapeScore": 0,
+        "placementErrorPx": 0.13625000000000398,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Deployment-Manager",
+        "label": "Cloud Deployment Manager",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-DNS",
+        "label": "Cloud DNS",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Domains",
+        "label": "Cloud Domains",
+        "shapeScore": 0,
+        "placementErrorPx": 0.017499999999998295,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-EKM",
+        "label": "Cloud EKM",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Endpoints",
+        "label": "Cloud Endpoints",
+        "shapeScore": 0,
+        "placementErrorPx": 0.13125000000000142,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-External-IP-Addresses",
+        "label": "Cloud External IP Addresses",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Firewall-Rules",
+        "label": "Cloud Firewall Rules",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 12,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-For-Marketing",
+        "label": "Cloud For Marketing",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Functions",
+        "label": "Cloud Functions",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 13,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Generic",
+        "label": "Cloud Generic",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-GPU",
+        "label": "Cloud GPU",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Healthcare-API",
+        "label": "Cloud Healthcare API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Healthcare-Marketplace",
+        "label": "Cloud Healthcare Marketplace",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-HSM",
+        "label": "Cloud HSM",
+        "shapeScore": 0,
+        "placementErrorPx": 0.02874999999999517,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-IDS",
+        "label": "Cloud IDS",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09000000000000341,
+        "elementCount": 15,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Inference-API",
+        "label": "Cloud Inference API",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Interconnect",
+        "label": "Cloud Interconnect",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Jobs-API",
+        "label": "Cloud Jobs API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09749999999999659,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Load-Balancing",
+        "label": "Cloud Load Balancing",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 13,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Logging",
+        "label": "Cloud Logging",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Media-Edge",
+        "label": "Cloud Media Edge",
+        "shapeScore": 0,
+        "placementErrorPx": 0.11499999999999488,
+        "elementCount": 16,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Monitoring",
+        "label": "Cloud Monitoring",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-NAT",
+        "label": "Cloud NAT",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Natural-Language-API",
+        "label": "Cloud Natural Language API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Network",
+        "label": "Cloud Network",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Ops",
+        "label": "Cloud Ops",
+        "shapeScore": 0,
+        "placementErrorPx": 0.10000000000000142,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Optimization-AI---Fleet-Routing-API",
+        "label": "Cloud Optimization AI Fleet Routing API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.045000000000001705,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Optimization-AI",
+        "label": "Cloud Optimization AI",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0799999999999983,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Router",
+        "label": "Cloud Router",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Routes",
+        "label": "Cloud Routes",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Run-For-Anthos",
+        "label": "Cloud Run For Anthos",
+        "shapeScore": 0,
+        "placementErrorPx": 0.04624999999999968,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Run",
+        "label": "Cloud Run",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03624999999999989,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Scheduler",
+        "label": "Cloud Scheduler",
+        "shapeScore": 0,
+        "placementErrorPx": 0.030000000000001137,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Security-Scanner",
+        "label": "Cloud Security Scanner",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09375,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Shell",
+        "label": "Cloud Shell",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Spanner",
+        "label": "Cloud Spanner",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-SQL",
+        "label": "Cloud SQL",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Storage",
+        "label": "Cloud Storage",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 12,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Tasks",
+        "label": "Cloud Tasks",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Test-Lab",
+        "label": "Cloud Test Lab",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-TPU",
+        "label": "Cloud TPU",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 27,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Translation-API",
+        "label": "Cloud Translation API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-Vision-API",
+        "label": "Cloud Vision API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Cloud-VPN",
+        "label": "Cloud VPN",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Compute-Engine",
+        "label": "Compute Engine",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 16,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Configuration-Management",
+        "label": "Configuration Management",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08624999999999972,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Connectivity-Test",
+        "label": "Connectivity Test",
+        "shapeScore": 0,
+        "placementErrorPx": 0.11375000000000313,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Connectors",
+        "label": "Connectors",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Contact-Center-AI",
+        "label": "Contact Center AI",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09749999999999659,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Container-Optimized-OS",
+        "label": "Container Optimized OS",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Container-Registry",
+        "label": "Container Registry",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 17,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Data-Catalog",
+        "label": "Data Catalog",
+        "shapeScore": 0,
+        "placementErrorPx": 0.04999999999999716,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Data-Labeling",
+        "label": "Data Labeling",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Data-Layers",
+        "label": "Data Layers",
+        "shapeScore": 0,
+        "placementErrorPx": 0.04999999999999716,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Data-Loss-Prevention-API",
+        "label": "Data Loss Prevention API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 11,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Data-QnA",
+        "label": "Data QnA",
+        "shapeScore": 0,
+        "placementErrorPx": 0.00999999999999801,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Data-Studio",
+        "label": "Data Studio",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Data-Transfer",
+        "label": "Data Transfer",
+        "shapeScore": 0,
+        "placementErrorPx": 0.10999999999999943,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Database-Migration-Service",
+        "label": "Database Migration Service",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0799999999999983,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Dataflow",
+        "label": "Dataflow",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 12,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Datalab",
+        "label": "Datalab",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Dataplex",
+        "label": "Dataplex",
+        "shapeScore": 0,
+        "placementErrorPx": 0.00999999999999801,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Datapol",
+        "label": "Datapol",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 11,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Dataprep",
+        "label": "Dataprep",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Dataproc-Metastore",
+        "label": "Dataproc Metastore",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03625000000000256,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Dataproc",
+        "label": "Dataproc",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 14,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Datashare",
+        "label": "Datashare",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Datastore",
+        "label": "Datastore",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 30,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Datastream",
+        "label": "Datastream",
+        "shapeScore": 0,
+        "placementErrorPx": 0.05250000000000199,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Debugger",
+        "label": "Debugger",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 13,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Developer-Portal",
+        "label": "Developer Portal",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Dialogflow-CX",
+        "label": "Dialogflow CX",
+        "shapeScore": 0,
+        "placementErrorPx": 0.007500000000000284,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Dialogflow-Insights",
+        "label": "Dialogflow Insights",
+        "shapeScore": 0,
+        "placementErrorPx": 0.00999999999999801,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Dialogflow",
+        "label": "Dialogflow",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0799999999999983,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Document-AI",
+        "label": "Document AI",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09375,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Early-Access-Center",
+        "label": "Early Access Center",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Error-Reporting",
+        "label": "Error Reporting",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Eventarc",
+        "label": "Eventarc",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09999999999999432,
+        "elementCount": 11,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Filestore",
+        "label": "Filestore",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Financial-Services-Marketplace",
+        "label": "Financial Services Marketplace",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Firestore",
+        "label": "Firestore",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Fleet-Engine",
+        "label": "Fleet Engine",
+        "shapeScore": 0,
+        "placementErrorPx": 0.04999999999999716,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Free-Trial",
+        "label": "Free Trial",
+        "shapeScore": 0,
+        "placementErrorPx": 0.006249999999999645,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Game-Servers",
+        "label": "Game Servers",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 16,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "GCE-Systems-Management",
+        "label": "GCE Systems Management",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Genomics",
+        "label": "Genomics",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 13,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "GKE-On-prem",
+        "label": "GKE On Prem",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08125000000000426,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Google-Cloud-Marketplace",
+        "label": "Google Cloud Marketplace",
+        "shapeScore": 0,
+        "placementErrorPx": 0.19999999999999574,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Google-Kubernetes-Engine",
+        "label": "Google Kubernetes Engine",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Google-Maps-Platform",
+        "label": "Google Maps Platform",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0449999999999946,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Healthcare-NLP-API",
+        "label": "Healthcare NLP API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Home",
+        "label": "Home",
+        "shapeScore": 0,
+        "placementErrorPx": 0.02499999999999858,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Identity-And-Access-Management",
+        "label": "Identity And Access Management",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1599999999999966,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Identity-Aware-Proxy",
+        "label": "Identity Aware Proxy",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08624999999999972,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Identity-Platform",
+        "label": "Identity Platform",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Iot-Core",
+        "label": "IoT Core",
+        "shapeScore": 0,
+        "placementErrorPx": 0.13250000000000028,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Iot-Edge",
+        "label": "IoT Edge",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 12,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Key-Access-Justifications",
+        "label": "Key Access Justifications",
+        "shapeScore": 0,
+        "placementErrorPx": 0.07875000000000032,
+        "elementCount": 11,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Key-Management-Service",
+        "label": "Key Management Service",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1599999999999966,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Kuberun",
+        "label": "Kuberun",
+        "shapeScore": 0,
+        "placementErrorPx": 0.07000000000000028,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Launcher",
+        "label": "Launcher",
+        "shapeScore": 0,
+        "placementErrorPx": 0.025000000000005684,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Local-SSD",
+        "label": "Local SSD",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Looker",
+        "label": "Looker",
+        "shapeScore": 0,
+        "placementErrorPx": 0.05624999999999858,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Managed-Service-For-Microsoft-Active-Directory",
+        "label": "Managed Service For Microsoft Active Directory",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Media-Translation-API",
+        "label": "Media Translation API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08125000000000426,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Memorystore",
+        "label": "Memorystore",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 14,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Migrate-For-Anthos",
+        "label": "Migrate For Anthos",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Migrate-For-Compute-Engine",
+        "label": "Migrate For Compute Engine",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "My-Cloud",
+        "label": "My Cloud",
+        "shapeScore": 0,
+        "placementErrorPx": 0.04374999999999574,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Network-Connectivity-Center",
+        "label": "Network Connectivity Center",
+        "shapeScore": 0,
+        "placementErrorPx": 0.02750000000000341,
+        "elementCount": 34,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Network-Intelligence-Center",
+        "label": "Network Intelligence Center",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Network-Security",
+        "label": "Network Security",
+        "shapeScore": 0,
+        "placementErrorPx": 0.11874999999999858,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Network-Tiers",
+        "label": "Network Tiers",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Network-Topology",
+        "label": "Network Topology",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Onboarding",
+        "label": "Onboarding",
+        "shapeScore": 0,
+        "placementErrorPx": 0.050000000000000044,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "OS-Configuration-Management",
+        "label": "OS Configuration Management",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "OS-Inventory-Management",
+        "label": "OS Inventory Management",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "OS-Patch-Management",
+        "label": "OS Patch Management",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Partner-Interconnect",
+        "label": "Partner Interconnect",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1474999999999973,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Partner-Portal",
+        "label": "Partner Portal",
+        "shapeScore": 0,
+        "placementErrorPx": 0.028750000000002274,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Performance-Dashboard",
+        "label": "Performance Dashboard",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Permissions",
+        "label": "Permissions",
+        "shapeScore": 0,
+        "placementErrorPx": 0.012500000000002842,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Persistent-Disk",
+        "label": "Persistent Disk",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Phishing-Protection",
+        "label": "Phishing Protection",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Policy-Analyzer",
+        "label": "Policy Analyzer",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Premium-Network-Tier",
+        "label": "Premium Network Tier",
+        "shapeScore": 0,
+        "placementErrorPx": 0.06499999999999773,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Private-Connectivity",
+        "label": "Private Connectivity",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09499999999999886,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Private-Service-Connect",
+        "label": "Private Service Connect",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03625000000000256,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Producer-Portal",
+        "label": "Producer Portal",
+        "shapeScore": 0,
+        "placementErrorPx": 0.012500000000002842,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Profiler",
+        "label": "Profiler",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Project",
+        "label": "Project",
+        "shapeScore": 0,
+        "placementErrorPx": 0.05000000000000426,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "PubSub",
+        "label": "Pub/Sub",
+        "shapeScore": 0.00007748934521503293,
+        "placementErrorPx": 0.125,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false,
+        "image": "icons/PubSub.png"
+      },
+      {
+        "id": "Quantum-Engine",
+        "label": "Quantum Engine",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 13,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Quotas",
+        "label": "Quotas",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 12,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Real-world-Insights",
+        "label": "Real World Insights",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08125000000000426,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Recommendations-AI",
+        "label": "Recommendations AI",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 12,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Release-Notes",
+        "label": "Release Notes",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03125,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Retail-API",
+        "label": "Retail API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.06499999999999773,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Risk-Manager",
+        "label": "Risk Manager",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Runtime-Config",
+        "label": "Runtime Config",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Secret-Manager",
+        "label": "Secret Manager",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Security-Command-Center",
+        "label": "Security Command Center",
+        "shapeScore": 0,
+        "placementErrorPx": 0.14000000000000057,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Security-Health-Advisor",
+        "label": "Security Health Advisor",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Security-Key-Enforcement",
+        "label": "Security Key Enforcement",
+        "shapeScore": 0,
+        "placementErrorPx": 0.06125000000000114,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Security",
+        "label": "Security",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Service-Discovery",
+        "label": "Service Discovery",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0762500000000017,
+        "elementCount": 11,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Speech-To-Text",
+        "label": "Speech To Text",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Stackdriver",
+        "label": "Stackdriver",
+        "shapeScore": 0,
+        "placementErrorPx": 0.022500000000007958,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Standard-Network-Tier",
+        "label": "Standard Network Tier",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Stream-Suite",
+        "label": "Stream Suite",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09125000000000227,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Support",
+        "label": "Support",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08124999999999982,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Tensorflow-Enterprise",
+        "label": "Tensorflow Enterprise",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Text-To-Speech",
+        "label": "Text To Speech",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Tools-For-Powershell",
+        "label": "Tools For Powershell",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Trace",
+        "label": "Trace",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Traffic-Director",
+        "label": "Traffic Director",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Transfer-Appliance",
+        "label": "Transfer Appliance",
+        "shapeScore": 0,
+        "placementErrorPx": 0.06750000000000256,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Transfer",
+        "label": "Transfer",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "User-Preferences",
+        "label": "User Preferences",
+        "shapeScore": 0,
+        "placementErrorPx": 0.028750000000002274,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Vertex-AI",
+        "label": "Vertex AI",
+        "shapeScore": 0,
+        "placementErrorPx": 0.11499999999999488,
+        "elementCount": 23,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Video-Intelligence-API",
+        "label": "Video Intelligence API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.05124999999999602,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Virtual-Private-Cloud",
+        "label": "Virtual Private Cloud",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 14,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Visual-Inspection",
+        "label": "Visual Inspection",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1075000000000017,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "VMware-Engine",
+        "label": "VMware Engine",
+        "shapeScore": 0,
+        "placementErrorPx": 0.04124999999999801,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Web-Risk",
+        "label": "Web Risk",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Web-Security-Scanner",
+        "label": "Web Security Scanner",
+        "shapeScore": 0,
+        "placementErrorPx": 0.12749999999999773,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Workflows",
+        "label": "Workflows",
+        "shapeScore": 0,
+        "placementErrorPx": 0.06374999999999975,
+        "elementCount": 13,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "Workload-Identity-Pool",
+        "label": "Workload Identity Pool",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      }
+    ]
+  },
+  "torture": {
+    "name": "torture",
+    "generatedAt": "2026-08-05T23:27:02.372Z",
+    "total": 25,
+    "meanShapeScore": 0.034392924214972566,
+    "worstShapeScore": 0.5800853249389056,
+    "meanPlacementErrorPx": 0.26044999999999985,
+    "worstPlacementErrorPx": 4.03125,
+    "failing": 3,
+    "auditIssueCount": 0,
+    "cases": [
+      {
+        "id": "01-evenodd-same-winding",
+        "label": "Evenodd Same Winding",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "trap": "Two rings wound the SAME direction. Under evenodd the inner one is a hole. A converter that infers holes from opposite winding fills this solid.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/01-evenodd-same-winding.png"
+      },
+      {
+        "id": "02-nonzero-same-winding",
+        "label": "Nonzero Same Winding",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "trap": "Identical geometry to 01 but nonzero: NO hole, must render solid. Any converter that treats \"nested ring\" as \"hole\" fails one of these two.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/02-nonzero-same-winding.png"
+      },
+      {
+        "id": "03-unclosed-subpaths",
+        "label": "Unclosed Subpaths",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "trap": "Compound path whose subpaths have NO Z. SVG closes them implicitly for filling. Dropping the \"duplicate\" last point deletes a real vertex.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/03-unclosed-subpaths.png"
+      },
+      {
+        "id": "04-island-in-hole",
+        "label": "Island In Hole",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 2,
+        "trap": "Three nesting levels: ring, hole, island inside the hole.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/04-island-in-hole.png"
+      },
+      {
+        "id": "05-disjoint-nested-bbox",
+        "label": "Disjoint Nested Bbox",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "trap": "A wide U and a small square that sits inside the U's BOUNDING BOX but is geometrically disjoint. Bounding-box hole detection punches it out.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/05-disjoint-nested-bbox.png"
+      },
+      {
+        "id": "06-self-intersecting",
+        "label": "Self Intersecting",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "trap": "Bowtie. evenodd leaves the crossing empty, nonzero fills it.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/06-self-intersecting.png"
+      },
+      {
+        "id": "07-stroke-caps-joins",
+        "label": "Stroke Caps Joins",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03125,
+        "elementCount": 7,
+        "trap": "Every cap and join, plus a miter that exceeds the limit and must bevel. Excalidraw forces round caps/joins, so these only survive as outlines.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/07-stroke-caps-joins.png"
+      },
+      {
+        "id": "08-stroke-transform-scaling",
+        "label": "Stroke Transform Scaling",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09375,
+        "elementCount": 3,
+        "trap": "Stroke width must be scaled by the element transform AND the viewBox fit. The three bars must end up visibly different thicknesses.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/08-stroke-transform-scaling.png"
+      },
+      {
+        "id": "09-rounded-rect-variants",
+        "label": "Rounded Rect Variants",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 6,
+        "trap": "rx only, ry only, over-large radii that must clamp, a pill, and a rect that is genuinely a circle. A \"big radius => ellipse\" guess breaks these.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/09-rounded-rect-variants.png"
+      },
+      {
+        "id": "10-css-cascade",
+        "label": "Css Cascade",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 2,
+        "trap": "Cascade order: presentation attribute < stylesheet rule < inline style. Expected: left GREEN (class beats attribute), right BLUE (style beats class). A converter that only applies CSS when the attribute is missing shows red.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/10-css-cascade.png"
+      },
+      {
+        "id": "11-nested-clip-and-mask",
+        "label": "Nested Clip And Mask",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 1,
+        "trap": "A clip and a mask nested on different ancestors. Only the INTERSECTION of the two should show. Taking the nearest one and stopping shows far too much.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/11-nested-clip-and-mask.png"
+      },
+      {
+        "id": "12-luminosity-mask",
+        "label": "Luminosity Mask",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 1,
+        "trap": "Illustrator's luminosity-mask idiom: feFlood white behind a BLACK shape, so the mask means \"everything except this circle\". Read naively (black = hide all) the artwork disappears entirely.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/12-luminosity-mask.png"
+      },
+      {
+        "id": "13-mask-reveal-and-hide",
+        "label": "Mask Reveal And Hide",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "trap": "Painter-order mask: white square reveals, black circle then hides part of it, a second white square re-reveals an overlapping corner.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/13-mask-reveal-and-hide.png"
+      },
+      {
+        "id": "14-transforms",
+        "label": "Transforms",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1287499999999966,
+        "elementCount": 3,
+        "trap": "Nested transforms, rotate about a point, negative (mirroring) scale, and a raw matrix. Mirroring flips winding, which must not invert hole detection.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/14-transforms.png"
+      },
+      {
+        "id": "15-viewbox-offset",
+        "label": "Viewbox Offset",
+        "shapeScore": 0,
+        "placementErrorPx": 0.5700000000000003,
+        "elementCount": 4,
+        "trap": "Non-zero, non-square, fractional viewBox origin. Hard-coding a 24x24 artboard or assuming origin 0,0 misplaces everything.",
+        "auditIssues": [],
+        "failing": true,
+        "image": "torture/15-viewbox-offset.png"
+      },
+      {
+        "id": "16-opacity",
+        "label": "Opacity",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09375,
+        "elementCount": 5,
+        "trap": "fill-opacity, stroke-opacity and inherited GROUP opacity, which multiplies rather than being inherited. Overlaps must composite, not replace.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/16-opacity.png"
+      },
+      {
+        "id": "17-gradients",
+        "label": "Gradients",
+        "shapeScore": 0.2797377804354085,
+        "placementErrorPx": 0.0625,
+        "elementCount": 3,
+        "trap": "Linear and radial gradients, plus a gradient referenced from a style attribute. All must flatten to a solid colour rather than vanish.",
+        "featureWarnings": "approximated: gradient fill x2",
+        "auditIssues": [],
+        "failing": true,
+        "image": "torture/17-gradients.png"
+      },
+      {
+        "id": "18-use-and-symbol",
+        "label": "Use And Symbol",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 6,
+        "trap": "<use> with its own x/y and transform, referencing both a plain shape and a group. Expanding it without honouring x/y stacks everything at the origin.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/18-use-and-symbol.png"
+      },
+      {
+        "id": "19-degenerate",
+        "label": "Degenerate",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 1,
+        "trap": "Shapes that must be skipped without throwing, next to one that must still be drawn: zero size, zero radius, empty d, single moveto, NaN, 2-point fill.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/19-degenerate.png"
+      },
+      {
+        "id": "20-unsupported-features",
+        "label": "Unsupported Features",
+        "shapeScore": 0.5800853249389056,
+        "placementErrorPx": 4.03125,
+        "elementCount": 5,
+        "trap": "Everything the converter cannot represent. Nothing here should crash, and each item must be REPORTED rather than silently dropped.",
+        "featureWarnings": "dropped: <text> x1; dropped: <pattern> x1; approximated: <filter> x1; approximated: stroke-dasharray x1; approximated: marker x2; approximated: skew transform x1",
+        "auditIssues": [],
+        "failing": true,
+        "image": "torture/20-unsupported-features.png"
+      },
+      {
+        "id": "21-clip-objectboundingbox",
+        "label": "Clip Objectboundingbox",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 2,
+        "trap": "clipPathUnits=\"objectBoundingBox\": clip coords are FRACTIONS of the referencing element's geometry box, not user units. Read as user units the clip is a sub-pixel sliver near the origin and the shape disappears. The box here is deliberately offset and non-square so a wrong origin or a wrong aspect shows up immediately.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/21-clip-objectboundingbox.png"
+      },
+      {
+        "id": "22-mask-contentunits-obb",
+        "label": "Mask Contentunits Obb",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 1,
+        "trap": "maskContentUnits=\"objectBoundingBox\": a 1x1 white rect means \"reveal the whole object\". Interpreted as user units it is a 1x1 sliver and the shape is erased. The black circle at 0.5,0.5 must punch out the centre.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/22-mask-contentunits-obb.png"
+      },
+      {
+        "id": "23-mask-units-obb-tight",
+        "label": "Mask Units Obb Tight",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0625,
+        "elementCount": 1,
+        "trap": "maskUnits=\"objectBoundingBox\" with a TIGHT region. Unlike the -10%/120% default this genuinely crops, so skipping the region bound over-draws the right-hand half. Mask content is in user space (the default).",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/23-mask-units-obb-tight.png"
+      },
+      {
+        "id": "24-luminosity-filterunits-default",
+        "label": "Luminosity Filterunits Default",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 1,
+        "trap": "The luminosity-mask idiom relying on the filterUnits DEFAULT, which is objectBoundingBox (-10%/120%), not userSpaceOnUse. Miss it and the flood rect never appears, the mask becomes empty-minus-circle = empty, and the artwork vanishes entirely.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/24-luminosity-filterunits-default.png"
+      },
+      {
+        "id": "25-obb-degenerate",
+        "label": "Obb Degenerate",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "trap": "objectBoundingBox references whose box is unusable: a zero-height line, a group with no geometry at all, and a dangling clip-path id. The unit matrix is singular or absent, so the reference cannot be resolved. Nothing here may be silently deleted - over-draw and warn instead.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/25-obb-degenerate.png"
+      }
+    ]
+  }
+}
