@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-06T08:08:25.401Z",
+  "builtAt": "2026-08-06T08:16:47.172Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,7 +7,7 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-06T08:07:25.072Z",
+    "generatedAt": "2026-08-06T08:16:45.343Z",
     "total": 216,
     "meanShapeScore": 0.0000049387597926240235,
     "worstShapeScore": 0.000989282769991756,
@@ -18,7 +18,7 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-06T08:08:23.949Z",
+    "generatedAt": "2026-08-06T08:16:45.372Z",
     "total": 25,
     "meanShapeScore": 0.034392924214972566,
     "worstShapeScore": 0.5800853249389056,

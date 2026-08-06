@@ -186,13 +186,15 @@ function run() {
   // Every torture case gets an image - the gallery is the point of the page.
   const tortureIds = new Set(tortureSummary.icons.map(i => i.id));
 
-  // Icons only publish the interesting tail: anything that fails, plus the
-  // worst few, so "0.000%" is backed by a visible non-trivial example rather
-  // than 216 identical strips.
+  // Icons publish only the interesting tail: anything non-zero or failing, so
+  // "0.000% mean" is backed by a visible non-trivial example. Padding this out
+  // with icons that score exactly zero would put six identical strips under a
+  // heading that says "the worst ones", which reads as a hedge.
   const iconIds = new Set(
     [...iconsSummary.icons]
+      .filter(icon => (icon.shapeScore ?? 0) > 0 || isFailing(icon, iconsSummary.thresholds))
       .sort((a, b) => (b.shapeScore ?? 0) - (a.shapeScore ?? 0))
-      .filter((icon, index) => index < WORST_ICONS_TO_PUBLISH || isFailing(icon, iconsSummary.thresholds))
+      .slice(0, WORST_ICONS_TO_PUBLISH)
       .map(i => i.id)
   );
 

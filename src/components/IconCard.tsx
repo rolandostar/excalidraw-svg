@@ -1,8 +1,12 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 import { GCPIcon, ExcalidrawOptions } from '../types';
-import { buildExcalidrawClipboardData } from '../utils/excalidrawGenerator';
+import {
+  buildExcalidrawClipboardData,
+  parseSvgToExcalidrawElements,
+} from '../utils/excalidrawGenerator';
 import { ICON_BASE_SIZE } from '../utils/defaultOptions';
+import { ExcalidrawPreview } from './ExcalidrawPreview';
 import confetti from 'canvas-confetti';
 
 interface IconCardProps {
@@ -36,6 +40,29 @@ export const IconCard: React.FC<IconCardProps> = ({
 
   const exportPx = Math.round(ICON_BASE_SIZE * options.iconScale);
   const previewPx = Math.min(exportPx, MAX_PREVIEW_PX);
+
+  // The card previews the *converted* scene, not the source file. Showing the
+  // input was a credibility gap on a product whose entire claim is conversion
+  // fidelity, and a CSS mock cannot represent roughness at all - a sketch-mode
+  // export looked identical to a clean one.
+  const elements = React.useMemo(
+    () =>
+      parseSvgToExcalidrawElements(
+        icon.rawSvg,
+        0,
+        0,
+        exportPx,
+        exportPx,
+        `card_${icon.id}`,
+        options.roughness
+      ),
+    [icon.rawSvg, icon.id, exportPx, options.roughness]
+  );
+
+  const frame = React.useMemo(
+    () => ({ x: 0, y: 0, width: exportPx, height: exportPx }),
+    [exportPx]
+  );
 
   const handleCopySingle = async () => {
     const { jsonText } = buildExcalidrawClipboardData([icon], options);
@@ -118,11 +145,9 @@ export const IconCard: React.FC<IconCardProps> = ({
               : 'column',
         }}
       >
-        <img
-          src={icon.dataUrl}
-          alt=""
-          style={{ width: `${previewPx}px`, height: `${previewPx}px`, objectFit: 'contain' }}
-        />
+        <div style={{ width: `${previewPx}px`, height: `${previewPx}px` }}>
+          <ExcalidrawPreview elements={elements} label={icon.title} frame={frame} />
+        </div>
 
         {options.showLabel && (
           <span

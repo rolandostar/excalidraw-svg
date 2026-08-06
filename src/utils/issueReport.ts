@@ -31,6 +31,14 @@ function describeAudit(result: ConversionResult): string {
     .join('\n');
 }
 
+function describeDrops(result: ConversionResult): string {
+  if (result.diagnostics.skippedTotal === 0) return '_none_';
+  return result.diagnostics.drops
+    .slice(0, 10)
+    .map(d => `- ${d.count} x \`<${d.tag}>\` — \`${d.reason}\` — ${d.detail}`)
+    .join('\n');
+}
+
 export function buildIssueUrl(fileName: string, result: ConversionResult): string {
   const title = `Bad conversion: ${fileName}.svg`;
 
@@ -61,10 +69,15 @@ was filled in automatically.
 | source dimensions | ${result.dimensions.width} x ${result.dimensions.height} (from ${result.dimensions.source}) |
 | converted to | ${result.width} x ${result.height} |
 | elements produced | ${result.counts.total} (${result.counts.lines} line, ${result.counts.ellipses} ellipse) |
+| source shapes dropped | ${result.diagnostics.skippedTotal} |
 
 ### Features the converter flagged
 
 ${describeWarnings(result)}
+
+### Source shapes that produced no output
+
+${describeDrops(result)}
 
 ### Scene audit issues
 

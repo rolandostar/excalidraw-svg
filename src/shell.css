@@ -984,3 +984,287 @@
     min-height: 104px;
   }
 }
+
+/* --- Methodology: evidence gallery -------------------------------------- */
+
+.doc-subhead {
+  margin: 1.75rem 0 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
+}
+
+.trap-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.trap-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 34%) 1fr;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.83rem;
+  line-height: 1.55;
+  border-top: 1px solid var(--border-color);
+}
+
+.trap-row:first-child {
+  border-top: none;
+}
+
+.trap-mistake {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+code.trap-mistake {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.trap-consequence {
+  color: var(--text-secondary);
+}
+
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.case-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  margin: 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.case-card.is-failing {
+  border-color: var(--danger-border);
+}
+
+.case-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.case-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.case-score {
+  flex-shrink: 0;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: rgba(52, 168, 83, 0.15);
+  color: var(--gcp-green);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.case-score.is-failing {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+/* White regardless of theme: the strips are rasterised on white, and a dark
+   backing would hide exactly the light strokes most likely to be wrong. */
+.case-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+
+.case-trap {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.case-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.case-deliberate {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.case-deliberate svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.doc-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.doc-section code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--text-primary);
+}
+
+@media (max-width: 640px) {
+  .trap-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
+
+/* --- Scene inspector modal ---------------------------------------------- */
+
+.modal-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.inspector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1rem;
+}
+
+.inspector-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+}
+
+.inspector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.inspector-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.inspector-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* White: this is the Excalidraw canvas, not site chrome. */
+.inspector-pane > img,
+.inspector-pane > .excalidraw-preview {
+  width: 100%;
+  height: 96px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: #fff;
+  object-fit: contain;
+}
+
+.inspector-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.55rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+}
+
+.inspector-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.inspector-stats dt {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.inspector-stats dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.inspector-issue {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.73rem;
+  line-height: 1.5;
+  color: var(--warn-text);
+}
+
+.inspector-issue svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.doc-body + .doc-body {
+  margin-top: 0.9rem;
+}
+
+.doc-body + .trap-table,
+.trap-table + .doc-subhead,
+.case-grid + .btn {
+  margin-top: 1rem;
+}

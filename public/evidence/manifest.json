@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-06T08:08:25.401Z",
+  "builtAt": "2026-08-06T08:16:47.172Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,7 +7,7 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-06T08:07:25.072Z",
+    "generatedAt": "2026-08-06T08:16:45.343Z",
     "total": 216,
     "meanShapeScore": 0.0000049387597926240235,
     "worstShapeScore": 0.000989282769991756,
@@ -23,8 +23,7 @@
         "placementErrorPx": 0.125,
         "elementCount": 3,
         "auditIssues": [],
-        "failing": false,
-        "image": "icons/Access-Context-Manager.png"
+        "failing": false
       },
       {
         "id": "Administration",
@@ -33,8 +32,7 @@
         "placementErrorPx": 0,
         "elementCount": 8,
         "auditIssues": [],
-        "failing": false,
-        "image": "icons/Administration.png"
+        "failing": false
       },
       {
         "id": "Advanced-Agent-Modeling",
@@ -43,8 +41,7 @@
         "placementErrorPx": 0.00999999999999801,
         "elementCount": 3,
         "auditIssues": [],
-        "failing": false,
-        "image": "icons/Advanced-Agent-Modeling.png"
+        "failing": false
       },
       {
         "id": "Advanced-Solutions-Lab",
@@ -53,8 +50,7 @@
         "placementErrorPx": 0.125,
         "elementCount": 32,
         "auditIssues": [],
-        "failing": false,
-        "image": "icons/Advanced-Solutions-Lab.png"
+        "failing": false
       },
       {
         "id": "Agent-Assist",
@@ -1970,7 +1966,7 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-06T08:08:23.949Z",
+    "generatedAt": "2026-08-06T08:16:45.372Z",
     "total": 25,
     "meanShapeScore": 0.034392924214972566,
     "worstShapeScore": 0.5800853249389056,

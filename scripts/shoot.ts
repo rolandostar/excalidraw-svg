@@ -43,7 +43,7 @@ function findChrome(): string {
 const arg = (name: string, fallback: string) =>
   process.argv.find(a => a.startsWith(`--${name}=`))?.split('=').slice(1).join('=') ?? fallback;
 
-const BASE = arg('url', 'http://localhost:5181');
+const BASE = arg('url', 'http://localhost:5182');
 const ONLY = arg('only', '');
 
 type Theme = 'light' | 'dark';
@@ -91,7 +91,30 @@ const SHOTS: Shot[] = [
   { name: 'icons-dark', route: '/icons', theme: 'dark', width: 1440, height: 950 },
   { name: 'icons-light', route: '/icons', theme: 'light', width: 1440, height: 950 },
   { name: 'icons-mobile-light', route: '/icons', theme: 'light', width: 390, height: 844 },
+  {
+    name: 'icons-sketch',
+    route: '/icons',
+    theme: 'dark',
+    width: 1440,
+    height: 700,
+    prepare: async page => {
+      await page.getByRole('button', { name: 'Virgil Sketch' }).click();
+      await page.waitForTimeout(1200);
+    },
+  },
   { name: 'methodology-dark', route: '/methodology', theme: 'dark', width: 1440, height: 950 },
+  {
+    name: 'methodology-full',
+    route: '/methodology',
+    theme: 'dark',
+    width: 1440,
+    height: 950,
+    fullPage: true,
+    prepare: async page => {
+      await page.waitForSelector('.case-card', { timeout: 15_000 });
+      await page.waitForTimeout(600);
+    },
+  },
   { name: 'methodology-light', route: '/methodology', theme: 'light', width: 1440, height: 950 },
 ];
 

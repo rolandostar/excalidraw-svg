@@ -2,8 +2,33 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, Check, Copy, Download, ExternalLink, Info } from 'lucide-react';
 import { ExcalidrawPreview } from './ExcalidrawPreview';
 import { convertSvg, SvgConversionError } from '../utils/convertSvg';
+import { DROP_REASON_LABELS, type ConversionDiagnostics } from '../utils/excalidrawGenerator';
 import { buildIssueUrl } from '../utils/issueReport';
 import type { SvgInput } from './SvgDropzone';
+
+/**
+ * Why source shapes produced no output.
+ *
+ * Shown on failure *and* on success, because a partial loss is the case the
+ * user is least likely to notice unaided: the preview looks plausible and the
+ * missing piece only turns up later, in Excalidraw.
+ */
+function DropBreakdown({ diagnostics }: { diagnostics: ConversionDiagnostics }) {
+  if (diagnostics.skippedTotal === 0) return null;
+
+  return (
+    <ul className="notice-list">
+      {diagnostics.drops.map((drop, i) => (
+        <li key={i}>
+          {drop.count} <code>&lt;{drop.tag}&gt;</code> {drop.count === 1 ? 'element' : 'elements'} —{' '}
+          {drop.detail === DROP_REASON_LABELS[drop.reason]
+            ? drop.detail
+            : `${DROP_REASON_LABELS[drop.reason]}: ${drop.detail}`}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 interface ConversionResultProps {
   input: SvgInput;
@@ -25,6 +50,7 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
           err instanceof SvgConversionError
             ? err.message
             : `Conversion failed: ${err instanceof Error ? err.message : String(err)}`,
+        diagnostics: err instanceof SvgConversionError ? err.diagnostics : undefined,
       };
     }
   }, [input.source]);
@@ -52,6 +78,7 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
           <div>
             <p className="notice-title">{input.name}.svg could not be converted</p>
             <p className="notice-text">{outcome.message}</p>
+            {outcome.diagnostics && <DropBreakdown diagnostics={outcome.diagnostics} />}
           </div>
         </div>
       </section>
@@ -168,6 +195,19 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      )}
+
+      {result.diagnostics.skippedTotal > 0 && (
+        <div className="notice notice-warn">
+          <Info size={16} aria-hidden="true" />
+          <div>
+            <p className="notice-title">
+              {result.diagnostics.skippedTotal} shape
+              {result.diagnostics.skippedTotal === 1 ? '' : 's'} in the source produced no output
+            </p>
+            <DropBreakdown diagnostics={result.diagnostics} />
           </div>
         </div>
       )}

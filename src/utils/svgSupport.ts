@@ -30,6 +30,17 @@ interface Rule {
   match?: (doc: Document) => Element[];
 }
 
+/**
+ * The support matrix published on the methodology page.
+ *
+ * Derived from `RULES` rather than written out again in the UI, so the site
+ * cannot claim support for something the detector still flags - or stay silent
+ * about a limitation that was added here later.
+ */
+export function listSupportRules(): { severity: SupportSeverity; feature: string; detail: string }[] {
+  return RULES.map(({ severity, feature, detail }) => ({ severity, feature, detail }));
+}
+
 const RULES: Rule[] = [
   {
     severity: 'unsupported',
