@@ -19,7 +19,6 @@
     "polygon-clipping": "^0.15.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "svg-to-excalidraw": "^0.0.2",
     "svgo": "^4.0.2"
   },
   "devDependencies": {

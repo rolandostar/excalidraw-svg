@@ -26,9 +26,6 @@ importers:
       react-dom:
         specifier: ^19.2.8
         version: 19.2.8(react@19.2.8)
-      svg-to-excalidraw:
-        specifier: ^0.0.2
-        version: 0.0.2
       svgo:
         specifier: ^4.0.2
         version: 4.0.2
@@ -858,9 +855,6 @@ packages:
   canvas-confetti@1.9.4:
     resolution: {integrity: sha512-yxQbJkAVrFXWNbTUjPqjF7G+g6pDotOUHGbkZq2NELZUMDpiJ85rIEazVb8GTaAptNW2miJAXbs1BtioA251Pw==}
 
-  chroma-js@2.6.0:
-    resolution: {integrity: sha512-BLHvCB9s8Z1EV4ethr6xnkl/P2YRFOGqfgvuMG/MyCbZPrTA+NeiByY6XvgF0zP4/2deU2CXnWyMa3zu1LqQ3A==}
-
   commander@11.1.0:
     resolution: {integrity: sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==}
     engines: {node: '>=16'}
@@ -965,9 +959,6 @@ packages:
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
-
-  gl-matrix@3.4.4:
-    resolution: {integrity: sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ==}
 
   hachure-fill@0.5.2:
     resolution: {integrity: sha512-3GKBOn+m2LX9iq+JC1064cSFprJY4jL1jCXTcpnfER5HYE2l/4EfWSGzkPa/ZDBmYI0ZOEj5VHV/eKnPGkHuOg==}
@@ -1147,9 +1138,6 @@ packages:
   splaytree@3.2.3:
     resolution: {integrity: sha512-7OXrNWzy6CK+r7Ch9OLPBDTKfB6XlWHjX4P0RU5B3IgFuWPeYN0XtRtlexGRjgbQxpfaUve6jTAwBGWuGntz/w==}
     engines: {node: '>=18.20 || >=20'}
-
-  svg-to-excalidraw@0.0.2:
-    resolution: {integrity: sha512-WP+RlvawFaWFqG0fVtQXjh7F+JYnox4vDdHM/iizEKtvjKLB5dih2yF+mcrGrKw7H77XlC8ScXf6zxSCkSGUAg==}
 
   svgo@4.0.2:
     resolution: {integrity: sha512-ekx94z1rRc5LDi6oSUaeRnYhd0UOJxdtQCL2rF8xpWxD3TPAsISWOrxezqGovqS38GRZOdpDfvQe3ts6F7nsng==}
@@ -1841,8 +1829,6 @@ snapshots:
 
   canvas-confetti@1.9.4: {}
 
-  chroma-js@2.6.0: {}
-
   commander@11.1.0: {}
 
   convert-source-map@2.0.0: {}
@@ -1980,8 +1966,6 @@ snapshots:
     optional: true
 
   gensync@1.0.0-beta.2: {}
-
-  gl-matrix@3.4.4: {}
 
   hachure-fill@0.5.2: {}
 
@@ -2175,16 +2159,6 @@ snapshots:
   source-map-js@1.2.1: {}
 
   splaytree@3.2.3: {}
-
-  svg-to-excalidraw@0.0.2:
-    dependencies:
-      chroma-js: 2.6.0
-      gl-matrix: 3.4.4
-      nanoid: 3.3.16
-      path-data-parser: 0.1.0
-      points-on-curve: 0.2.0
-      points-on-path: 0.2.1
-      roughjs: 4.6.6
 
   svgo@4.0.2:
     dependencies:
