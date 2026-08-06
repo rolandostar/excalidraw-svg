@@ -7,10 +7,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test:icons": "tsx scripts/generate-all-outputs.ts",
-    "test:icons:update": "tsx scripts/generate-all-outputs.ts --update-baseline",
-    "test:torture": "tsx scripts/generate-all-outputs.ts --suite=torture",
-    "test:torture:update": "tsx scripts/generate-all-outputs.ts --suite=torture --update-baseline"
+    "test": "tsx scripts/run-fidelity.ts --input=svg --name=icons",
+    "test:update": "tsx scripts/run-fidelity.ts --input=svg --name=icons --update-baseline",
+    "test:torture": "tsx scripts/run-fidelity.ts --input=tests/torture-svg --name=torture",
+    "test:torture:update": "tsx scripts/run-fidelity.ts --input=tests/torture-svg --name=torture --update-baseline"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

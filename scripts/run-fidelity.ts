@@ -17,8 +17,14 @@
  *      silently swallow (unfilled open paths, degenerate shapes, image
  *      elements whose file was dropped).
  *
- * Results are gated against `test-outputs/baseline.json`. Run with
- * `--update-baseline` to accept the current numbers as the new reference.
+ * Usage:
+ *
+ *   tsx scripts/run-fidelity.ts --input=<dir> [--name=<suite>]
+ *                               [--update-baseline] [--only=<substring>]
+ *
+ * Any directory of SVGs works. Results land in `tests/results/<suite>/` and
+ * are gated against `tests/baselines/<suite>.json`; `--update-baseline`
+ * accepts the current numbers as the new reference.
  */
 import './setupDom';
 
@@ -55,23 +61,23 @@ import {
   composeTriptych,
 } from './lib/report';
 
-/**
- * `--suite=torture` swaps the corpus for `tests/torture`, a small set of SVGs
- * built specifically around features converters get wrong (fill rules, nested
- * clips and masks, cap/join geometry, degenerate shapes). They are scored
- * against a real renderer exactly like the icons, so they need no hand-written
- * expectations - resvg is the oracle.
- */
-const SUITE = (() => {
-  const flag = process.argv.find(a => a.startsWith('--suite='));
-  return flag ? flag.slice('--suite='.length) : 'icons';
-})();
+function flag(name: string): string | null {
+  const found = process.argv.find(a => a.startsWith(`--${name}=`));
+  return found ? found.slice(name.length + 3) : null;
+}
 
-const SVG_DIR = path.resolve(process.cwd(), SUITE === 'torture' ? 'tests/torture' : 'svg');
-const OUT_DIR = path.resolve(process.cwd(), SUITE === 'torture' ? 'test-outputs/torture' : 'test-outputs');
-const ICONS_DIR = path.join(OUT_DIR, 'icons');
-const COMPARISONS_DIR = path.join(OUT_DIR, 'comparisons');
-const BASELINE_FILE = path.join(OUT_DIR, 'baseline.json');
+const INPUT_DIR = path.resolve(process.cwd(), flag('input') ?? 'svg');
+
+/**
+ * Suite name, defaulting to the input folder's own name. It selects both the
+ * results folder and the baseline file, so two corpora never collide.
+ */
+const SUITE = flag('name') ?? path.basename(INPUT_DIR).replace(/-svg$/, '');
+
+const RESULTS_DIR = path.resolve(process.cwd(), 'tests/results', SUITE);
+const ELEMENTS_DIR = path.join(RESULTS_DIR, 'elements');
+const COMPARISONS_DIR = path.join(RESULTS_DIR, 'comparisons');
+const BASELINE_FILE = path.resolve(process.cwd(), 'tests/baselines', `${SUITE}.json`);
 
 const PANEL_SIZE = 320;
 const TARGET = { x: 0, y: 0, width: 48, height: 48 };
@@ -95,7 +101,7 @@ const onlyFilter = (() => {
 })();
 
 function ensureDirs() {
-  for (const dir of [OUT_DIR, ICONS_DIR, COMPARISONS_DIR]) {
+  for (const dir of [RESULTS_DIR, ELEMENTS_DIR, COMPARISONS_DIR, path.dirname(BASELINE_FILE)]) {
     fs.mkdirSync(dir, { recursive: true });
   }
 }
@@ -128,10 +134,10 @@ function describeIssues(prefix: string, issues: ReturnType<typeof auditSceneFide
 async function run() {
   ensureDirs();
 
-  let files = fs.readdirSync(SVG_DIR).filter(f => f.toLowerCase().endsWith('.svg'));
+  let files = fs.readdirSync(INPUT_DIR).filter(f => f.toLowerCase().endsWith('.svg'));
   if (onlyFilter) files = files.filter(f => f.toLowerCase().includes(onlyFilter));
 
-  console.log(`Scoring ${files.length} icons against Excalidraw's own renderer...`);
+  console.log(`Suite "${SUITE}": scoring ${files.length} SVG(s) from ${path.relative(process.cwd(), INPUT_DIR)}`);
 
   const baseline: Record<string, number> | null = fs.existsSync(BASELINE_FILE)
     ? JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf-8'))
@@ -144,7 +150,7 @@ async function run() {
   for (let i = 0; i < files.length; i++) {
     const filename = files[i];
     const name = path.basename(filename, '.svg');
-    const rawSvg = fs.readFileSync(path.join(SVG_DIR, filename), 'utf-8');
+    const rawSvg = fs.readFileSync(path.join(INPUT_DIR, filename), 'utf-8');
 
     const record: IconMetrics = {
       id: name,
@@ -236,7 +242,7 @@ async function run() {
 
       // --- deterministic snapshot -----------------------------------------
       fs.writeFileSync(
-        path.join(ICONS_DIR, `${name}.excalidraw`),
+        path.join(ELEMENTS_DIR, `${name}.excalidraw`),
         JSON.stringify(
           {
             type: 'excalidraw',
@@ -280,7 +286,7 @@ async function run() {
   });
 
   fs.writeFileSync(
-    path.join(OUT_DIR, 'all-gcp-icons.excalidrawlib'),
+    path.join(RESULTS_DIR, 'library.excalidrawlib'),
     JSON.stringify(
       {
         type: 'excalidrawlib',
@@ -326,8 +332,8 @@ async function run() {
     icons: metrics,
   };
 
-  fs.writeFileSync(path.join(OUT_DIR, 'summary.json'), JSON.stringify(summary, null, 2), 'utf-8');
-  fs.writeFileSync(path.join(OUT_DIR, 'comparison.html'), buildHtmlReport(summary, baseline), 'utf-8');
+  fs.writeFileSync(path.join(RESULTS_DIR, 'summary.json'), JSON.stringify(summary, null, 2), 'utf-8');
+  fs.writeFileSync(path.join(RESULTS_DIR, 'comparison.html'), buildHtmlReport(summary, baseline), 'utf-8');
 
   // --- baseline gate -------------------------------------------------------
   const currentScores: Record<string, number> = {};
@@ -364,7 +370,7 @@ async function run() {
   console.log(`  mean placement error ${summary.meanPlacementErrorPx.toFixed(3)}px`);
   console.log(`  worst placement err  ${summary.worstPlacementErrorPx.toFixed(3)}px`);
   console.log(`  audit issues         ${summary.auditIssueCount}`);
-  console.log(`  failing icons        ${summary.failingIcons}/${summary.totalProcessed}`);
+  console.log(`  failing files        ${summary.failingIcons}/${summary.totalProcessed}`);
 
   const flagged = metrics.filter(m => m.featureWarnings);
   if (flagged.length) {
@@ -394,7 +400,7 @@ Unsupported/approximated features (${flagged.length} file(s)):`);
     return;
   }
 
-  console.log(`\nReport: ${path.join(OUT_DIR, 'comparison.html')}`);
+  console.log(`\nReport: ${path.relative(process.cwd(), path.join(RESULTS_DIR, 'comparison.html'))}`);
 }
 
 run().catch(err => {

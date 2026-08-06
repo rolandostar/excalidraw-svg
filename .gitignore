@@ -1,13 +1,10 @@
 node_modules/
 dist/
 
-# Harness output. The `baseline.json` files are the committed references the
-# regression gate compares against; everything else is a regenerable artefact.
-test-outputs/*
-!test-outputs/baseline.json
-!test-outputs/torture/
-test-outputs/torture/*
-!test-outputs/torture/baseline.json
+# Harness output: regenerable renders, diffs, element snapshots, reports and
+# the generated library. The committed reference the regression gate compares
+# against lives in tests/baselines/ instead.
+tests/results/
 
 # npm lockfile - this project uses pnpm
 package-lock.json
