@@ -2,6 +2,7 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { GCPIcon, ExcalidrawOptions } from '../types';
 import { buildExcalidrawClipboardData } from '../utils/excalidrawGenerator';
+import { ICON_BASE_SIZE } from '../utils/defaultOptions';
 import confetti from 'canvas-confetti';
 
 interface IconCardProps {
@@ -10,7 +11,18 @@ interface IconCardProps {
   isSelectionMode: boolean;
   onToggleSelect: (id: string) => void;
   options: ExcalidrawOptions;
+  onToast: (message: string) => void;
 }
+
+/**
+ * Largest icon the grid will draw at true size.
+ *
+ * At `iconScale: 2` an icon is 192 canvas units, which would force ~230px grid
+ * cells and drop the grid to three columns. The card shows it scaled to fit
+ * and states the real export size in the caption, so the number is never
+ * implied by the picture alone.
+ */
+const MAX_PREVIEW_PX = 112;
 
 export const IconCard: React.FC<IconCardProps> = ({
   icon,
@@ -18,39 +30,31 @@ export const IconCard: React.FC<IconCardProps> = ({
   isSelectionMode,
   onToggleSelect,
   options,
+  onToast,
 }) => {
   const [copied, setCopied] = React.useState(false);
 
-  const handleCopySingle = async (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
+  const exportPx = Math.round(ICON_BASE_SIZE * options.iconScale);
+  const previewPx = Math.min(exportPx, MAX_PREVIEW_PX);
+
+  const handleCopySingle = async () => {
     const { jsonText } = buildExcalidrawClipboardData([icon], options);
     try {
       await navigator.clipboard.writeText(jsonText);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-
-      confetti({
-        particleCount: 25,
-        spread: 40,
-        origin: { y: 0.2 },
-        colors: ['#4285F4', '#34A853'],
-      });
-    } catch (err) {
-      console.error('Failed to copy single icon:', err);
+      window.setTimeout(() => setCopied(false), 1600);
+      confetti({ particleCount: 25, spread: 40, origin: { y: 0.2 }, colors: ['#4285F4', '#34A853'] });
+      onToast(`${icon.title} copied — paste into Excalidraw with Ctrl+V`);
+    } catch {
+      onToast('Could not access the clipboard.');
     }
   };
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    if (isSelectionMode) {
-      onToggleSelect(icon.id);
-    } else {
-      handleCopySingle(e);
-    }
+  const activate = () => {
+    if (isSelectionMode) onToggleSelect(icon.id);
+    else void handleCopySingle();
   };
 
-  const iconSize = Math.round(48 * options.iconScale);
-
-  // Compute font family CSS rule
   const fontFamilyCss =
     options.labelFontFamily === 1
       ? "'Excalifont', 'Kalam', cursive"
@@ -65,27 +69,35 @@ export const IconCard: React.FC<IconCardProps> = ({
   return (
     <div
       className={`icon-card ${isSelected ? 'selected' : ''} ${copied ? 'copied-flash' : ''}`}
-      onClick={handleCardClick}
-      title={isSelectionMode ? 'Click to select' : 'Click anywhere to copy to Excalidraw'}
+      onClick={activate}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          activate();
+        }
+      }}
+      role={isSelectionMode ? 'checkbox' : 'button'}
+      aria-checked={isSelectionMode ? isSelected : undefined}
+      aria-label={
+        isSelectionMode
+          ? `${icon.title}, ${isSelected ? 'selected' : 'not selected'}`
+          : `Copy ${icon.title} to clipboard`
+      }
+      tabIndex={0}
     >
-      {/* Toast Feedback for instant copy */}
       {copied && (
         <div className="copy-toast">
-          <Check className="w-3.5 h-3.5 text-green-400" />
-          <span>Copied!</span>
+          <Check size={13} />
+          <span>Copied</span>
         </div>
       )}
 
-      {/* Selection Checkbox (Visible in Selection Mode or when selected) */}
       {(isSelectionMode || isSelected) && (
         <div className="checkbox-container">
-          <div className="checkbox-custom">
-            {isSelected && <Check className="w-3 h-3 text-white" />}
-          </div>
+          <div className="checkbox-custom">{isSelected && <Check size={12} color="#fff" />}</div>
         </div>
       )}
 
-      {/* Live Excalidraw Container Preview Box */}
       <div
         className="icon-preview-box"
         style={{
@@ -98,29 +110,20 @@ export const IconCard: React.FC<IconCardProps> = ({
               ? '12px'
               : '0px',
           padding: options.showCard ? `${options.padding}px` : '0px',
-          display: 'flex',
           flexDirection:
             options.labelPosition === 'right'
               ? 'row'
               : options.labelPosition === 'top'
               ? 'column-reverse'
               : 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '6px',
         }}
       >
         <img
           src={icon.dataUrl}
-          alt={icon.title}
-          style={{
-            width: `${iconSize}px`,
-            height: `${iconSize}px`,
-            objectFit: 'contain',
-          }}
+          alt=""
+          style={{ width: `${previewPx}px`, height: `${previewPx}px`, objectFit: 'contain' }}
         />
 
-        {/* Non-editable Excalidraw Label (Visible inside container when showLabel is ON) */}
         {options.showLabel && (
           <span
             className="icon-title-text"
@@ -135,7 +138,6 @@ export const IconCard: React.FC<IconCardProps> = ({
         )}
       </div>
 
-      {/* Non-editable Web UI Caption (Displayed when Excalidraw Label is OFF) */}
       {!options.showLabel && (
         <div className="icon-ui-caption">
           <span className="subtle-caption-text">{icon.title}</span>

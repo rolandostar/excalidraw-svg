@@ -2,7 +2,11 @@ import './setupDom';
 
 import { exportToSvg } from '@excalidraw/utils';
 import { ExcalidrawElement, ExcalidrawFile } from '../src/types';
-import { LINE_CONFIRM_THRESHOLD } from '../src/utils/defaultOptions';
+import { withFrame } from '../src/utils/sceneFrame';
+
+// The scene audit is pure and shared with the browser, so it lives in `src/`.
+// Re-exported here so existing harness imports keep working.
+export { auditSceneFidelity, type FidelityIssue } from '../src/utils/sceneAudit';
 
 export interface RenderedScene {
   svg: string;
@@ -77,31 +81,7 @@ export async function renderExcalidrawSceneInWindow(
   window: { x: number; y: number; width: number; height: number },
   files: Record<string, ExcalidrawFile> = {}
 ): Promise<RenderedScene> {
-  const sentinel = {
-    ...elements[0],
-    id: '__frame_sentinel__',
-    type: 'line',
-    x: window.x,
-    y: window.y,
-    width: window.width,
-    height: window.height,
-    angle: 0,
-    strokeColor: 'transparent',
-    backgroundColor: 'transparent',
-    strokeWidth: 0.01,
-    roughness: 0,
-    opacity: 100,
-    roundness: null,
-    points: [
-      [0, 0],
-      [window.width, 0],
-      [window.width, window.height],
-      [0, window.height],
-      [0, 0],
-    ],
-  } as unknown as ExcalidrawElement;
-
-  const scene = await renderExcalidrawScene([sentinel, ...elements], files, 0);
+  const scene = await renderExcalidrawScene(withFrame(elements, window), files, 0);
 
   const [, , w, h] = scene.viewBox.split(/\s+/).map(Number);
   const escaped = Math.abs(w - window.width) > 0.05 || Math.abs(h - window.height) > 0.05;
@@ -112,78 +92,4 @@ export async function renderExcalidrawSceneInWindow(
   }
 
   return scene;
-}
-
-export interface FidelityIssue {
-  elementIndex: number;
-  elementType: string;
-  kind: 'unfilled-open-path' | 'degenerate' | 'missing-file';
-  detail: string;
-}
-
-/**
- * Static analysis of a scene against the rules Excalidraw applies at render
- * time. Catches "looks right in the source SVG, disappears in Excalidraw"
- * regressions without needing a human to eyeball 216 images.
- */
-export function auditSceneFidelity(
-  elements: ExcalidrawElement[],
-  files: Record<string, ExcalidrawFile> = {}
-): FidelityIssue[] {
-  const issues: FidelityIssue[] = [];
-
-  elements.forEach((el, elementIndex) => {
-    if (el.isDeleted) return;
-
-    if (el.type === 'line') {
-      const points = el.points || [];
-      const hasFill = !!el.backgroundColor && el.backgroundColor !== 'transparent';
-
-      if (points.length < 2) {
-        issues.push({
-          elementIndex,
-          elementType: el.type,
-          kind: 'degenerate',
-          detail: `line has ${points.length} point(s); Excalidraw renders nothing`,
-        });
-        return;
-      }
-
-      if (hasFill) {
-        const first = points[0];
-        const last = points[points.length - 1];
-        const gap = Math.hypot(first[0] - last[0], first[1] - last[1]);
-        if (points.length < 3 || gap > LINE_CONFIRM_THRESHOLD) {
-          issues.push({
-            elementIndex,
-            elementType: el.type,
-            kind: 'unfilled-open-path',
-            detail:
-              `backgroundColor ${el.backgroundColor} will be ignored: path is not a loop ` +
-              `(first/last gap ${gap.toFixed(2)} > LINE_CONFIRM_THRESHOLD ${LINE_CONFIRM_THRESHOLD})`,
-          });
-        }
-      }
-    }
-
-    if ((el.type === 'ellipse' || el.type === 'rectangle') && (el.width <= 0 || el.height <= 0)) {
-      issues.push({
-        elementIndex,
-        elementType: el.type,
-        kind: 'degenerate',
-        detail: `zero-sized ${el.type} (${el.width}x${el.height})`,
-      });
-    }
-
-    if (el.type === 'image' && (!el.fileId || !files[el.fileId])) {
-      issues.push({
-        elementIndex,
-        elementType: el.type,
-        kind: 'missing-file',
-        detail: `image element references fileId "${el.fileId}" which is not in files{}`,
-      });
-    }
-  });
-
-  return issues;
 }

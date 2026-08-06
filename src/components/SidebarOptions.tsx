@@ -1,6 +1,7 @@
 import React from 'react';
 import { Settings, Frame, Type, Paintbrush, Sliders, Sparkles } from 'lucide-react';
 import { ExcalidrawOptions, CardStyle, LabelPosition, LabelFontFamily } from '../types';
+import { ICON_BASE_SIZE } from '../utils/defaultOptions';
 
 interface SidebarOptionsProps {
   options: ExcalidrawOptions;
@@ -47,7 +48,6 @@ export const SidebarOptions: React.FC<SidebarOptionsProps> = ({ options, setOpti
   const applyPreset = (preset: 'sketch' | 'gcp-dark' | 'gcp-light' | 'minimal') => {
     if (preset === 'sketch') {
       setOptions({
-        exportMode: 'vector',
         showCard: true,
         cardStyle: 'sketch-box',
         roughness: 2,
@@ -63,7 +63,6 @@ export const SidebarOptions: React.FC<SidebarOptionsProps> = ({ options, setOpti
       });
     } else if (preset === 'gcp-dark') {
       setOptions({
-        exportMode: 'vector',
         showCard: true,
         cardStyle: 'soft-card',
         roughness: 0,
@@ -79,7 +78,6 @@ export const SidebarOptions: React.FC<SidebarOptionsProps> = ({ options, setOpti
       });
     } else if (preset === 'gcp-light') {
       setOptions({
-        exportMode: 'vector',
         showCard: true,
         cardStyle: 'soft-card',
         roughness: 0,
@@ -95,7 +93,6 @@ export const SidebarOptions: React.FC<SidebarOptionsProps> = ({ options, setOpti
       });
     } else if (preset === 'minimal') {
       setOptions({
-        exportMode: 'vector',
         showCard: false,
         cardStyle: 'none',
         roughness: 0,
@@ -117,26 +114,9 @@ export const SidebarOptions: React.FC<SidebarOptionsProps> = ({ options, setOpti
       <div>
         <div className="section-title">
           <Settings className="w-4 h-4 text-blue-400" />
-          Export Mode & Presets
+          Presets
         </div>
 
-        <div className="control-label" style={{ marginBottom: '0.4rem' }}>Canvas Clipboard Mode</div>
-        <div className="segmented-control" style={{ marginBottom: '0.75rem' }}>
-          <button
-            className={`segment-btn ${options.exportMode === 'vector' ? 'active' : ''}`}
-            onClick={() => updateOption('exportMode', 'vector')}
-            title="100% Native Vector Elements (Editable shapes, sketchable, library ready)"
-          >
-            Native Vectors
-          </button>
-          <button
-            className={`segment-btn ${options.exportMode === 'svg-image' ? 'active' : ''}`}
-            onClick={() => updateOption('exportMode', 'svg-image')}
-            title="Embedded Pure SVG Image (Canvas paste only)"
-          >
-            SVG Image
-          </button>
-        </div>
         <div className="grid grid-cols-2 gap-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
           <button
             className="btn btn-secondary btn-sm"
@@ -344,11 +324,11 @@ export const SidebarOptions: React.FC<SidebarOptionsProps> = ({ options, setOpti
 
         <div className="control-label">
           <span>Icon Scale</span>
-          <span className="control-value">{Math.round(48 * options.iconScale)}px ({options.iconScale}x)</span>
+          <span className="control-value">{Math.round(ICON_BASE_SIZE * options.iconScale)}px ({options.iconScale}x)</span>
         </div>
         <input
           type="range"
-          min="0.75"
+          min="0.5"
           max="2.0"
           step="0.25"
           value={options.iconScale}

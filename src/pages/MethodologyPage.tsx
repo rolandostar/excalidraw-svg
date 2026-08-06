@@ -28,7 +28,7 @@ export function MethodologyPage() {
         </div>
         <div className="stat">
           <span className="stat-value">{STATS.tortureFailures}</span>
-          <span className="stat-label">known failures</span>
+          <span className="stat-label">deliberate failures</span>
         </div>
       </div>
 

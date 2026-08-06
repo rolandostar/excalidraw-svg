@@ -9,6 +9,7 @@ interface IconGridProps {
   setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
   isSelectionMode: boolean;
   options: ExcalidrawOptions;
+  onToast: (message: string) => void;
 }
 
 export const IconGrid: React.FC<IconGridProps> = ({
@@ -17,6 +18,7 @@ export const IconGrid: React.FC<IconGridProps> = ({
   setSelectedIds,
   isSelectionMode,
   options,
+  onToast,
 }) => {
   const handleToggleSelect = (id: string) => {
     setSelectedIds(prev =>
@@ -43,7 +45,7 @@ export const IconGrid: React.FC<IconGridProps> = ({
           No GCP icons match your filter
         </h3>
         <p style={{ fontSize: '0.85rem' }}>
-          Try clearing your search query or switching to "All Categories".
+          Try clearing your search query or switching back to "All".
         </p>
       </div>
     );
@@ -59,6 +61,7 @@ export const IconGrid: React.FC<IconGridProps> = ({
           isSelectionMode={isSelectionMode}
           onToggleSelect={handleToggleSelect}
           options={options}
+          onToast={onToast}
         />
       ))}
     </div>

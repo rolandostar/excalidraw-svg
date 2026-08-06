@@ -1,15 +1,26 @@
 import { ExcalidrawOptions } from '../types';
 
 /**
+ * Edge length in Excalidraw canvas units of an icon at `iconScale: 1`.
+ *
+ * 48 was too small in practice: pasted next to default 20px Excalidraw text an
+ * icon read as a bullet point rather than a diagram node, and every user's
+ * first action was to scale it up. 96 is the size people were choosing anyway,
+ * so it is now what 1x means.
+ *
+ * Everything downstream is derived from this - card sizing, grid pitch and the
+ * sidebar readout - so changing it here changes them together.
+ */
+export const ICON_BASE_SIZE = 96;
+
+/**
  * Single source of truth for the default export settings.
  *
- * The UI (App.tsx) and the icon test suite (scripts/generate-all-outputs.ts)
- * BOTH read from here. If they drift apart, the visual comparison dashboard
- * stops describing what actually lands on the clipboard, which is exactly the
- * class of bug this module exists to prevent.
+ * The icon library UI and the fidelity harness BOTH read from here. If they
+ * drift apart, the comparison dashboard stops describing what actually lands
+ * on the clipboard, which is exactly the class of bug this module prevents.
  */
 export const DEFAULT_EXCALIDRAW_OPTIONS: ExcalidrawOptions = {
-  exportMode: 'vector',
   showCard: false,
   cardStyle: 'none',
   roughness: 0,

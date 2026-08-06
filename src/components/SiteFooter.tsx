@@ -7,7 +7,7 @@ export function SiteFooter() {
       <div className="site-footer-inner">
         <p className="site-footer-claim">
           {STATS.iconCount} icons at {formatPct(STATS.iconMeanError)} mean shape error ·{' '}
-          {STATS.tortureCount} torture cases · {STATS.tortureFailures} known failures.{' '}
+          {STATS.tortureCount} torture cases · {STATS.tortureFailures} deliberate failures.{' '}
           <Link to="/methodology" className="text-link">
             Every number here is measured, not asserted.
           </Link>

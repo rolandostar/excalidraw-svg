@@ -5,67 +5,71 @@ export interface CategoryInfo {
   badgeColor: string;
 }
 
+/**
+ * Six buckets, shown as filter chips.
+ *
+ * Ten was too many to scan: the chip bar overflowed its container at every
+ * viewport width, and four of the buckets held under twenty icons each, so
+ * the filter mostly told you which of ten near-synonymous labels Google had
+ * picked rather than helping you find anything.
+ *
+ * The keyword matching below is deliberately NOT collapsed to match. It still
+ * resolves ten fine-grained buckets, which are then folded into these six by
+ * `FINE_TO_DISPLAY`. Merging the keyword lists instead would have changed
+ * match precedence - the matcher is first-wins - and silently reclassified
+ * icons that are currently correct.
+ */
 export const CATEGORIES: Record<string, CategoryInfo> = {
   'ai-ml': {
     id: 'ai-ml',
-    name: 'AI & Machine Learning',
+    name: 'AI & ML',
     description: 'Vertex AI, AutoML, Dialogflow, Speech & Vision APIs',
     badgeColor: '#8AB4F8',
   },
   'compute': {
     id: 'compute',
-    name: 'Compute & Containers',
-    description: 'GKE, Compute Engine, Cloud Run, Anthos, App Engine',
+    name: 'Compute',
+    description: 'GKE, Compute Engine, Cloud Run, Functions, Apigee, Workflows',
     badgeColor: '#81C995',
   },
-  'storage-db': {
-    id: 'storage-db',
-    name: 'Storage & Databases',
-    description: 'Cloud Storage, Cloud SQL, Spanner, Bigtable, Firestore',
+  'data': {
+    id: 'data',
+    name: 'Data & Storage',
+    description: 'BigQuery, Dataflow, Cloud Storage, Spanner, Firestore',
     badgeColor: '#FDE293',
   },
-  'data-analytics': {
-    id: 'data-analytics',
-    name: 'Data & Analytics',
-    description: 'BigQuery, Dataflow, Dataproc, Looker, Pub/Sub',
-    badgeColor: '#FFD599',
-  },
-  'networking': {
-    id: 'networking',
-    name: 'Networking',
-    description: 'VPC, Cloud Load Balancing, DNS, CDN, Interconnect',
+  'network-security': {
+    id: 'network-security',
+    name: 'Network & Security',
+    description: 'VPC, Load Balancing, DNS, IAM, KMS, BeyondCorp',
     badgeColor: '#C58AF9',
-  },
-  'security': {
-    id: 'security',
-    name: 'Security & Identity',
-    description: 'IAM, Secret Manager, Cloud Armor, KMS, BeyondCorp',
-    badgeColor: '#F28B82',
-  },
-  'integration': {
-    id: 'integration',
-    name: 'API & Integration',
-    description: 'Apigee, API Gateway, Cloud Tasks, Eventarc, Workflows',
-    badgeColor: '#A7F0BA',
   },
   'operations': {
     id: 'operations',
-    name: 'Operations & Management',
-    description: 'Cloud Logging, Monitoring, Trace, Billing, OS Mgmt',
+    name: 'Operations',
+    description: 'Logging, Monitoring, Billing, Cloud Build, Artifact Registry',
     badgeColor: '#9BBBD4',
-  },
-  'dev-tools': {
-    id: 'dev-tools',
-    name: 'Developer Tools',
-    description: 'Cloud Build, Artifact Registry, Cloud Code, Deploy',
-    badgeColor: '#D7AEFB',
   },
   'general': {
     id: 'general',
-    name: 'General Cloud & Industry',
+    name: 'General',
     description: 'Marketplace, Healthcare, Maps, Gaming, IoT',
     badgeColor: '#BDC1C6',
   },
+};
+
+/** Fine-grained matcher bucket -> displayed category. */
+const FINE_TO_DISPLAY: Record<string, string> = {
+  'ai-ml': 'ai-ml',
+  'compute': 'compute',
+  'integration': 'compute',
+  'storage-db': 'data',
+  'data-analytics': 'data',
+  'networking': 'network-security',
+  'security': 'network-security',
+  'operations': 'operations',
+  'dev-tools': 'operations',
+  'general': 'general',
 };
 
 const CATEGORY_MATCHERS: Array<[string, string[]]> = [
@@ -143,9 +147,9 @@ const CATEGORY_MATCHERS: Array<[string, string[]]> = [
 export function categorizeIcon(name: string): string {
   const lower = name.toLowerCase();
 
-  for (const [categoryId, keywords] of CATEGORY_MATCHERS) {
+  for (const [fineId, keywords] of CATEGORY_MATCHERS) {
     if (keywords.some(kw => lower.includes(kw))) {
-      return categoryId;
+      return FINE_TO_DISPLAY[fineId] ?? 'general';
     }
   }
 

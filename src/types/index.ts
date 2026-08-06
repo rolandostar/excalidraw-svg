@@ -14,10 +14,8 @@ export interface GCPIcon {
 export type CardStyle = 'none' | 'soft-card' | 'sketch-box' | 'outline' | 'badge';
 export type LabelPosition = 'bottom' | 'right' | 'top' | 'inside';
 export type LabelFontFamily = 1 | 2 | 3 | 4 | 5; // 1: Excalifont, 2: Helvetica, 3: Comic Shanns, 4: Lilita One, 5: Nunito
-export type ExportMode = 'vector' | 'svg-image';
 
 export interface ExcalidrawOptions {
-  exportMode: ExportMode;
   showCard: boolean;
   cardStyle: CardStyle;
   roughness: number; // 0, 1, 2
@@ -28,7 +26,7 @@ export interface ExcalidrawOptions {
   labelFontFamily: LabelFontFamily;
   labelFontSize: number;
   labelColor: string;
-  iconScale: number; // e.g. 1.0 (48px), 1.5 (72px), 2.0 (96px)
+  iconScale: number; // multiplier on ICON_BASE_SIZE: 1.0 = 96px, 2.0 = 192px
   padding: number; // card inner padding
 }
 

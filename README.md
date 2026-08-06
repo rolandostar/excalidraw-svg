@@ -32,11 +32,19 @@ baseline. Run it before and after every change to conversion code.
 | suite | files | mean shape error | worst | worst placement | failing |
 |---|---|---|---|---|---|
 | icons | 216 | **0.000 %** | 0.10 % | 0.200 px | **0** |
-| torture | 25 | 3.44 % | 58 % | — | 3 |
+| torture | 25 | 3.44 % | 58 % | — | 3 (deliberate) |
 
-213 of 216 icons are at *exactly* 0.00 %. The three non-zero torture files are
-lossy by design (flattened gradients, deliberately unsupported features) and
-each reports itself rather than failing silently.
+214 of 216 icons are at *exactly* 0.00 %.
+
+The three failing torture files fail **by construction** and are meant to stay
+that way — they pin documented limits in place so those limits cannot drift
+unnoticed. One is a file made entirely of features the converter refuses to
+guess at, one measures how much colour a flattened gradient loses, and one sits
+a fraction over the placement gate on a hairline border. None is an outstanding
+bug; see [Deliberate failures](docs/TESTING.md#deliberate-failures).
+
+A suite reporting 0 failing here would mean the thresholds had been loosened or
+the cases deleted.
 
 ## Repository layout
 

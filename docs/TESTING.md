@@ -132,16 +132,25 @@ sharp joins, and stroked rings dropped entirely when wound clockwise. The
 `objectBoundingBox` batch then caught two bugs in the fix that was written for
 it.
 
-## Expected non-zero results
+## Deliberate failures
 
-Three torture files are non-zero on purpose. If one of these reaches 0.00 %,
-something changed — check it is an improvement and not a broken test.
+Three torture files are over threshold **by construction**. They are not
+outstanding bugs and there is no intention to make them pass — each one exists
+to pin a documented limit in place so that it cannot quietly change.
 
-| file | error | why |
+| file | error | why it is deliberate |
 |---|---|---|
-| `20-unsupported-features` | ~58 % | text, pattern, filter, marker, dasharray, skew — all deliberately unsupported and all reported |
-| `17-gradients` | ~28 % | gradients flatten to an averaged colour |
-| `15-viewbox-offset` | 0.00 % shape, 0.57 px placement | metric edge on a 0.5-unit hairline border, not a conversion defect |
+| `20-unsupported-features` | ~58 % | Contains one of everything the converter refuses to guess at: text, pattern, filter, marker, dasharray, skew. The requirement is that each is **reported** by `collectUnsupportedFeatures`, not that it renders. A high pixel error is the correct outcome; a low one would mean something was silently approximated. |
+| `17-gradients` | ~28 % | Excalidraw has no gradient paint server, so a gradient is flattened to a single averaged colour. That is the designed behaviour. The error is a measure of how much colour information the format cannot carry, and it should stay roughly constant. |
+| `15-viewbox-offset` | 0.00 % shape, 0.57 px placement | Shape is exact. The placement number is an artefact of measuring a 0.5-unit hairline border against a pixel grid, not a conversion defect. It sits just over the 0.5 px gate, which is left in place rather than loosening the threshold for every other case. |
+
+These are the reason the suite reports "3 failing" rather than "0 failing". A
+green board would require either deleting the cases or weakening the
+thresholds, and both would make the number meaningless.
+
+**If one of these reaches 0.00 %, that is a signal, not a win.** Check whether
+the converter genuinely gained a capability — in which case update the row
+above and the baseline — or whether the fixture stopped exercising the feature.
 
 ## Workflow for changing conversion code
 

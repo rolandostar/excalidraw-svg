@@ -104,94 +104,6 @@ body {
   border-radius: var(--radius-lg);
 }
 
-/* Icon-library toolbar. Sits directly under the global site header. */
-.app-header {
-  position: sticky;
-  top: var(--header-h);
-  z-index: 40;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-color);
-  padding: 1rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-
-.brand-section {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.brand-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #4285f4, #1a73e8);
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 16px var(--accent-glow);
-}
-
-.brand-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ffffff 30%, #94a3b8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.brand-subtitle {
-  font-size: 0.75rem;
-  color: var(--gcp-blue);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: rgba(66, 133, 244, 0.15);
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(66, 133, 244, 0.3);
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 0.5rem 1rem;
-  width: 100%;
-  max-width: 420px;
-  transition: var(--transition-fast);
-}
-
-.search-bar:focus-within {
-  border-color: var(--gcp-blue);
-  box-shadow: 0 0 12px var(--accent-glow);
-}
-
-.search-input {
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  width: 100%;
-  outline: none;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
 /* Button Component */
 .btn {
   display: inline-flex;
@@ -254,8 +166,8 @@ body {
   gap: 1.25rem;
   padding: 1.25rem;
   position: sticky;
-  top: calc(var(--header-h) + 90px);
-  height: calc(100vh - var(--header-h) - 120px);
+  top: calc(var(--header-h) + 1.5rem);
+  max-height: calc(100vh - var(--header-h) - 3rem);
   overflow-y: auto;
 }
 
@@ -409,7 +321,7 @@ input[type="range"] {
 /* Icon Cards Grid */
 .icon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 1rem;
   width: 100%;
   box-sizing: border-box;
@@ -510,7 +422,7 @@ input[type="range"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 90px;
+  min-height: 128px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;

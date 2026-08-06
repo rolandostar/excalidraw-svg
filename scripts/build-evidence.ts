@@ -11,13 +11,16 @@
  * have to depend on. So this script freezes the parts the site needs into
  * `public/evidence/`, which IS committed:
  *
- *   public/evidence/headline.json     ~20 numbers, imported into the bundle
- *   public/evidence/manifest.json     per-case detail, fetched on demand
- *   public/evidence/torture/<id>.png  all triptychs (source | output | diff)
- *   public/evidence/icons/<id>.png    triptychs for the worst N icons only
+ *   src/generated/evidence-headline.json  ~20 numbers, imported into the bundle
+ *   public/evidence/manifest.json         per-case detail, fetched on demand
+ *   public/evidence/torture/<id>.png      all triptychs (source | output | diff)
+ *   public/evidence/icons/<id>.png        triptychs for the worst N icons only
  *
  * The split matters: the landing page quotes four numbers and must not pay
  * 60 KB of per-case JSON to do it, while the methodology page needs all of it.
+ * The headline lives under `src/` because Vite refuses to bundle imports out
+ * of `public/`, and it must be bundled - a fetch would leave the hero briefly
+ * quoting nothing.
  *
  * Run after the harness:
  *   pnpm test && pnpm test:torture && pnpm evidence
@@ -31,6 +34,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RESULTS = path.join(ROOT, 'tests', 'results');
 const TORTURE_SRC = path.join(ROOT, 'tests', 'torture-svg');
 const OUT = path.join(ROOT, 'public', 'evidence');
+const HEADLINE_FILE = path.join(ROOT, 'src', 'generated', 'evidence-headline.json');
 
 /** Triptychs for icons are ~20 KB each and 214 of 216 score exactly zero. */
 const WORST_ICONS_TO_PUBLISH = 6;
@@ -209,7 +213,8 @@ function run() {
     icons: iconsHeadline,
     torture: tortureHeadline,
   };
-  fs.writeFileSync(path.join(OUT, 'headline.json'), JSON.stringify(headline, null, 2), 'utf-8');
+  fs.mkdirSync(path.dirname(HEADLINE_FILE), { recursive: true });
+  fs.writeFileSync(HEADLINE_FILE, JSON.stringify(headline, null, 2), 'utf-8');
 
   const bytes = (dir: string) =>
     fs.existsSync(dir)

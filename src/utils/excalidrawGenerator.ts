@@ -22,6 +22,7 @@ import {
   unionMultiPolygons,
 } from './pathRegions';
 import { LineCap, LineJoin, strokeToRegion } from './strokeOutline';
+import { ICON_BASE_SIZE } from './defaultOptions';
 
 function getPointsOnPath(path: string, tolerance?: number, distance?: number): [number, number][][] {
   const mod: any = pointsOnPathModule;
@@ -62,6 +63,9 @@ const MIN_VISIBLE_HOLE_AREA_PX = 0.02;
  * stroke always keeps a visible one.
  */
 const MIN_STROKE_WIDTH = 0.25;
+
+/** The SVG initial value of the `fill` property. Undeclared is *not* `none`. */
+const DEFAULT_FILL = '#000000';
 
 /** 2D Affine Matrix transformation representation: [a, b, c, d, e, f] */
 type Matrix2D = [number, number, number, number, number, number];
@@ -267,6 +271,49 @@ interface RawShape {
   opacity: number;
 }
 
+/**
+ * Why a shape in the source never became an element.
+ *
+ * The converter used to drop shapes silently, which made every failure look
+ * identical from the outside: an empty canvas, or the flat message "No
+ * drawable geometry found in that file." Attributing each drop is the
+ * difference between a user filing a useful bug and giving up.
+ */
+export type DropReason =
+  | 'no-fill-no-stroke'
+  | 'empty-geometry'
+  | 'clipped-away'
+  | 'degenerate'
+  | 'parse-error'
+  | 'in-defs';
+
+export interface ShapeDrop {
+  reason: DropReason;
+  /** Tag name of the source element, e.g. `path`. */
+  tag: string;
+  count: number;
+  detail: string;
+}
+
+export interface ConversionDiagnostics {
+  drops: ShapeDrop[];
+  /** Total source shapes that produced no output. */
+  skippedTotal: number;
+}
+
+export const DROP_REASON_LABELS: Record<DropReason, string> = {
+  'no-fill-no-stroke': 'resolved to no fill and no stroke',
+  'empty-geometry': 'had no geometry to draw',
+  'clipped-away': 'was clipped or masked away entirely',
+  degenerate: 'collapsed to nothing at the output size',
+  'parse-error': 'could not be parsed',
+  'in-defs': 'is a definition, only drawn where referenced',
+};
+
+export function emptyDiagnostics(): ConversionDiagnostics {
+  return { drops: [], skippedTotal: 0 };
+}
+
 /** Extracts CSS stylesheet rules from <style> elements inside SVG DOM */
 function parseCssStylesheet(doc: Document): Record<string, { fill?: string; stroke?: string; opacity?: number }> {
   const styleMap: Record<string, { fill?: string; stroke?: string; opacity?: number }> = {};
@@ -334,6 +381,69 @@ function getInheritedFillRule(el: Element): FillRule {
   return 'nonzero';
 }
 
+/** The subset of paint declarations this converter models, from one source. */
+interface PaintDecls {
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: string;
+  opacity?: string;
+}
+
+/** Reads `fill`/`stroke`/`stroke-width` out of a `style="…"` attribute. */
+function readStyleAttribute(el: Element): PaintDecls {
+  const text = el.getAttribute('style');
+  if (!text) return {};
+
+  const out: PaintDecls = {};
+  const fillMatch = text.match(/(?:^|[;\s])fill\s*:\s*([^;\}]+)/i);
+  if (fillMatch) out.fill = fillMatch[1].trim();
+  const strokeMatch = text.match(/(?:^|[;\s])stroke\s*:\s*([^;\}]+)/i);
+  if (strokeMatch) out.stroke = strokeMatch[1].trim();
+  const swMatch = text.match(/stroke-width\s*:\s*([^;\}]+)/i);
+  if (swMatch) out.strokeWidth = swMatch[1].trim();
+  const opacityMatch = text.match(/(?:^|[;\s])opacity\s*:\s*([^;\}]+)/i);
+  if (opacityMatch) out.opacity = opacityMatch[1].trim();
+  return out;
+}
+
+/** Merges the `<style>` rules matching this element's `class` list. */
+function readClassRules(el: Element, styleMap: Record<string, any>): PaintDecls {
+  const className = el.getAttribute('class');
+  if (!className) return {};
+
+  const out: PaintDecls = {};
+  for (const name of className.split(/\s+/)) {
+    const rule = styleMap[name];
+    if (!rule) continue;
+    if (rule.fill) out.fill = rule.fill;
+    if (rule.stroke) out.stroke = rule.stroke;
+    if (rule.opacity !== undefined) out.opacity = String(rule.opacity);
+  }
+  return out;
+}
+
+/**
+ * Everything one element declares, in ascending CSS precedence:
+ * presentation attribute < stylesheet rule < inline `style`.
+ *
+ * NOTE: `getShapeStyle` deliberately does *not* apply this ordering to the
+ * shape itself - there, a presentation attribute still beats a stylesheet rule
+ * (see the comment at the call site). The ordering here governs which
+ * declaration wins *within a single ancestor*, which was previously not
+ * modelled at all because ancestors were read for attributes only.
+ */
+function declaredPaint(el: Element, styleMap: Record<string, any>): PaintDecls {
+  const attrs: PaintDecls = {};
+  const fill = el.getAttribute('fill');
+  if (fill) attrs.fill = fill;
+  const stroke = el.getAttribute('stroke');
+  if (stroke) attrs.stroke = stroke;
+  const strokeWidth = el.getAttribute('stroke-width');
+  if (strokeWidth) attrs.strokeWidth = strokeWidth;
+
+  return { ...attrs, ...readClassRules(el, styleMap), ...readStyleAttribute(el) };
+}
+
 /** Resolves computed element fill, stroke, width, and opacity */
 function getShapeStyle(el: Element, styleMap: Record<string, any>, doc: Document) {
   let fill = el.getAttribute('fill');
@@ -358,44 +468,55 @@ function getShapeStyle(el: Element, styleMap: Record<string, any>, doc: Document
   let groupOpacity = 1;
   for (let node: Element | null = el; node; node = node.parentElement) {
     groupOpacity *= readOpacity(node.getAttribute?.('opacity') ?? null);
+    // The element's own `style` opacity is applied further down, where it
+    // replaces rather than composites; multiplying it here too would
+    // double-count it.
+    if (node !== el) groupOpacity *= readOpacity(readStyleAttribute(node).opacity ?? null);
   }
   const fillOpacity = readOpacity(el.getAttribute('fill-opacity'));
   const strokeOpacity = readOpacity(el.getAttribute('stroke-opacity'));
   let strokeWidthStr: string | null = null;
 
-  let ancestor: Element | null = el.parentElement;
-  while (ancestor && ancestor.tagName.toLowerCase() !== 'svg') {
-    if (!fill) fill = ancestor.getAttribute('fill');
-    if (!stroke) stroke = ancestor.getAttribute('stroke');
-    if (!strokeWidthStr) strokeWidthStr = ancestor.getAttribute('stroke-width');
-    ancestor = ancestor.parentElement;
-  }
-
-  const className = el.getAttribute('class');
-  if (className) {
-    className.split(/\s+/).forEach(c => {
-      if (styleMap[c]) {
-        if (!fill && styleMap[c].fill) fill = styleMap[c].fill;
-        if (!stroke && styleMap[c].stroke) stroke = styleMap[c].stroke;
-        if (styleMap[c].opacity !== undefined) groupOpacity *= readOpacity(String(styleMap[c].opacity));
-      }
-    });
-  }
+  // Own declarations first. A presentation attribute still beats a stylesheet
+  // rule here, which is backwards per CSS but is long-standing behaviour that
+  // the curated icon baseline depends on; `flattenStyleCascade` in the
+  // optimizer already resolves the cascade correctly for that path.
+  const ownClassRules = readClassRules(el, styleMap);
+  if (!fill && ownClassRules.fill) fill = ownClassRules.fill;
+  if (!stroke && ownClassRules.stroke) stroke = ownClassRules.stroke;
+  if (ownClassRules.opacity !== undefined) groupOpacity *= readOpacity(ownClassRules.opacity);
 
   const elStrokeWidth = el.getAttribute('stroke-width');
   if (elStrokeWidth) strokeWidthStr = elStrokeWidth;
 
-  const styleAttr = el.getAttribute('style');
-  if (styleAttr) {
-    const fillMatch = styleAttr.match(/fill\s*:\s*([^;\}]+)/i);
-    if (fillMatch) fill = fillMatch[1].trim();
-    const strokeMatch = styleAttr.match(/stroke\s*:\s*([^;\}]+)/i);
-    if (strokeMatch) stroke = strokeMatch[1].trim();
-    const opacityMatch = styleAttr.match(/(?:^|[;\s])opacity\s*:\s*([^;\}]+)/i);
-    if (opacityMatch) groupOpacity = readOpacity(opacityMatch[1]);
-    const swMatch = styleAttr.match(/stroke-width\s*:\s*([^;\}]+)/i);
-    if (swMatch) strokeWidthStr = swMatch[1].trim();
+  /**
+   * Then inherit, nearest ancestor first, for anything still undeclared.
+   *
+   * Two things were previously missed here. The walk stopped *before* the root
+   * `<svg>`, so `<svg fill="none" stroke="currentColor">` - the shape of every
+   * Feather, Lucide, Tabler, Bootstrap and Heroicons outline icon, and of most
+   * of what SVG Repo serves - contributed nothing and every child resolved to
+   * "no fill, no stroke" and was dropped. And ancestors were read for
+   * presentation *attributes* only, so `<g style="fill:#111">` and
+   * `<g class="ico">` were invisible.
+   *
+   * The walk stops after the nearest `<svg>` because a nested one establishes
+   * its own viewport; that case is reported as unsupported elsewhere.
+   */
+  for (let ancestor: Element | null = el.parentElement; ancestor; ancestor = ancestor.parentElement) {
+    const declared = declaredPaint(ancestor, styleMap);
+    if (!fill) fill = declared.fill ?? null;
+    if (!stroke) stroke = declared.stroke ?? null;
+    if (!strokeWidthStr) strokeWidthStr = declared.strokeWidth ?? null;
+    if (ancestor.tagName.toLowerCase() === 'svg') break;
   }
+
+  // Finally the element's own inline style, which outranks everything.
+  const ownStyle = readStyleAttribute(el);
+  if (ownStyle.fill) fill = ownStyle.fill;
+  if (ownStyle.stroke) stroke = ownStyle.stroke;
+  if (ownStyle.strokeWidth) strokeWidthStr = ownStyle.strokeWidth;
+  if (ownStyle.opacity) groupOpacity = readOpacity(ownStyle.opacity);
 
   // Handle gradient URL resolution
   if (fill && fill.startsWith('url(')) {
@@ -415,8 +536,22 @@ function getShapeStyle(el: Element, styleMap: Record<string, any>, doc: Document
     }
   }
 
-  const isFillNone = !fill || fill === 'none' || fill === 'transparent';
-  const isStrokeNone = !stroke || stroke === 'none' || stroke === 'transparent';
+  const isNoPaint = (value: string | null): boolean => {
+    if (!value) return false;
+    const normalised = value.trim().toLowerCase();
+    return normalised === 'none' || normalised === 'transparent';
+  };
+
+  /**
+   * The initial value of `fill` is black, not `none`. Conflating "undeclared"
+   * with "explicitly none" - the old behaviour - silently discarded every
+   * shape in a file that relies on the SVG default, which is most hand-written
+   * and CSS-driven artwork. `stroke` genuinely does default to `none`, so only
+   * `fill` gets a fallback.
+   */
+  const isFillNone = isNoPaint(fill);
+  const isStrokeNone = !stroke || isNoPaint(stroke);
+  if (!fill) fill = DEFAULT_FILL;
 
   return {
     fill: isFillNone ? 'transparent' : (fill || 'transparent'),
@@ -930,8 +1065,24 @@ export function parseSvgToExcalidrawElements(
   targetWidth: number,
   targetHeight: number,
   groupId: string,
-  roughness: number
+  roughness: number,
+  /**
+   * Optional out-parameter, filled with a per-reason tally of source shapes
+   * that produced no output. Optional and last so the three callers that do
+   * not report to a user stay unchanged.
+   */
+  diagnostics?: ConversionDiagnostics
 ): ExcalidrawElement[] {
+  const noteDrop = (reason: DropReason, tag: string, detail = DROP_REASON_LABELS[reason]) => {
+    if (!diagnostics) return;
+    diagnostics.skippedTotal += 1;
+    const existing = diagnostics.drops.find(
+      d => d.reason === reason && d.tag === tag && d.detail === detail
+    );
+    if (existing) existing.count += 1;
+    else diagnostics.drops.push({ reason, tag, count: 1, detail });
+  };
+
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(rawSvg, 'image/svg+xml');
@@ -1038,8 +1189,26 @@ export function parseSvgToExcalidrawElements(
       pushRegion(transformed, style.stroke, style.strokeOpacityPct, clipRegion);
     };
 
-    doc.querySelectorAll('path, polygon, polyline, line, rect, circle, ellipse').forEach(el => {
-      if (el.closest('defs, clipPath, mask')) return;
+    /**
+     * Converts one source element, returning why it drew nothing, or `null`.
+     *
+     * Extracted from the loop below so the *whole* body sits inside one
+     * `try`. It previously did not: `getVisibilityRegion` runs `parsePath`
+     * over every `<clipPath>` and `<mask>` in the document, and that throws on
+     * malformed or SVGO-minified arc data (`a5 5 0 0110 0` tokenises as one
+     * number). Outside the try, a single bad `d` in a clip path escaped to the
+     * function-level catch and returned `[]` for the entire file.
+     */
+    const convertShapeElement = (el: Element): DropReason | null => {
+      const producedBefore = rawShapes.length;
+      if (el.closest('defs, clipPath, mask')) {
+        // `clipPath`/`mask` content is consumed as clip geometry, not dropped;
+        // reporting it would bury the real losses under noise from every
+        // well-handled export. A bare `<defs>` shape, on the other hand, is
+        // only ink if something instantiates it - and `<use>` is not resolved
+        // on this path - so that one is a loss worth reporting.
+        return el.closest('clipPath, mask') ? null : 'in-defs';
+      }
 
       const tagName = el.tagName.toLowerCase();
 
@@ -1050,16 +1219,16 @@ export function parseSvgToExcalidrawElements(
 
       if (tagName === 'path') {
         const d = el.getAttribute('d') || '';
-        if (!d.trim()) return;
+        if (!d.trim()) return 'empty-geometry';
 
         const style = getShapeStyle(el, styleMap, doc);
-        if (style.isFillNone && style.isStrokeNone) return;
+        if (style.isFillNone && style.isStrokeNone) return 'no-fill-no-stroke';
 
         const matrix = getCombinedTransformMatrix(el);
 
-        try {
+        {
           const subpaths = getPointsOnPath(d, flattenTolerance);
-          if (subpaths.length === 0) return;
+          if (subpaths.length === 0) return 'empty-geometry';
 
           if (!style.isFillNone) {
             // Holes are resolved in *user space*, before the transform is
@@ -1086,16 +1255,14 @@ export function parseSvgToExcalidrawElements(
           }
 
           pushStroke(subpaths as Point[][], false, style, matrix, clipRegion);
-        } catch (err) {
-          console.warn('Path parsing warning:', err);
         }
       } else if (tagName === 'polygon' || tagName === 'polyline') {
         const ptsAttr = el.getAttribute('points') || '';
         const coords = ptsAttr.trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
-        if (coords.length < 4) return;
+        if (coords.length < 4) return 'empty-geometry';
 
         const style = getShapeStyle(el, styleMap, doc);
-        if (style.isFillNone && style.isStrokeNone) return;
+        if (style.isFillNone && style.isStrokeNone) return 'no-fill-no-stroke';
 
         const matrix = getCombinedTransformMatrix(el);
         const isClosed = tagName === 'polygon';
@@ -1132,7 +1299,7 @@ export function parseSvgToExcalidrawElements(
 
         const style = getShapeStyle(el, styleMap, doc);
         // A `<line>` is never filled in SVG; with no stroke it paints nothing.
-        if (style.isStrokeNone) return;
+        if (style.isStrokeNone) return 'no-fill-no-stroke';
 
         const matrix = getCombinedTransformMatrix(el);
         pushStroke([[[x1, y1], [x2, y2]]], false, style, matrix, clipRegion);
@@ -1141,7 +1308,7 @@ export function parseSvgToExcalidrawElements(
         const y = parseFloat(el.getAttribute('y') || '0');
         const w = parseFloat(el.getAttribute('width') || '0');
         const h = parseFloat(el.getAttribute('height') || '0');
-        if (w <= 0 || h <= 0) return;
+        if (!(w > 0) || !(h > 0)) return 'degenerate';
 
         // Per spec an omitted rx/ry mirrors the other, and both clamp to half
         // the corresponding side.
@@ -1153,7 +1320,7 @@ export function parseSvgToExcalidrawElements(
         const ry = Math.min(Math.max(Number.isFinite(ryRaw) ? ryRaw : 0, 0), h / 2);
 
         const style = getShapeStyle(el, styleMap, doc);
-        if (style.isFillNone && style.isStrokeNone) return;
+        if (style.isFillNone && style.isStrokeNone) return 'no-fill-no-stroke';
 
         const matrix = getCombinedTransformMatrix(el);
 
@@ -1209,10 +1376,10 @@ export function parseSvgToExcalidrawElements(
           rx = parseFloat(el.getAttribute('rx') || '0');
           ry = parseFloat(el.getAttribute('ry') || '0');
         }
-        if (rx <= 0 || ry <= 0) return;
+        if (!(rx > 0) || !(ry > 0)) return 'degenerate';
 
         const style = getShapeStyle(el, styleMap, doc);
-        if (style.isFillNone && style.isStrokeNone) return;
+        if (style.isFillNone && style.isStrokeNone) return 'no-fill-no-stroke';
 
         const matrix = getCombinedTransformMatrix(el);
 
@@ -1237,6 +1404,24 @@ export function parseSvgToExcalidrawElements(
           const localRing = shapeToRings(el, flattenTolerance)[0];
           if (localRing) pushStroke([localRing], true, style, matrix, clipRegion);
         }
+      }
+
+      // Passed every guard and still painted nothing. The distinction matters:
+      // "clipped away" is usually an unsupported clip/mask idiom on our side,
+      // "degenerate" is usually a collapsed transform or a sub-pixel shape.
+      if (rawShapes.length === producedBefore) {
+        return clipRegion ? 'clipped-away' : 'degenerate';
+      }
+      return null;
+    };
+
+    doc.querySelectorAll('path, polygon, polyline, line, rect, circle, ellipse').forEach(el => {
+      try {
+        const reason = convertShapeElement(el);
+        if (reason) noteDrop(reason, el.tagName.toLowerCase());
+      } catch (err) {
+        console.warn(`Shape conversion warning (<${el.tagName.toLowerCase()}>):`, err);
+        noteDrop('parse-error', el.tagName.toLowerCase(), err instanceof Error ? err.message : String(err));
       }
     });
 
@@ -1352,62 +1537,105 @@ export function parseSvgToExcalidrawElements(
   }
 }
 
+export interface ItemLayout {
+  cardWidth: number;
+  cardHeight: number;
+  iconWidth: number;
+  iconHeight: number;
+  labelWidth: number;
+  labelHeight: number;
+  /** Offsets from the item origin, not absolute coordinates. */
+  iconDx: number;
+  iconDy: number;
+  labelDx: number;
+  labelDy: number;
+}
+
+/**
+ * Size and internal offsets of one item, independent of where it is placed.
+ *
+ * Split out of `createExcalidrawItem` so the grid packers can ask how big an
+ * item is *before* choosing its position. They used to assume a fixed 160/180
+ * unit pitch, which silently overlapped neighbours as soon as a card grew -
+ * long service names and any `iconScale` above 1 both did it.
+ */
+export function measureExcalidrawItem(icon: GCPIcon, options: ExcalidrawOptions): ItemLayout {
+  const iconWidth = Math.round(ICON_BASE_SIZE * options.iconScale);
+  const iconHeight = iconWidth;
+  const padding = options.showCard ? options.padding : 0;
+
+  const labelFontSize = options.labelFontSize;
+  // Excalidraw measures text with the real font; this is an estimate, so it
+  // errs wide rather than letting neighbouring labels collide.
+  const labelWidth = options.showLabel
+    ? Math.max(Math.round(icon.title.length * labelFontSize * 0.6), 40)
+    : 0;
+  const labelHeight = options.showLabel ? Math.round(labelFontSize * 1.3) : 0;
+
+  let cardWidth: number;
+  let cardHeight: number;
+  let iconDx: number;
+  let iconDy: number;
+  let labelDx: number;
+  let labelDy: number;
+
+  if (options.labelPosition === 'right') {
+    cardWidth = iconWidth + (options.showLabel ? labelWidth + 12 : 0) + padding * 2;
+    cardHeight = Math.max(iconHeight, labelHeight) + padding * 2;
+    iconDx = padding;
+    iconDy = (cardHeight - iconHeight) / 2;
+    labelDx = padding + iconWidth + 12;
+    labelDy = (cardHeight - labelHeight) / 2;
+  } else if (options.labelPosition === 'top') {
+    cardWidth = Math.max(iconWidth, labelWidth) + padding * 2;
+    cardHeight = iconHeight + padding * 2 + (options.showLabel ? labelHeight + 8 : 0);
+    labelDx = (cardWidth - labelWidth) / 2;
+    labelDy = padding;
+    iconDx = (cardWidth - iconWidth) / 2;
+    iconDy = padding + (options.showLabel ? labelHeight + 8 : 0);
+  } else {
+    // `bottom` and `inside` differ only in the gap between icon and label.
+    const gap = options.labelPosition === 'inside' ? 4 : 8;
+    cardWidth = Math.max(iconWidth, labelWidth) + padding * 2;
+    cardHeight = iconHeight + padding * 2 + (options.showLabel ? labelHeight + gap : 0);
+    iconDx = (cardWidth - iconWidth) / 2;
+    iconDy = padding;
+    labelDx = (cardWidth - labelWidth) / 2;
+    labelDy = padding + iconHeight + gap;
+  }
+
+  return {
+    cardWidth,
+    cardHeight,
+    iconWidth,
+    iconHeight,
+    labelWidth,
+    labelHeight,
+    iconDx,
+    iconDy,
+    labelDx,
+    labelDy,
+  };
+}
+
 export function createExcalidrawItem(
   icon: GCPIcon,
   options: ExcalidrawOptions,
   baseX = 0,
-  baseY = 0,
-  isLibraryExport = false
+  baseY = 0
 ): { elements: ExcalidrawElement[]; files: Record<string, ExcalidrawFile> } {
   const elements: ExcalidrawElement[] = [];
   const files: Record<string, ExcalidrawFile> = {};
   const groupId = generateRandomId();
 
-  const iconWidth = Math.round(48 * options.iconScale);
-  const iconHeight = Math.round(48 * options.iconScale);
-  const padding = options.showCard ? options.padding : 0;
+  const layout = measureExcalidrawItem(icon, options);
+  const { cardWidth, cardHeight, iconWidth, iconHeight, labelWidth, labelHeight } = layout;
   const labelText = icon.title;
 
-  const labelFontSize = options.labelFontSize;
-  const labelWidth = Math.max(Math.round(labelText.length * labelFontSize * 0.55), 40);
-  const labelHeight = Math.round(labelFontSize * 1.3);
-
-  let cardWidth = iconWidth;
-  let cardHeight = iconHeight;
-  let iconX = baseX;
-  let iconY = baseY;
-  let labelX = baseX;
-  let labelY = baseY;
-
-  if (options.labelPosition === 'bottom') {
-    cardWidth = Math.max(iconWidth + padding * 2, labelWidth + padding * 2);
-    cardHeight = iconHeight + padding * 2 + (options.showLabel ? labelHeight + 8 : 0);
-    iconX = baseX + (cardWidth - iconWidth) / 2;
-    iconY = baseY + padding;
-    labelX = baseX + (cardWidth - labelWidth) / 2;
-    labelY = baseY + padding + iconHeight + 8;
-  } else if (options.labelPosition === 'right') {
-    cardWidth = iconWidth + (options.showLabel ? labelWidth + 12 : 0) + padding * 2;
-    cardHeight = Math.max(iconHeight, labelHeight) + padding * 2;
-    iconX = baseX + padding;
-    iconY = baseY + (cardHeight - iconHeight) / 2;
-    labelX = baseX + padding + iconWidth + 12;
-    labelY = baseY + (cardHeight - labelHeight) / 2;
-  } else if (options.labelPosition === 'top') {
-    cardWidth = Math.max(iconWidth + padding * 2, labelWidth + padding * 2);
-    cardHeight = iconHeight + padding * 2 + (options.showLabel ? labelHeight + 8 : 0);
-    labelX = baseX + (cardWidth - labelWidth) / 2;
-    labelY = baseY + padding;
-    iconX = baseX + (cardWidth - iconWidth) / 2;
-    iconY = baseY + padding + (options.showLabel ? labelHeight + 8 : 0);
-  } else {
-    cardWidth = Math.max(iconWidth, labelWidth) + padding * 2;
-    cardHeight = iconHeight + labelHeight + padding * 2 + 4;
-    iconX = baseX + (cardWidth - iconWidth) / 2;
-    iconY = baseY + padding;
-    labelX = baseX + (cardWidth - labelWidth) / 2;
-    labelY = baseY + padding + iconHeight + 4;
-  }
+  const iconX = baseX + layout.iconDx;
+  const iconY = baseY + layout.iconDy;
+  const labelX = baseX + layout.labelDx;
+  const labelY = baseY + layout.labelDy;
 
   // 1. Frame Card
   if (options.showCard && options.cardStyle !== 'none') {
@@ -1422,11 +1650,21 @@ export function createExcalidrawItem(
     }));
   }
 
-  // 2. Vector Shapes vs Image
-  const useVector = isLibraryExport || options.exportMode === 'vector';
-  const vectorElements = useVector
-    ? parseSvgToExcalidrawElements(icon.rawSvg, Math.round(iconX), Math.round(iconY), iconWidth, iconHeight, groupId, options.roughness)
-    : [];
+  // 2. Vector shapes, with an embedded image only as a last resort.
+  //
+  // The image path is no longer user-selectable: an embedded bitmap is not
+  // editable, not restyleable and not what this project is for. It survives
+  // purely as a fallback so that a file the converter cannot handle still
+  // pastes as *something* visible rather than vanishing.
+  const vectorElements = parseSvgToExcalidrawElements(
+    icon.rawSvg,
+    Math.round(iconX),
+    Math.round(iconY),
+    iconWidth,
+    iconHeight,
+    groupId,
+    options.roughness
+  );
 
   if (vectorElements.length > 0) {
     elements.push(...vectorElements);
@@ -1452,7 +1690,7 @@ export function createExcalidrawItem(
       fontFamily: options.labelFontFamily,
       textAlign: 'center',
       verticalAlign: 'top',
-      baseline: labelFontSize,
+      baseline: options.labelFontSize,
       containerId: null,
       lineHeight: 1.25,
     }));
@@ -1461,13 +1699,37 @@ export function createExcalidrawItem(
   return { elements, files };
 }
 
+/**
+ * Column/row pitch that fits the largest item in the set, plus a gutter.
+ *
+ * Replaces the old fixed 160/180 constants, which were sized for a 48px icon
+ * with a short label and overlapped as soon as either grew.
+ */
+function gridPitch(
+  icons: GCPIcon[],
+  options: ExcalidrawOptions,
+  gutter: number
+): { pitchX: number; pitchY: number } {
+  let widest = 0;
+  let tallest = 0;
+
+  for (const icon of icons) {
+    const { cardWidth, cardHeight } = measureExcalidrawItem(icon, options);
+    if (cardWidth > widest) widest = cardWidth;
+    if (cardHeight > tallest) tallest = cardHeight;
+  }
+
+  return { pitchX: Math.ceil(widest) + gutter, pitchY: Math.ceil(tallest) + gutter };
+}
+
 export function buildExcalidrawLibraryPackage(icons: GCPIcon[], options: ExcalidrawOptions): ExcalidrawLibraryPackage {
   const allFiles: Record<string, ExcalidrawFile> = {};
+  const { pitchX, pitchY } = gridPitch(icons, options, 32);
 
   const libraryItems = icons.map((icon, idx) => {
     const col = idx % 10;
     const row = Math.floor(idx / 10);
-    const { elements, files } = createExcalidrawItem(icon, options, col * 180, row * 180, true);
+    const { elements, files } = createExcalidrawItem(icon, options, col * pitchX, row * pitchY);
 
     // `files` used to be discarded here. When vector conversion yields nothing,
     // `createExcalidrawItem` falls back to an `image` element whose bitmap
@@ -1502,11 +1764,12 @@ export function buildExcalidrawClipboardData(
 ): { jsonText: string; excalidrawClipboardJson: string } {
   let allElements: ExcalidrawElement[] = [];
   const allFiles: Record<string, ExcalidrawFile> = {};
+  const { pitchX, pitchY } = gridPitch(icons, options, 24);
 
   icons.forEach((icon, idx) => {
     const col = idx % 8;
     const row = Math.floor(idx / 8);
-    const { elements, files } = createExcalidrawItem(icon, options, col * 160, row * 160, false);
+    const { elements, files } = createExcalidrawItem(icon, options, col * pitchX, row * pitchY);
     allElements = allElements.concat(elements);
     Object.assign(allFiles, files);
   });

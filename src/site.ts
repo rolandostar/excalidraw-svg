@@ -2,7 +2,7 @@
  * Site-wide constants.
  *
  * Anything here that looks like a claim must be traceable to a committed
- * artifact. The numbers come from `public/evidence/headline.json`, which
+ * artifact. The numbers come from `src/generated/evidence-headline.json`, which
  * `scripts/build-evidence.ts` freezes from the same harness output the
  * regression gate reads - so the copy on the page cannot drift away from what
  * the suite actually measures.
@@ -11,7 +11,7 @@
  * error only, but the gate also fails a case on placement error, so a count
  * derived from them under-reports failures.
  */
-import headline from '../public/evidence/headline.json';
+import headline from './generated/evidence-headline.json';
 
 export const REPO_URL = 'https://github.com/rolandostar/excalidraw-svg';
 export const REPO_SLUG = 'rolandostar/excalidraw-svg';

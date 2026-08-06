@@ -189,22 +189,12 @@ async function run() {
       // --- structural audit of every shipped export path ------------------
       record.auditIssues.push(...describeIssues('vector', auditSceneFidelity(elements)));
 
-      const asVector = createExcalidrawItem(icon, DEFAULT_EXCALIDRAW_OPTIONS, 0, 0, false);
-      record.auditIssues.push(...describeIssues('clipboard', auditSceneFidelity(asVector.elements, asVector.files)));
+      const asItem = createExcalidrawItem(icon, DEFAULT_EXCALIDRAW_OPTIONS, 0, 0);
+      record.auditIssues.push(...describeIssues('clipboard', auditSceneFidelity(asItem.elements, asItem.files)));
 
-      const asLibrary = createExcalidrawItem(icon, DEFAULT_EXCALIDRAW_OPTIONS, 0, 0, true);
       // A library item is serialised without its `files` map, so any image
       // element it carries is already broken at this point.
-      record.auditIssues.push(...describeIssues('library', auditSceneFidelity(asLibrary.elements, {})));
-
-      const asImage = createExcalidrawItem(
-        icon,
-        { ...DEFAULT_EXCALIDRAW_OPTIONS, exportMode: 'svg-image' },
-        0,
-        0,
-        false
-      );
-      record.auditIssues.push(...describeIssues('svg-image', auditSceneFidelity(asImage.elements, asImage.files)));
+      record.auditIssues.push(...describeIssues('library', auditSceneFidelity(asItem.elements, {})));
 
       // --- fidelity scoring ------------------------------------------------
       const sourceInk = inkBox(rawSvg);

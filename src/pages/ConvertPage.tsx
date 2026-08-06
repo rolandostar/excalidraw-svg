@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowRight, FlaskConical, Layers, ShieldCheck } from 'lucide-react';
+import { ConversionResultPanel } from '../components/ConversionResult';
 import { SvgDropzone, type SvgInput } from '../components/SvgDropzone';
 import { Link } from '../router';
 import { STATS, formatPct } from '../site';
@@ -26,13 +27,7 @@ export function ConvertPage() {
         </p>
       </section>
 
-      {input && (
-        <section className="result-placeholder glass-panel" aria-live="polite">
-          <p>
-            Loaded <strong>{input.name}</strong> ({input.source.length.toLocaleString()} bytes)
-          </p>
-        </section>
-      )}
+      {input && <ConversionResultPanel key={input.source} input={input} />}
 
       <section className="next-steps">
         <Link to="/icons" className="next-card">
@@ -61,7 +56,7 @@ export function ConvertPage() {
             <span className="next-card-text">
               {STATS.tortureCount} torture cases, pixel-diffed against a real renderer.
               Results published in full — including the {STATS.tortureFailures} we
-              still fail.
+              intentionally fail.
             </span>
           </span>
         </Link>
@@ -78,7 +73,7 @@ export function ConvertPage() {
         </div>
         <div className="stat">
           <span className="stat-value">{STATS.tortureFailures}</span>
-          <span className="stat-label">known failures, documented not hidden</span>
+          <span className="stat-label">deliberate failures, pinned so the limit cannot drift</span>
         </div>
       </section>
     </main>
