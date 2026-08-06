@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, Frame, Type, Paintbrush, Sliders, Sparkles } from 'lucide-react';
+import { Settings, Frame, Type, Paintbrush, Sliders, Sparkles, ChevronDown } from 'lucide-react';
 import { ExcalidrawOptions, CardStyle, LabelPosition, LabelFontFamily } from '../types';
 import { ICON_BASE_SIZE } from '../utils/defaultOptions';
 
@@ -109,8 +109,24 @@ export const SidebarOptions: React.FC<SidebarOptionsProps> = ({ options, setOpti
     }
   };
 
+  // Collapsed only on narrow viewports, where this panel otherwise fills the
+  // entire first screen and pushes all 216 icons below the fold. The CSS
+  // ignores this class above the breakpoint, so desktop is never collapsed.
+  const [isOpen, setIsOpen] = React.useState(false);
+
   return (
-    <aside className="sidebar glass-panel">
+    <aside className={`sidebar glass-panel${isOpen ? ' is-open' : ''}`}>
+      <button
+        className="sidebar-summary"
+        onClick={() => setIsOpen(o => !o)}
+        aria-expanded={isOpen}
+      >
+        <Settings size={15} aria-hidden="true" />
+        Styling options
+        <ChevronDown size={15} className="sidebar-summary-chevron" aria-hidden="true" />
+      </button>
+
+      <div className="sidebar-body">
       <div>
         <div className="section-title">
           <Settings className="w-4 h-4 text-blue-400" />
@@ -351,6 +367,7 @@ export const SidebarOptions: React.FC<SidebarOptionsProps> = ({ options, setOpti
             />
           </>
         )}
+      </div>
       </div>
     </aside>
   );

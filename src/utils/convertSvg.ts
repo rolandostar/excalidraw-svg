@@ -11,7 +11,11 @@
  * against a renderer; for a stranger's logo, "nothing happened" is
  * indistinguishable from "your wordmark was dropped".
  */
-import { parseSvgToExcalidrawElements } from './excalidrawGenerator';
+import {
+  emptyDiagnostics,
+  parseSvgToExcalidrawElements,
+  type ConversionDiagnostics,
+} from './excalidrawGenerator';
 import { collectUnsupportedFeatures, type SvgFeatureWarning } from './svgSupport';
 import { auditSceneFidelity, type FidelityIssue } from './sceneAudit';
 import type { ExcalidrawElement } from '../types';
@@ -28,7 +32,19 @@ export interface SvgDimensions {
   source: 'viewBox' | 'width/height' | 'fallback';
 }
 
-export class SvgConversionError extends Error {}
+/**
+ * Carries the drop tally so the failure path can say *why*.
+ *
+ * Without it, every distinct cause - an unread root-`<svg>` fill, a mask that
+ * resolved to nothing, an unparseable `d` - surfaced as the same sentence, and
+ * the user's only recourse was to guess.
+ */
+export class SvgConversionError extends Error {
+  constructor(message: string, readonly diagnostics: ConversionDiagnostics = emptyDiagnostics()) {
+    super(message);
+    this.name = 'SvgConversionError';
+  }
+}
 
 /**
  * Intrinsic size of an SVG, preferring the viewBox.
@@ -83,6 +99,8 @@ export interface ConversionResult {
   warnings: SvgFeatureWarning[];
   /** Elements Excalidraw will refuse to draw as intended. */
   auditIssues: FidelityIssue[];
+  /** Source shapes that produced no output, and why. */
+  diagnostics: ConversionDiagnostics;
   counts: { total: number; lines: number; ellipses: number };
   /** `excalidraw/clipboard` payload, ready for navigator.clipboard. */
   clipboardJson: string;
@@ -99,6 +117,7 @@ export function convertSvg(rawSvg: string, roughness = 0): ConversionResult {
   const dimensions = readSvgDimensions(doc);
   const { width, height } = fitToCanvas(dimensions);
 
+  const diagnostics = emptyDiagnostics();
   const elements = parseSvgToExcalidrawElements(
     rawSvg,
     0,
@@ -106,19 +125,26 @@ export function convertSvg(rawSvg: string, roughness = 0): ConversionResult {
     width,
     height,
     `svg_${Math.random().toString(36).slice(2, 10)}`,
-    roughness
+    roughness,
+    diagnostics
   );
 
   const warnings = collectUnsupportedFeatures(rawSvg);
 
   // An empty result with no warnings means the converter found geometry it
   // silently could not handle - surfaced as an error rather than an empty
-  // canvas, which the user would read as "the site is broken".
+  // canvas, which the user would read as "the site is broken". The drop tally
+  // rides along so the message can name a cause instead of shrugging.
   if (elements.length === 0) {
     throw new SvgConversionError(
       warnings.some(w => w.severity === 'unsupported')
         ? 'Nothing convertible in that file — everything in it is unsupported. See the details below.'
-        : 'No drawable geometry found in that file.'
+        : diagnostics.skippedTotal > 0
+        ? `No drawable geometry found: all ${diagnostics.skippedTotal} shape${
+            diagnostics.skippedTotal === 1 ? '' : 's'
+          } in that file were skipped. See the breakdown below.`
+        : 'No drawable geometry found in that file.',
+      diagnostics
     );
   }
 
@@ -139,6 +165,7 @@ export function convertSvg(rawSvg: string, roughness = 0): ConversionResult {
     dimensions,
     warnings,
     auditIssues: auditSceneFidelity(elements),
+    diagnostics,
     counts: {
       total: elements.length,
       lines: elements.filter(e => e.type === 'line').length,

@@ -8,6 +8,33 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Kalam:wght@400;700&family=Lilita+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <!--
+      Resolve the theme before first paint.
+
+      Doing this in React means the document renders once with the default
+      theme and then swaps, which is a full-page white flash for every dark
+      mode user on every navigation. This must stay inline and synchronous -
+      a deferred or external script is already too late.
+
+      Kept in sync with src/hooks/useTheme.ts: same storage key, same values.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('excalidraw-svg:theme');
+          var preference = stored === 'light' || stored === 'dark' ? stored : 'system';
+          var resolved =
+            preference === 'system'
+              ? window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark'
+              : preference;
+          document.documentElement.dataset.theme = resolved;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

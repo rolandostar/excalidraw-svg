@@ -1,6 +1,7 @@
 import { Github } from 'lucide-react';
 import { Link, useRouter, type RoutePath } from '../router';
 import { REPO_URL } from '../site';
+import { ThemeToggle } from './ThemeToggle';
 
 const NAV: { to: RoutePath; label: string }[] = [
   { to: '/', label: 'Convert' },
@@ -37,15 +38,18 @@ export function SiteHeader() {
         ))}
       </nav>
 
-      <a
-        className="site-nav-link site-nav-external"
-        href={REPO_URL}
-        target="_blank"
-        rel="noreferrer noopener"
-      >
-        <Github size={15} aria-hidden="true" />
-        <span className="site-nav-external-label">GitHub</span>
-      </a>
+      <div className="site-header-end">
+        <ThemeToggle />
+        <a
+          className="site-nav-link site-nav-external"
+          href={REPO_URL}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <Github size={15} aria-hidden="true" />
+          <span className="site-nav-external-label">GitHub</span>
+        </a>
+      </div>
     </header>
   );
 }

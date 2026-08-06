@@ -11,3 +11,7 @@ package-lock.json
 
 # Accidental Windows shell redirect target
 nul
+
+# Local UI review screenshots
+.screenshots/
+.verify/
