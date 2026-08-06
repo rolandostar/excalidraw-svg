@@ -1,0 +1,22 @@
+{
+  "01-evenodd-same-winding": 0,
+  "02-nonzero-same-winding": 0,
+  "03-unclosed-subpaths": 0,
+  "04-island-in-hole": 0,
+  "05-disjoint-nested-bbox": 0,
+  "06-self-intersecting": 0,
+  "07-stroke-caps-joins": 0,
+  "08-stroke-transform-scaling": 0,
+  "09-rounded-rect-variants": 0,
+  "10-css-cascade": 0,
+  "11-nested-clip-and-mask": 0,
+  "12-luminosity-mask": 0,
+  "13-mask-reveal-and-hide": 0,
+  "14-transforms": 0,
+  "15-viewbox-offset": 0,
+  "16-opacity": 0,
+  "17-gradients": 0.279738,
+  "18-use-and-symbol": 0,
+  "19-degenerate": 0,
+  "20-unsupported-features": 0.580085
+}
