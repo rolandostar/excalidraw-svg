@@ -1,0 +1,160 @@
+# Testing
+
+The harness is the oracle. Visual inspection is not — several changes that
+looked like clear improvements were measurable regressions, and several
+alarming-looking numbers turned out to be artefacts of how the measurement was
+framed.
+
+---
+
+## Running
+
+```bash
+pnpm test                    # 216 GCP icons
+pnpm test:torture            # 25 edge-case SVGs
+
+pnpm test:update             # accept current numbers as the new baseline
+pnpm test:torture:update
+```
+
+Any folder of SVGs can be scored:
+
+```bash
+tsx scripts/run-fidelity.ts --input=path/to/svgs --name=mysuite
+tsx scripts/run-fidelity.ts --input=svg --only=bigquery   # substring filter
+```
+
+`--name` defaults to the input folder's name with a trailing `-svg` stripped.
+It selects both `tests/results/<name>/` and `tests/baselines/<name>.json`, so
+suites never collide.
+
+A `--only` run reads and writes **no** baseline — it sees a subset, so letting
+it touch the reference would corrupt it.
+
+## What gets measured
+
+Each file is converted through the **shipped** export path
+(`createExcalidrawItem` → `buildExcalidrawLibraryPackage` /
+`buildExcalidrawClipboardData` with `DEFAULT_EXCALIDRAW_OPTIONS`), rendered by
+**Excalidraw's own** `exportToSvg`, and scored on two deliberately orthogonal
+axes:
+
+**Shape error** — `mismatchedPixels / unionInkPixels`, from a `pixelmatch` diff
+of the source SVG against the Excalidraw render. Normalised by inked pixels
+rather than canvas area, because icons are mostly empty space and dividing by
+area makes everything look excellent.
+
+**Placement error** — largest edge or size error in output pixels, comparing
+where the source ink *should* land against the bounds of the emitted geometry.
+Purely numeric, no rendering.
+
+Both are needed. A shape-only metric hides a systematic offset; a bbox-only
+metric hides a missing hole.
+
+**Audit** — `auditSceneFidelity` additionally catches structural faults
+Excalidraw swallows silently: open paths carrying a fill it will refuse to
+fill, degenerate shapes, image elements whose file was dropped.
+
+### Framing
+
+Both sides are rendered inside one **common** user-space window. This matters:
+framing each side on its own ink box sounds neutral but is not, because
+Excalidraw's forced round caps make a stroked icon's ink box larger than the
+source's. Fitting that larger box to the same canvas shrinks the whole drawing
+and lights up every edge in the diff — it inflated real errors by roughly 10×
+and buried the local differences that mattered.
+
+`exportToSvg` always crops to content bounds and bakes the offset into every
+element transform, so the output cannot be reframed afterwards.
+`renderExcalidrawSceneInWindow()` works around this by prepending an invisible
+sentinel element spanning the desired window, which makes that window *become*
+the bounding box: `viewBox` is exactly `0 0 w h` with a zero translate. It
+throws if content escapes the window, because a silently shifted frame makes
+every subsequent measurement wrong.
+
+## Gate
+
+Results are compared against `tests/baselines/<suite>.json`. Any icon whose
+shape error grows by more than `regressionSlack` (0.001) fails the run with a
+non-zero exit code and a per-icon before/after list.
+
+Thresholds for the "failing" count (`scripts/lib/report.ts`):
+
+| metric | threshold |
+|---|---|
+| shape error | 2 % |
+| placement error | 0.5 px |
+| audit issues | any |
+
+The gate has been verified to actually fail — doctoring a baseline entry
+produces `Kuberun: 0.00% -> 91.89%` and exit code 1. If you change the harness,
+re-verify this; a gate that cannot fail is worse than no gate.
+
+## Reading a failure
+
+```
+tests/results/<suite>/
+  comparison.html          sorted worst-first, with per-icon deltas vs baseline
+  comparisons/<id>.png     triptych: source | Excalidraw | pixel diff
+  elements/<id>.excalidraw importable scene, deterministic on disk
+  summary.json             every metric, machine-readable
+  library.excalidrawlib    the generated library
+```
+
+Open `comparison.html` first. The triptych is usually enough to classify the
+defect immediately — a uniform edge band means a scale or offset problem, red
+only at corners means joins, radial hairlines mean bridged sliver holes.
+
+`tests/results/` is gitignored in full. Only `tests/baselines/` is committed.
+
+## Adding a torture test
+
+Drop an SVG into `tests/torture-svg/` and run `pnpm test:torture:update`.
+
+They are **self-verifying** — resvg is the oracle, so no expected output is
+written by hand. That is the whole point: you do not need to know what the
+correct answer looks like, only to construct a file that exercises the feature.
+
+Guidelines that made the existing 25 useful:
+
+- **One feature per file**, named so the failure is self-describing.
+- **Comment the trap at the top** — what a naive converter does wrong and what
+  the correct result looks like. Future readers need the intent, not the SVG.
+- **Make the wrong answer obvious.** Prefer geometry where an error is a large
+  area, not a hairline. Use offset, non-square boxes so a wrong origin or
+  aspect shows up.
+- **Pair contrasting cases.** `01`/`02` are identical geometry under `evenodd`
+  and `nonzero` and must render *differently*; any single heuristic fails one.
+
+Writing the first 20 immediately surfaced five real bugs: `<use>` x/y ignored,
+group opacity ignored, anisotropic stroke widths, self-intersecting offsets at
+sharp joins, and stroked rings dropped entirely when wound clockwise. The
+`objectBoundingBox` batch then caught two bugs in the fix that was written for
+it.
+
+## Expected non-zero results
+
+Three torture files are non-zero on purpose. If one of these reaches 0.00 %,
+something changed — check it is an improvement and not a broken test.
+
+| file | error | why |
+|---|---|---|
+| `20-unsupported-features` | ~58 % | text, pattern, filter, marker, dasharray, skew — all deliberately unsupported and all reported |
+| `17-gradients` | ~28 % | gradients flatten to an averaged colour |
+| `15-viewbox-offset` | 0.00 % shape, 0.57 px placement | metric edge on a 0.5-unit hairline border, not a conversion defect |
+
+## Workflow for changing conversion code
+
+1. `pnpm test` and `pnpm test:torture` — confirm green before you start.
+2. Make the change.
+3. Re-run both. Read the **regression list**, not just the mean; a change can
+   improve the average while destroying one icon.
+4. If a regression is real, fix it. If the *baseline* was wrong, say so
+   explicitly and update it in its own commit.
+5. `pnpm test:update` / `pnpm test:torture:update`, and commit the baselines
+   alongside the change with the numbers in the message.
+
+Determinism has been verified: identical scores across runs, and stable file
+hashes for on-disk snapshots. If you see churn, something reintroduced
+`Date.now()` or `Math.random()` into a snapshot path — `scripts/lib/snapshot.ts`
+exists to project those away.
