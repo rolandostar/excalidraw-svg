@@ -82,7 +82,26 @@ export function compareInFrame(
   sceneWindow: Box,
   size = 384
 ): ShapeReport | null {
-  const source = rasterise(setViewBox(sourceSvg, sourceWindow), size, 'white');
+  return compareRasterInFrame(rasteriseSource(sourceSvg, sourceWindow, size), sceneSvg, sceneWindow, size);
+}
+
+/**
+ * The source half of `compareInFrame`, split out so it can be cached.
+ *
+ * It is a function of the input file and the framing constants only, which
+ * makes it identical on every run - see `sourceCache.ts`.
+ */
+export function rasteriseSource(sourceSvg: string, sourceWindow: Box, size: number): Raster {
+  return rasterise(setViewBox(sourceSvg, sourceWindow), size, 'white');
+}
+
+/** `compareInFrame` with the source panel already rendered. */
+export function compareRasterInFrame(
+  source: Raster,
+  sceneSvg: string,
+  sceneWindow: Box,
+  size: number
+): ShapeReport | null {
   const scene = rasterise(setViewBox(sceneSvg, sceneWindow), size, 'white');
   return diffRasters(source, scene, size);
 }

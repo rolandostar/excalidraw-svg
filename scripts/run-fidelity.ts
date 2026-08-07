@@ -40,7 +40,7 @@ import {
   parseSvgToExcalidrawElements,
   createExcalidrawItem,
   buildExcalidrawLibraryPackage,
-  buildExcalidrawClipboardData,
+  gridPitch,
 } from '../src/utils/excalidrawGenerator';
 import { IMPLICIT_CATEGORY, categorizeByRules, formatTitle } from '../src/utils/categorizer';
 import { collectUnsupportedFeatures, describeWarnings } from '../src/utils/svgSupport';
@@ -49,12 +49,14 @@ import { IconAsset, IconSetManifest } from '../src/types';
 import { renderExcalidrawSceneInWindow, auditSceneFidelity } from './excalidrawRenderer';
 import { Box, inkBox, readViewBox } from './lib/raster';
 import {
-  compareInFrame,
+  compareRasterInFrame,
   comparePlacement,
   expectedBounds,
+  rasteriseSource,
   sceneWindowToSourceWindow,
   unionBounds,
 } from './lib/fidelity';
+import { cacheVersion, pruneCache, readSource, writeSource } from './lib/sourceCache';
 import { stabiliseElements, stabiliseFiles } from './lib/snapshot';
 import {
   DEFAULT_THRESHOLDS,
@@ -270,7 +272,39 @@ interface ScoredFile {
   icon: IconAsset | null;
   /** True when a triptych was actually written, for the run summary. */
   wroteComparison: boolean;
+  /** True when the source panel came from the on-disk cache. */
+  cacheHit: boolean;
+  /** Package-level audit findings for this icon, at its real grid offsets. */
+  packageIssues: string[];
+  /** Every `files` key this icon generated, for a cross-corpus collision check. */
+  fileIds: string[];
+  /** Wall time per stage, only populated under `--profile`. */
+  timings?: Record<string, number>;
 }
+
+/**
+ * Grid offsets this icon occupies in the packaged outputs.
+ *
+ * Computed by the master from titles alone and handed down, which is what
+ * lets the package-level audit run inside the workers instead of as a
+ * single-threaded tail. The column counts mirror
+ * `buildExcalidrawLibraryPackage` and `buildExcalidrawClipboardData`.
+ */
+interface PackageLayout {
+  index: number;
+  libraryPitch: { pitchX: number; pitchY: number };
+  clipboardPitch: { pitchX: number; pitchY: number };
+}
+
+const PROFILE = process.argv.includes('--profile');
+
+/**
+ * Reuse of the source half of each comparison between runs. `--no-cache`
+ * forces every panel to be re-rendered, which is what you want when auditing
+ * the harness itself rather than the converter.
+ */
+const USE_CACHE = !process.argv.includes('--no-cache');
+const CACHE_VERSION = cacheVersion({ PANEL_SIZE, TARGET, SCENE_WINDOW });
 
 /**
  * Scores a single SVG.
@@ -279,10 +313,33 @@ interface ScoredFile {
  * filenames derived from that file's id - which is what makes the fan-out
  * below safe.
  */
-async function scoreFile(candidate: Candidate): Promise<ScoredFile> {
+async function scoreFile(candidate: Candidate, layout: PackageLayout | null): Promise<ScoredFile> {
   const name = candidate.id;
   const rawSvg = fs.readFileSync(candidate.absPath, 'utf-8');
   let wroteComparison = false;
+  let cacheHit = false;
+  const packageIssues: string[] = [];
+  const fileIds: string[] = [];
+
+  const timings: Record<string, number> = {};
+  const stage = <T>(key: string, fn: () => T): T => {
+    if (!PROFILE) return fn();
+    const t = process.hrtime.bigint();
+    try {
+      return fn();
+    } finally {
+      timings[key] = (timings[key] ?? 0) + Number(process.hrtime.bigint() - t) / 1e6;
+    }
+  };
+  const stageAsync = async <T>(key: string, fn: () => Promise<T>): Promise<T> => {
+    if (!PROFILE) return fn();
+    const t = process.hrtime.bigint();
+    try {
+      return await fn();
+    } finally {
+      timings[key] = (timings[key] ?? 0) + Number(process.hrtime.bigint() - t) / 1e6;
+    }
+  };
 
   const record: IconMetrics = {
     id: name,
@@ -300,32 +357,36 @@ async function scoreFile(candidate: Candidate): Promise<ScoredFile> {
 
   {
     try {
-      icon = buildIcon(candidate, rawSvg);
+      icon = stage('optimise (SVGO)', () => buildIcon(candidate, rawSvg));
       record.category = icon.category;
       record.title = icon.title;
       record.optimizedBytes = icon.optimizedSvg.length;
 
       // Reported, never fatal: an approximation is a documented trade-off and
       // an unsupported feature is information the user needs, not a crash.
-      const features = collectUnsupportedFeatures(rawSvg);
+      const features = stage('feature scan', () => collectUnsupportedFeatures(rawSvg));
       if (features.length > 0) record.featureWarnings = describeWarnings(features);
 
       // --- geometry under test -------------------------------------------
-      const elements = parseSvgToExcalidrawElements(
-        icon.rawSvg,
-        TARGET.x,
-        TARGET.y,
-        TARGET.width,
-        TARGET.height,
-        `group_${name.replace(/[^a-zA-Z0-9]/g, '_')}`,
-        DEFAULT_EXCALIDRAW_OPTIONS.roughness
+      const elements = stage('convert (geometry under test)', () =>
+        parseSvgToExcalidrawElements(
+          icon!.rawSvg,
+          TARGET.x,
+          TARGET.y,
+          TARGET.width,
+          TARGET.height,
+          `group_${name.replace(/[^a-zA-Z0-9]/g, '_')}`,
+          DEFAULT_EXCALIDRAW_OPTIONS.roughness
+        )
       );
       record.elementCount = elements.length;
 
       // --- structural audit of every shipped export path ------------------
       record.auditIssues.push(...describeIssues('vector', auditSceneFidelity(elements)));
 
-      const asItem = createExcalidrawItem(icon, DEFAULT_EXCALIDRAW_OPTIONS, 0, 0);
+      const asItem = stage('convert (item at 0,0)', () =>
+        createExcalidrawItem(icon!, DEFAULT_EXCALIDRAW_OPTIONS, 0, 0)
+      );
       record.auditIssues.push(...describeIssues('clipboard', auditSceneFidelity(asItem.elements, asItem.files)));
 
       // A library item is serialised without its `files` map, so any image
@@ -333,18 +394,43 @@ async function scoreFile(candidate: Candidate): Promise<ScoredFile> {
       record.auditIssues.push(...describeIssues('library', auditSceneFidelity(asItem.elements, {})));
 
       // --- fidelity scoring ------------------------------------------------
-      const sourceInk = inkBox(rawSvg);
-      const sourceViewBox = readViewBox(rawSvg);
+      // --- source side: identical every run, so cached on disk ------------
+      const cached = USE_CACHE ? stage('cache read', () => readSource(CACHE_VERSION, rawSvg)) : null;
+      cacheHit = cached !== null;
 
-      if (elements.length > 0 && sourceViewBox) {
-        const scene = await renderExcalidrawSceneInWindow(elements as any, SCENE_WINDOW, {});
-        const sourceWindow = sceneWindowToSourceWindow(SCENE_WINDOW, sourceViewBox, TARGET);
-        const shape = compareInFrame(rawSvg, sourceWindow, scene.svg, {
-          x: 0,
-          y: 0,
-          width: SCENE_WINDOW.width,
-          height: SCENE_WINDOW.height,
-        }, PANEL_SIZE);
+      const sourceViewBox = cached ? cached.viewBox : readViewBox(rawSvg);
+      const sourceInk = cached
+        ? cached.ink
+        : stage('inkBox (resvg 512 + scan)', () => inkBox(rawSvg));
+
+      let sourceRaster = cached?.raster ?? null;
+      if (!sourceRaster && sourceViewBox) {
+        const window = sceneWindowToSourceWindow(SCENE_WINDOW, sourceViewBox, TARGET);
+        sourceRaster = stage('rasterise source', () => rasteriseSource(rawSvg, window, PANEL_SIZE));
+      }
+
+      if (!cached && sourceRaster && USE_CACHE) {
+        stage('cache write', () =>
+          writeSource(CACHE_VERSION, rawSvg, {
+            ink: sourceInk,
+            viewBox: sourceViewBox,
+            raster: sourceRaster!,
+          })
+        );
+      }
+
+      if (elements.length > 0 && sourceViewBox && sourceRaster) {
+        const scene = await stageAsync('exportToSvg (excalidraw)', () =>
+          renderExcalidrawSceneInWindow(elements as any, SCENE_WINDOW, {})
+        );
+        const shape = stage('rasterise scene + pixel diff', () =>
+          compareRasterInFrame(
+            sourceRaster!,
+            scene.svg,
+            { x: 0, y: 0, width: SCENE_WINDOW.width, height: SCENE_WINDOW.height },
+            PANEL_SIZE
+          )
+        );
 
         if (shape) {
           record.shapeScore = shape.score;
@@ -353,9 +439,11 @@ async function scoreFile(candidate: Candidate): Promise<ScoredFile> {
           // publishes and nobody opens. Encoding and writing it for every
           // passing file was the single largest source of I/O in the run.
           if (COMPARISON_MODE === 'all' || shape.mismatchedPixels > 0) {
-            fs.writeFileSync(
-              path.join(COMPARISONS_DIR, `${name}.png`),
-              composeTriptych([shape.source, shape.scene, shape.diff])
+            stage('triptych PNG', () =>
+              fs.writeFileSync(
+                path.join(COMPARISONS_DIR, `${name}.png`),
+                composeTriptych([shape.source, shape.scene, shape.diff])
+              )
             );
             wroteComparison = true;
           }
@@ -371,6 +459,56 @@ async function scoreFile(candidate: Candidate): Promise<ScoredFile> {
           unionBounds(elements)
         );
         record.placementErrorPx = placement ? placement.maxErrorPx : null;
+      }
+
+      // --- package-level audit, at this icon's real grid offsets ----------
+      //
+      // Runs here rather than over the assembled corpus in the master, which
+      // was 2 more conversions per icon on a single core after the parallel
+      // phase had finished. Auditing each icon's slice is equivalent: the
+      // packaged payloads are a concatenation of these elements and a merge of
+      // these `files` maps, `auditSceneFidelity` is per element, and merging
+      // can only ever add files an element might reference - never remove one.
+      // What a slice cannot see is a `fileId` colliding across icons, so the
+      // ids are returned and checked corpus-wide by the master.
+      if (layout) {
+        const libCol = layout.index % 10;
+        const libRow = Math.floor(layout.index / 10);
+        const asLibrary = stage('convert (library offset)', () =>
+          createExcalidrawItem(
+            icon!,
+            DEFAULT_EXCALIDRAW_OPTIONS,
+            libCol * layout.libraryPitch.pitchX,
+            libRow * layout.libraryPitch.pitchY
+          )
+        );
+        auditSceneFidelity(asLibrary.elements, asLibrary.files).forEach(issue => {
+          packageIssues.push(`library item "${icon!.title}": [${issue.kind}] ${issue.detail}`);
+        });
+
+        const clipCol = layout.index % 8;
+        const clipRow = Math.floor(layout.index / 8);
+        const asClipboard = stage('convert (clipboard offset)', () =>
+          createExcalidrawItem(
+            icon!,
+            DEFAULT_EXCALIDRAW_OPTIONS,
+            clipCol * layout.clipboardPitch.pitchX,
+            clipRow * layout.clipboardPitch.pitchY
+          )
+        );
+
+        // Round-tripped, because the clipboard payload reaches Excalidraw as
+        // text and anything JSON cannot carry is a real defect.
+        const roundTripped = JSON.parse(
+          JSON.stringify({ elements: asClipboard.elements, files: asClipboard.files })
+        );
+        auditSceneFidelity(roundTripped.elements, roundTripped.files).forEach(issue => {
+          packageIssues.push(
+            `clipboard "${icon!.title}": [${issue.kind}] element #${issue.elementIndex} - ${issue.detail}`
+          );
+        });
+
+        fileIds.push(...Object.keys(asClipboard.files), ...Object.keys(asLibrary.files));
       }
 
       // --- deterministic snapshot -----------------------------------------
@@ -398,7 +536,15 @@ async function scoreFile(candidate: Candidate): Promise<ScoredFile> {
     }
   }
 
-  return { record, icon, wroteComparison };
+  return {
+    record,
+    icon,
+    wroteComparison,
+    cacheHit,
+    packageIssues,
+    fileIds,
+    ...(PROFILE ? { timings } : {}),
+  };
 }
 
 /** Round-robin, so a slow run of large files cannot land entirely on one worker. */
@@ -408,13 +554,19 @@ function shard<T>(items: T[], buckets: number): T[][] {
   return out;
 }
 
+/** One unit of work handed to a child: a file plus where it sits in the packages. */
+interface WorkItem {
+  candidate: Candidate;
+  layout: PackageLayout;
+}
+
 /** Child entry point: score a slice, write it to a file, exit. */
 async function runWorker(outFile: string) {
-  const candidates: Candidate[] = JSON.parse(fs.readFileSync(`${outFile}.in`, 'utf-8'));
+  const items: WorkItem[] = JSON.parse(fs.readFileSync(`${outFile}.in`, 'utf-8'));
   const results: ScoredFile[] = [];
 
-  for (const candidate of candidates) {
-    results.push(await scoreFile(candidate));
+  for (const item of items) {
+    results.push(await scoreFile(item.candidate, item.layout));
     if (process.send) process.send({ done: 1 });
   }
 
@@ -428,11 +580,13 @@ async function runWorker(outFile: string) {
  * plus Excalidraw's renderer reading bare globals, and giving each of those a
  * private realm is the whole reason this is safe to parallelise at all.
  */
-async function scoreAll(files: Candidate[]): Promise<ScoredFile[]> {
+async function scoreAll(items: WorkItem[]): Promise<ScoredFile[]> {
+  const files = items;
+
   if (JOBS <= 1 || files.length < JOBS * 2) {
     const out: ScoredFile[] = [];
     for (let i = 0; i < files.length; i++) {
-      out.push(await scoreFile(files[i]));
+      out.push(await scoreFile(files[i].candidate, files[i].layout));
       if ((i + 1) % 25 === 0 || i + 1 === files.length) console.log(`  ${i + 1}/${files.length}`);
     }
     return out;
@@ -463,6 +617,8 @@ async function scoreAll(files: Candidate[]): Promise<ScoredFile[]> {
           `--name=${SUITE}`,
           `--comparisons=${COMPARISON_MODE}`,
           ...(WRITE_SNAPSHOTS ? ['--snapshots'] : []),
+          ...(PROFILE ? ['--profile'] : []),
+          ...(USE_CACHE ? [] : ['--no-cache']),
         ];
 
         const child = fork(self, args, { stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
@@ -515,49 +671,87 @@ async function run() {
     ? JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf-8'))
     : null;
 
+  /**
+   * Grid pitch, computed before anything is converted.
+   *
+   * `measureExcalidrawItem` reads only `icon.title` and the options, so the
+   * packaged layout is knowable from filenames alone. That is what lets each
+   * worker audit its own slice at the offsets it will really occupy, instead
+   * of the master rebuilding both packages - 2 conversions per icon - on one
+   * core once the parallel phase had already finished.
+   */
+  const titleStubs = files.map(f => {
+    const manifest = manifestFor(path.dirname(f.absPath));
+    const override = manifest.overrides?.[f.name] ?? {};
+    return { title: override.title?.trim() || formatTitle(f.name) } as IconAsset;
+  });
+
+  const items: WorkItem[] = files.map((candidate, index) => ({
+    candidate,
+    layout: {
+      index,
+      libraryPitch: gridPitch(titleStubs, DEFAULT_EXCALIDRAW_OPTIONS, 32),
+      clipboardPitch: gridPitch(titleStubs, DEFAULT_EXCALIDRAW_OPTIONS, 24),
+    },
+  }));
+
+  // Entries from an older measurement version can never be used again.
+  if (USE_CACHE) pruneCache(CACHE_VERSION);
+
   const startedAt = Date.now();
-  const scored = await scoreAll(files);
+  const scored = await scoreAll(items);
 
   const metrics: IconMetrics[] = scored.map(s => s.record);
   const icons: IconAsset[] = scored.map(s => s.icon).filter((i): i is IconAsset => i !== null);
   const comparisonsWritten = scored.filter(s => s.wroteComparison).length;
 
   // --- whole-package checks ------------------------------------------------
-  const packageIssues: string[] = [];
+  //
+  // Per-icon findings came back from the workers. The one thing a single
+  // slice cannot see is two icons minting the same `fileId`, which would make
+  // the merged `files` map drop one of them, so that is checked here across
+  // the whole corpus.
+  const packageIssues: string[] = scored.flatMap(s => s.packageIssues);
 
-  const library = buildExcalidrawLibraryPackage(icons, DEFAULT_EXCALIDRAW_OPTIONS);
-  library.libraryItems.forEach(item => {
-    auditSceneFidelity(item.elements, item.files ?? {}).forEach(issue => {
-      packageIssues.push(`library item "${item.name}": [${issue.kind}] ${issue.detail}`);
-    });
-  });
+  const seenFileIds = new Set<string>();
+  for (const s of scored) {
+    for (const id of s.fileIds) {
+      if (seenFileIds.has(id)) {
+        packageIssues.push(
+          `package: fileId "${id}" is generated by more than one icon - the merged files map would drop one`
+        );
+      }
+      seenFileIds.add(id);
+    }
+  }
 
-  const clipboard = buildExcalidrawClipboardData(icons, DEFAULT_EXCALIDRAW_OPTIONS);
-  const clipboardPayload = JSON.parse(clipboard.jsonText);
-  auditSceneFidelity(clipboardPayload.elements, clipboardPayload.files).forEach(issue => {
-    packageIssues.push(`clipboard: [${issue.kind}] element #${issue.elementIndex} - ${issue.detail}`);
-  });
-
-  fs.writeFileSync(
-    path.join(RESULTS_DIR, 'library.excalidrawlib'),
-    JSON.stringify(
-      {
-        type: 'excalidrawlib',
-        version: 2,
-        source: 'https://excalidraw-gcp.studio',
-        libraryItems: library.libraryItems.map(item => ({
-          ...item,
-          id: item.name ?? item.id,
-          created: 0,
-          elements: stabiliseElements(item.elements, item.name ?? item.id),
-          ...(item.files ? { files: stabiliseFiles(item.files, item.elements, item.name ?? item.id) } : {}),
-        })),
-      },
-      null,
-      2
-    ),
-    'utf-8'
-  );
+  if (WRITE_SNAPSHOTS) {
+    // Rebuilds both packages from scratch purely to emit the artifact, which
+    // nothing reads. Off by default for exactly that reason.
+    const library = buildExcalidrawLibraryPackage(icons, DEFAULT_EXCALIDRAW_OPTIONS);
+    fs.writeFileSync(
+      path.join(RESULTS_DIR, 'library.excalidrawlib'),
+      JSON.stringify(
+        {
+          type: 'excalidrawlib',
+          version: 2,
+          source: 'https://excalidraw-gcp.studio',
+          libraryItems: library.libraryItems.map(item => ({
+            ...item,
+            id: item.name ?? item.id,
+            created: 0,
+            elements: stabiliseElements(item.elements, item.name ?? item.id),
+            ...(item.files
+              ? { files: stabiliseFiles(item.files, item.elements, item.name ?? item.id) }
+              : {}),
+          })),
+        },
+        null,
+        2
+      ),
+      'utf-8'
+    );
+  }
 
   // --- summary -------------------------------------------------------------
   const shapeScores = metrics.filter(m => m.shapeScore !== null).map(m => m.shapeScore as number);
@@ -637,6 +831,30 @@ async function run() {
   console.log(`  worst placement err  ${summary.worstPlacementErrorPx.toFixed(3)}px`);
   console.log(`  audit issues         ${summary.auditIssueCount}`);
   console.log(`  failing files        ${summary.failingIcons}/${summary.totalProcessed}`);
+  if (PROFILE) {
+    const totals: Record<string, number> = {};
+    scored.forEach(s =>
+      Object.entries(s.timings ?? {}).forEach(([k, v]) => (totals[k] = (totals[k] ?? 0) + v))
+    );
+    const sum = Object.values(totals).reduce((a, b) => a + b, 0) || 1;
+
+    console.log('\n  CPU time by stage (summed across workers, so > wall clock):');
+    Object.entries(totals)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([k, v]) =>
+        console.log(
+          `    ${(v / 1000).toFixed(1).padStart(6)}s  ${((v / sum) * 100).toFixed(1).padStart(5)}%` +
+            `  ${(v / metrics.length).toFixed(1).padStart(6)} ms/icon  ${k}`
+        )
+      );
+    console.log(`    ${(sum / 1000).toFixed(1).padStart(6)}s          total`);
+  }
+
+  const cacheHits = scored.filter(s => s.cacheHit).length;
+  console.log(
+    `  source cache         ${cacheHits}/${metrics.length} hit` +
+      (USE_CACHE ? '' : '  (disabled with --no-cache)')
+  );
   console.log(
     `  triptychs written    ${comparisonsWritten}/${metrics.length}` +
       (COMPARISON_MODE === 'scored'

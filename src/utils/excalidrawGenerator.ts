@@ -1755,7 +1755,13 @@ export function createExcalidrawItem(
  * Replaces the old fixed 160/180 constants, which were sized for a 48px icon
  * with a short label and overlapped as soon as either grew.
  */
-function gridPitch(
+/**
+ * Exported for the fidelity harness, which needs the pitch *before* it has
+ * converted anything: `measureExcalidrawItem` reads only `icon.title` and the
+ * options, so the layout can be computed from filenames alone and handed to
+ * worker processes that each own one slice of the corpus.
+ */
+export function gridPitch(
   icons: IconAsset[],
   options: ExcalidrawOptions,
   gutter: number

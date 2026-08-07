@@ -6,6 +6,10 @@ dist/
 # against lives in tests/baselines/ instead.
 tests/results/
 
+# Rasterised source panels reused between runs. Derived entirely from the
+# committed SVGs plus the measurement code, and keyed by a hash of both.
+tests/.cache/
+
 # npm lockfile - this project uses pnpm
 package-lock.json
 

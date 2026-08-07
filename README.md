@@ -29,8 +29,10 @@ pnpm test:torture        # score the edge-case SVGs
 against the source SVG, and **fails on any regression** versus the committed
 baseline. Run it before and after every change to conversion code.
 
-It fans out across `min(8, cores - 1)` processes — 261 icons in ~44 s. Pass
-`--jobs=1` for a serial run; the results are identical either way.
+It fans out across `min(8, cores - 1)` processes and caches the half of each
+comparison that cannot change — 261 icons in ~22 s warm, ~44 s cold. Pass
+`--jobs=1` for a serial run or `--no-cache` to re-render everything; the
+results are identical either way.
 
 ## Current fidelity
 

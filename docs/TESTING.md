@@ -24,10 +24,42 @@ guarantee needed is on the merge, which re-sorts by id. Two knobs:
 ```bash
 --jobs=1                     # serial, for profiling or a clean stack trace
 --jobs=4                     # cap the fan-out
+--profile                    # CPU time by stage
+--no-cache                   # re-render the source panels from scratch
 ```
 
-Results are identical either way. If they are not, that is a bug worth
-reporting, not a flake to retry.
+Results are identical whatever these are set to. If they are not, that is a
+bug worth reporting, not a flake to retry.
+
+### Why a warm run is twice as fast
+
+`--profile` on the 261-icon corpus:
+
+```
+  192.2s  61.7%  rasterise + pixel diff
+   96.7s  31.1%  inkBox (resvg 512 + scan)
+    5.5s   1.8%  optimise (SVGO)
+    3.9s   1.3%  exportToSvg (excalidraw)
+   11.0s   3.5%  the four conversions, combined
+```
+
+Rasterisation is 93% of the cost, and most of it is spent on the **source**
+side of each comparison. That side is a function of the input file and the
+framing constants only - `inkBox(rawSvg)`, the source viewBox, and the source
+panel - so it is identical on every run and is cached in `tests/.cache/`
+(gitignored, ~2.5 MB). The scene side depends on the converter and is always
+recomputed.
+
+    cold  44s      warm  22s
+
+The cache key hashes the file's bytes **and** the source of `raster.ts` and
+`fidelity.ts` **and** the geometry constants. Change how anything is measured
+and every entry is invalidated, because a panel measured under different rules
+is not a speed-up, it is a wrong answer that reproduces. Stale-version entries
+are pruned at the start of each run.
+
+Note what this means for profiling: `--profile` on a warm run shows the cached
+stages as near-zero. Use `--no-cache --profile` to see true cost.
 
 Any folder of SVGs can be scored:
 
@@ -159,9 +191,25 @@ encoding 261 PNGs to publish six. Suites whose every case is published - the
 torture gallery shows passing cases too - pass `--comparisons=all`, which the
 `test:torture` scripts already do. The run prints how many were written.
 
-Per-file `.excalidraw` dumps are off by default and enabled with `--snapshots`.
-Nothing reads them: `tests/results/` is gitignored, so they cannot serve as a
-regression reference. They exist to inspect one conversion by hand.
+Per-file `.excalidraw` dumps and `library.excalidrawlib` are off by default and
+enabled together with `--snapshots`. Nothing reads them: `tests/results/` is
+gitignored, so they cannot serve as a regression reference. They exist to
+inspect one conversion by hand.
+
+### Where the package-level audit runs
+
+Each worker audits its own icons at the grid offsets they will really occupy in
+the `.excalidrawlib` and clipboard payloads, rather than the master rebuilding
+both packages once every worker has finished. That is equivalent: the packaged
+payloads are a concatenation of these elements and a merge of these `files`
+maps, `auditSceneFidelity` is per element, and merging can only ever *add* a
+file an element might reference. The one thing a slice cannot see is two icons
+minting the same `fileId`, so the ids come back to the master and are checked
+across the whole corpus - a check that did not exist before.
+
+The grid pitch this needs is computed up front from titles alone:
+`measureExcalidrawItem` reads `icon.title` and the options and never touches
+the SVG.
 
 ## Adding a torture test
 
