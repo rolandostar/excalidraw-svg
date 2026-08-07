@@ -48,11 +48,15 @@ the glob patterns and invalidates the module when the match list changes.
 
 Two properties of that module are load-bearing:
 
-- **Discovery is cheap, materialisation is not.** `listIconSets()` reads only
-  manifests and the raw markup of the first eight files per set, and is what
-  the `/icons` gallery renders. `loadIconSet()` is where SVGO runs, so it is
-  per-set, on demand, and memoised. A tenth set costs the gallery one card, not
-  another second of optimisation.
+- **The optimiser runs at build time, not in the browser.** `vite/icon-sets.ts`
+  globs `svg/`, runs `optimizeSvgString` in Node and exposes the result as
+  `virtual:icon-sets`. Opening a set used to run SVGO over every file in it
+  before the grid could paint, and shipping SVGO to do that cost 187 KB gzip -
+  roughly half the main chunk - to process files that were already in the repo.
+  The converter page, which handles files the build has never seen, does not
+  use the optimiser at all, so nothing in the client needs it. Both the plugin
+  and the fidelity harness call the same `optimizeSvgString`, verified to
+  produce byte-identical markup for all 261 icons.
 - **Category rules live in the manifest, not in code.** `categorizer.ts` keeps
   only the matching engine and `formatTitle`. The GCP keyword lists moved
   verbatim into `svg/legacy-gcp/set.json`, order preserved — the matcher is
@@ -62,6 +66,17 @@ Two properties of that module are load-bearing:
 Search aliases are declared as bidirectional `synonyms` groups and expanded
 into each icon's tag list at load time, which is why `vpc` and
 `virtual private cloud` find the same icon without either being canonical.
+
+## The icon grid converts lazily
+
+A set is up to 216 cards; a viewport holds about twenty. `IconCard` converts
+its SVG and runs Excalidraw's exporter only once `useHasBeenVisible` says the
+card has come within 600px of the viewport, and the flag is sticky because the
+result is cached and unmounting would only mean redoing the work later. The
+card's box is sized from `previewPx` rather than from its contents, so
+deferring the artwork cannot move the layout or make the observer oscillate.
+
+Opening a set went from 216 exports to 35.
 
 ---
 

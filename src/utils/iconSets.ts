@@ -7,7 +7,8 @@ import type {
   IconSetSummary,
 } from '../types';
 import { IMPLICIT_CATEGORY, categorizeByRules, expandSynonyms, formatTitle } from './categorizer';
-import { optimizeSvgString } from './svgOptimizer';
+// eslint-disable-next-line import/no-unresolved -- supplied by vite/icon-sets.ts
+import { ICON_SETS } from 'virtual:icon-sets';
 
 /**
  * Icon sets are folders.
@@ -15,23 +16,16 @@ import { optimizeSvgString } from './svgOptimizer';
  * `svg/<set-id>/*.svg` is a set, and `svg/<set-id>/set.json` optionally names
  * and categorises it. Nothing has to be registered anywhere: dropping a folder
  * into `svg/` makes it appear at `/icons/<set-id>` on the next dev-server tick,
- * because Vite watches these glob patterns and invalidates this module when
- * their match list changes.
+ * because `vite/icon-sets.ts` watches the folder and rebuilds this module when
+ * anything in it changes.
  *
  * A folder with no `set.json` still works - the name is inferred from the
  * folder and every icon lands in one bucket. Requiring boilerplate before an
  * icon showed up would defeat the point of dropping the folder in.
+ *
+ * The SVG markup arriving here is **already optimised**. That runs in Node at
+ * build time; see `vite/icon-sets.ts` for why.
  */
-const RAW_SVGS = import.meta.glob('../../svg/*/*.svg', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-}) as Record<string, string>;
-
-const MANIFESTS = import.meta.glob('../../svg/*/set.json', {
-  import: 'default',
-  eager: true,
-}) as Record<string, IconSetManifest>;
 
 /**
  * Loose files directly under `svg/`. Matched only so the mistake can be
@@ -43,15 +37,6 @@ const DEFAULT_ACCENT = '#4285F4';
 
 /** Sets without an explicit `order` sort after every set that has one. */
 const UNORDERED = 1_000;
-
-function setIdFromPath(path: string): string | null {
-  const match = path.match(/\/svg\/([^/]+)\//);
-  return match ? match[1] : null;
-}
-
-function fileNameFromPath(path: string): string {
-  return path.slice(path.lastIndexOf('/') + 1).replace(/\.svg$/i, '');
-}
 
 /** Encodes an SVG for use in `src`. Quotes are escaped, everything else is not. */
 function toDataUrl(svg: string): string {
@@ -78,8 +63,8 @@ interface Discovered {
   id: string;
   manifest: IconSetManifest;
   hasManifest: boolean;
-  /** Raw file contents keyed by filename without extension, name-sorted. */
-  files: Array<{ name: string; rawSvg: string }>;
+  /** Already-optimised markup, name-sorted. */
+  files: Array<{ name: string; svg: string }>;
 }
 
 let discovered: Map<string, Discovered> | null = null;
@@ -87,39 +72,17 @@ let discovered: Map<string, Discovered> | null = null;
 function discover(): Map<string, Discovered> {
   if (discovered) return discovered;
 
-  const sets = new Map<string, Discovered>();
-
-  const ensure = (id: string): Discovered => {
-    let entry = sets.get(id);
-    if (!entry) {
-      entry = { id, manifest: {}, hasManifest: false, files: [] };
-      sets.set(id, entry);
-    }
-    return entry;
-  };
-
-  for (const [path, manifest] of Object.entries(MANIFESTS)) {
-    const id = setIdFromPath(path);
-    if (!id) continue;
-    const entry = ensure(id);
-    entry.manifest = manifest ?? {};
-    entry.hasManifest = true;
-  }
-
-  for (const [path, rawSvg] of Object.entries(RAW_SVGS)) {
-    const id = setIdFromPath(path);
-    if (!id || !rawSvg) continue;
-    ensure(id).files.push({ name: fileNameFromPath(path), rawSvg });
-  }
-
-  for (const entry of sets.values()) {
-    entry.files.sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  // A folder holding only a set.json is a half-finished drop, not a set.
-  for (const [id, entry] of sets) {
-    if (entry.files.length === 0) sets.delete(id);
-  }
+  const sets = new Map<string, Discovered>(
+    ICON_SETS.map(set => [
+      set.id,
+      {
+        id: set.id,
+        manifest: (set.manifest ?? {}) as IconSetManifest,
+        hasManifest: Object.keys(set.manifest ?? {}).length > 0,
+        files: set.icons,
+      },
+    ])
+  );
 
   const loose = Object.keys(LOOSE_SVGS).length;
   if (loose > 0 && import.meta.env.DEV) {
@@ -166,10 +129,7 @@ function summarise(entry: Discovered): IconSetSummary {
     count: entry.files.length,
     categories: resolveCategories(manifest),
     hasManifest: entry.hasManifest,
-    // Deliberately the *unoptimised* source: the gallery shows these at 28px
-    // in an <img>, so running SVGO over every set on the landing page would
-    // buy nothing and cost seconds.
-    previews: entry.files.slice(0, 8).map(f => toDataUrl(f.rawSvg)),
+    previews: entry.files.slice(0, 8).map(f => toDataUrl(f.svg)),
   };
 
   summaries.set(entry.id, summary);
@@ -180,7 +140,7 @@ function byOrderThenName(a: IconSetSummary, b: IconSetSummary): number {
   return a.order - b.order || a.name.localeCompare(b.name);
 }
 
-/** Every discovered set, cheap: no SVG is optimised. */
+/** Every discovered set. Cheap: the markup arrives already optimised. */
 export function listIconSets(): IconSetSummary[] {
   return Array.from(discover().values()).map(summarise).sort(byOrderThenName);
 }
@@ -197,9 +157,9 @@ export function iconSetExists(setId: string): boolean {
 /**
  * Fully materialised sets, memoised.
  *
- * This is where SVGO runs, so it is deliberately per-set and on demand: the
- * gallery must not pay to optimise every icon of every set just to draw a
- * thumbnail strip.
+ * Now only string work - titles, categories, search tags, data URLs - because
+ * the optimiser already ran at build time. Still per-set and memoised so the
+ * gallery does not build tag indexes for sets nobody opened.
  */
 const materialised = new Map<string, IconSet>();
 
@@ -215,12 +175,11 @@ export function loadIconSet(setId: string): IconSet | null {
   const rules = resolveRules(manifest);
   const overrides = manifest.overrides ?? {};
 
-  const icons: IconAsset[] = entry.files.map(({ name, rawSvg }) => {
+  const icons: IconAsset[] = entry.files.map(({ name, svg }) => {
     const override = overrides[name] ?? {};
     const title = override.title?.trim() || formatTitle(name);
     const category = override.category || categorizeByRules(name, rules, summary.categories);
-    const optimizedSvg = optimizeSvgString(rawSvg);
-    const { width, height } = readIntrinsicSize(optimizedSvg);
+    const { width, height } = readIntrinsicSize(svg);
 
     const tags = Array.from(
       new Set(
@@ -244,9 +203,9 @@ export function loadIconSet(setId: string): IconSet | null {
       title,
       category,
       tags,
-      rawSvg: optimizedSvg,
-      optimizedSvg,
-      dataUrl: toDataUrl(optimizedSvg),
+      rawSvg: svg,
+      optimizedSvg: svg,
+      dataUrl: toDataUrl(svg),
       width,
       height,
     };

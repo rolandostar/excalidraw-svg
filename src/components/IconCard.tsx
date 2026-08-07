@@ -7,6 +7,7 @@ import {
 } from '../utils/excalidrawGenerator';
 import { ICON_BASE_SIZE } from '../utils/defaultOptions';
 import { ExcalidrawPreview } from './ExcalidrawPreview';
+import { useHasBeenVisible } from '../hooks/useHasBeenVisible';
 import confetti from 'canvas-confetti';
 
 interface IconCardProps {
@@ -79,6 +80,20 @@ const IconCardImpl: React.FC<IconCardProps> = ({
 }) => {
   const [copied, setCopied] = React.useState(false);
 
+  const cardRef = React.useRef<HTMLDivElement>(null);
+
+  /**
+   * Convert and export only what the user might actually be looking at.
+   *
+   * A set is 216 cards and a viewport holds about twenty. Doing the work for
+   * all of them on mount cost one SVG conversion and one Excalidraw export per
+   * card, on the main thread, before anything could be interacted with. The
+   * card's own box is sized from `previewPx` rather than from its contents, so
+   * deferring the artwork does not move the layout and cannot make the
+   * observer oscillate.
+   */
+  const isVisible = useHasBeenVisible(cardRef);
+
   const exportPx = Math.round(ICON_BASE_SIZE * options.iconScale);
   const previewPx = Math.min(exportPx, MAX_PREVIEW_PX);
 
@@ -87,8 +102,8 @@ const IconCardImpl: React.FC<IconCardProps> = ({
   // fidelity, and a CSS mock cannot represent roughness at all - a sketch-mode
   // export looked identical to a clean one.
   const elements = React.useMemo(
-    () => convertIcon(icon, exportPx, options.roughness),
-    [icon, exportPx, options.roughness]
+    () => (isVisible ? convertIcon(icon, exportPx, options.roughness) : null),
+    [isVisible, icon, exportPx, options.roughness]
   );
 
   const frame = React.useMemo(
@@ -127,6 +142,7 @@ const IconCardImpl: React.FC<IconCardProps> = ({
 
   return (
     <div
+      ref={cardRef}
       className={`icon-card ${isSelected ? 'selected' : ''} ${copied ? 'copied-flash' : ''}`}
       onClick={activate}
       onKeyDown={e => {
@@ -178,7 +194,7 @@ const IconCardImpl: React.FC<IconCardProps> = ({
         }}
       >
         <div style={{ width: `${previewPx}px`, height: `${previewPx}px` }}>
-          <ExcalidrawPreview elements={elements} label={icon.title} frame={frame} />
+          {elements && <ExcalidrawPreview elements={elements} label={icon.title} frame={frame} />}
         </div>
 
         {options.showLabel && (
