@@ -900,10 +900,19 @@
   display: none;
 }
 
+.sidebar-summary-tag {
+  margin-left: 0.1rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--gcp-blue);
+  background: rgba(66, 133, 244, 0.12);
+  border-radius: var(--radius-full);
+}
+
 .sidebar-body {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
 }
 
 @media (max-width: 1024px) {
@@ -921,15 +930,19 @@
     align-items: center;
     gap: 0.5rem;
     width: 100%;
-    padding: 0.85rem 1rem;
+    padding: 0.8rem 0.95rem;
     border: none;
     border-radius: var(--radius-lg);
     background: transparent;
     color: var(--text-primary);
     font-family: inherit;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
+  }
+
+  .sidebar-summary svg:first-child {
+    color: var(--gcp-blue);
   }
 
   .sidebar-summary-chevron {
@@ -944,11 +957,15 @@
 
   .sidebar-body {
     display: none;
-    padding: 0 1rem 1.25rem;
   }
 
   .sidebar.is-open .sidebar-body {
     display: flex;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .sidebar.is-open .opt-section:first-child {
+    border-top: none;
   }
 
   /* Icons before options: the grid is why anyone opened the page. */

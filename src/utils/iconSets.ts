@@ -1,11 +1,15 @@
 import type {
+  ExcalidrawOptions,
   IconAsset,
   IconCategory,
   IconCategoryRule,
   IconSet,
   IconSetManifest,
   IconSetSummary,
+  ResolvedPreset,
 } from '../types';
+import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from './defaultOptions';
+import { sanitizeOptionsPatch } from './optionsSchema';
 import { IMPLICIT_CATEGORY, categorizeByRules, expandSynonyms, formatTitle } from './categorizer';
 // eslint-disable-next-line import/no-unresolved -- supplied by vite/icon-sets.ts
 import { ICON_SETS } from 'virtual:icon-sets';
@@ -85,7 +89,7 @@ function discover(): Map<string, Discovered> {
   );
 
   const loose = Object.keys(LOOSE_SVGS).length;
-  if (loose > 0 && import.meta.env.DEV) {
+  if (loose > 0 && import.meta.env?.DEV) {
     console.warn(
       `[iconSets] ${loose} SVG file(s) sit directly in svg/ and will not appear on the site. ` +
         `Icons must live in a set folder, e.g. svg/my-set/icon.svg`
@@ -106,6 +110,95 @@ function resolveRules(manifest: IconSetManifest): IconCategoryRule[] {
 }
 
 /**
+ * Presets a set gets when it declares none.
+ *
+ * Expressed as patches over that set's own defaults, so a bare folder still
+ * offers something useful without inheriting another set's colours.
+ */
+const FALLBACK_PRESETS: { id: string; label: string; hint: string; options: Partial<ExcalidrawOptions> }[] = [
+  {
+    id: 'sketch',
+    label: 'Sketch',
+    hint: 'Hand-drawn frame',
+    options: { showCard: true, cardStyle: 'sketch-box', roughness: 2, cardStrokeColor: '#4285f4' },
+  },
+  {
+    id: 'dark-card',
+    label: 'Dark card',
+    hint: 'Soft dark panel',
+    options: {
+      showCard: true,
+      cardStyle: 'soft-card',
+      roughness: 0,
+      cardBgColor: 'rgba(30, 41, 59, 0.8)',
+      cardStrokeColor: '#4285f4',
+      labelColor: '#f8fafc',
+    },
+  },
+  {
+    id: 'light-card',
+    label: 'Light card',
+    hint: 'Clean white panel',
+    options: {
+      showCard: true,
+      cardStyle: 'soft-card',
+      roughness: 0,
+      cardBgColor: '#ffffff',
+      cardStrokeColor: '#cbd5e1',
+      labelColor: '#0f172a',
+    },
+  },
+];
+
+function resolveDefaults(setId: string, manifest: IconSetManifest): ExcalidrawOptions {
+  return normaliseOptions({
+    ...DEFAULT_EXCALIDRAW_OPTIONS,
+    ...sanitizeOptionsPatch(manifest.defaults, `${setId}/set.json defaults`),
+  });
+}
+
+/**
+ * Every preset the sidebar will show, fully resolved.
+ *
+ * A "Default" entry is always present and always equal to the set's own
+ * defaults, so there is a guaranteed way back from any experiment. An author
+ * who declares their own `default` preset replaces the label and hint but not
+ * that guarantee.
+ */
+function resolvePresets(
+  setId: string,
+  manifest: IconSetManifest,
+  defaults: ExcalidrawOptions
+): ResolvedPreset[] {
+  const declared = manifest.presets?.filter(p => p?.id && p?.label) ?? [];
+  const source = declared.length > 0 ? declared : FALLBACK_PRESETS;
+
+  const resolved = source
+    .filter(p => p.id !== 'default')
+    .map(preset => ({
+      id: preset.id,
+      label: preset.label,
+      hint: preset.hint,
+      options: normaliseOptions({
+        ...defaults,
+        ...sanitizeOptionsPatch(preset.options, `${setId}/set.json preset "${preset.id}"`),
+      }),
+    }));
+
+  const authored = source.find(p => p.id === 'default');
+
+  return [
+    {
+      id: 'default',
+      label: authored?.label ?? 'Default',
+      hint: authored?.hint ?? 'How this set is meant to look',
+      options: defaults,
+    },
+    ...resolved,
+  ];
+}
+
+/**
  * Summaries are cached because `previews` percent-encodes up to eight files
  * per set, and callers treat this as a cheap getter they can call in render.
  */
@@ -116,6 +209,7 @@ function summarise(entry: Discovered): IconSetSummary {
   if (cached) return cached;
 
   const { manifest } = entry;
+  const defaults = resolveDefaults(entry.id, manifest);
 
   const summary: IconSetSummary = {
     id: entry.id,
@@ -127,6 +221,8 @@ function summarise(entry: Discovered): IconSetSummary {
     accent: manifest.accent || DEFAULT_ACCENT,
     order: typeof manifest.order === 'number' ? manifest.order : UNORDERED,
     count: entry.files.length,
+    defaults,
+    presets: resolvePresets(entry.id, manifest, defaults),
     categories: resolveCategories(manifest),
     hasManifest: entry.hasManifest,
     previews: entry.files.slice(0, 8).map(f => toDataUrl(f.svg)),
@@ -145,13 +241,16 @@ export function listIconSets(): IconSetSummary[] {
   return Array.from(discover().values()).map(summarise).sort(byOrderThenName);
 }
 
+/**
+ * One set's metadata without materialising its icons.
+ *
+ * The set page needs the declared defaults and presets on its first render,
+ * before the icons themselves have been built, because they seed the persisted
+ * styling state.
+ */
 export function findIconSetSummary(setId: string): IconSetSummary | null {
   const entry = discover().get(setId);
   return entry ? summarise(entry) : null;
-}
-
-export function iconSetExists(setId: string): boolean {
-  return discover().has(setId);
 }
 
 /**

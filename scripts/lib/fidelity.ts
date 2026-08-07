@@ -16,7 +16,7 @@
  */
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
-import { Box, Raster, inkBox, rasterise, rasteriseInkNormalised, setViewBox } from './raster';
+import { Box, Raster, inkBox, rasterise, setViewBox } from './raster';
 
 export interface ShapeReport {
   /** Mismatched pixels / union ink pixels. 0 is identical. */
@@ -45,24 +45,6 @@ const WHITE_CUTOFF = 250;
 
 function isInked(data: Uint8Array, i: number): boolean {
   return data[i] < WHITE_CUTOFF || data[i + 1] < WHITE_CUTOFF || data[i + 2] < WHITE_CUTOFF;
-}
-
-/**
- * Pixel-diffs two documents, each normalised onto its own ink box.
- *
- * The score is normalised by the *union* of inked pixels rather than by total
- * canvas area. Normalising by area would make every score look excellent
- * simply because icons are mostly empty space.
- */
-export function compareShape(
-  sourceSvg: string,
-  sceneSvg: string,
-  size = 384,
-  knownSourceInk?: Box | null
-): ShapeReport | null {
-  const source = rasteriseInkNormalised(sourceSvg, size, knownSourceInk);
-  const scene = rasteriseInkNormalised(sceneSvg, size);
-  return diffRasters(source, scene, size);
 }
 
 /**
@@ -260,12 +242,6 @@ export function comparePlacement(expected: Box, actual: Box | null): PlacementRe
     dWidth,
     dHeight,
   };
-}
-
-export function encodePng(raster: Raster): Buffer {
-  const png = new PNG({ width: raster.width, height: raster.height });
-  png.data = Buffer.from(raster.data);
-  return PNG.sync.write(png);
 }
 
 export { inkBox };

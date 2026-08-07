@@ -114,7 +114,9 @@ const SHOTS: Shot[] = [
     height: 700,
     prepare: async page => {
       await waitForGrid(page);
-      await page.getByRole('button', { name: 'Virgil Sketch' }).click();
+      // Scoped to the preset row: "Sketch" is also a card style and a
+      // roughness level once the frame section expands.
+      await page.locator('.preset-btn', { hasText: 'Sketch' }).click();
       await page.waitForTimeout(1200);
     },
   },

@@ -45,7 +45,7 @@ export const IconGrid: React.FC<IconGridProps> = ({
           color: 'var(--text-secondary)',
         }}
       >
-        <SearchX className="w-12 h-12 text-slate-500" />
+        <SearchX size={44} aria-hidden="true" />
         <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
           No GCP icons match your filter
         </h3>

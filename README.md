@@ -124,9 +124,33 @@ optional:
   // Per-file corrections, keyed by filename without the extension.
   "overrides": {
     "weird-file-name": { "title": "Cloud Run", "category": "compute" }
-  }
+  },
+
+  // How the set opens. A patch over the app defaults - state only what
+  // differs. Every field of the styling sidebar is available.
+  "defaults": {
+    "labelFontFamily": 1,        // 1 Excalifont, 2 Helvetica, 3 Comic Shanns,
+    "labelFontSize": 18,         //   4 Lilita One, 5 Nunito
+    "labelColor": "#4285f4",
+    "iconScale": 1
+  },
+
+  // The preset buttons. Each `options` is a patch over `defaults`, so a
+  // preset states the two or three things that make it interesting. A
+  // "Default" button equal to `defaults` is always added.
+  "presets": [
+    { "id": "sketch", "label": "Sketch", "hint": "Hand-drawn frame",
+      "options": { "showCard": true, "cardStyle": "sketch-box", "roughness": 2 } },
+    { "id": "bare", "label": "Bare", "hint": "Just the mark",
+      "options": { "showLabel": false, "showCard": false } }
+  ]
 }
 ```
+
+Unrecognised keys and out-of-range values in `defaults` and `presets` are
+dropped with a console warning rather than merged — a value none of the
+sidebar controls can represent would leave the UI unable to show or undo it.
+Styling is remembered per set, so each one keeps the look you last gave it.
 
 `svg/legacy-gcp/set.json` is a complete worked example.
 

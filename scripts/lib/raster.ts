@@ -135,25 +135,3 @@ export function inkBox(svg: string, sampleWidth = 512, alphaThreshold = 8): Box 
   };
 }
 
-/**
- * Square frame centred on `box`, expanded by `padRatio` of the longer side.
- * A square frame keeps both sides of a comparison at identical pixel
- * dimensions while still letting an aspect-ratio error show up as mismatched
- * pixels rather than being normalised away.
- */
-export function squareFrame(box: Box, padRatio = 0.02): Box {
-  const side = Math.max(box.width, box.height) * (1 + padRatio * 2);
-  const cx = box.x + box.width / 2;
-  const cy = box.y + box.height / 2;
-  return { x: cx - side / 2, y: cy - side / 2, width: side, height: side };
-}
-
-/**
- * Renders a document framed on its own ink, at exactly `size` x `size`.
- * `knownInk` lets a caller reuse an ink box it already paid for.
- */
-export function rasteriseInkNormalised(svg: string, size: number, knownInk?: Box | null): Raster | null {
-  const ink = knownInk ?? inkBox(svg);
-  if (!ink) return null;
-  return rasterise(setViewBox(svg, squareFrame(ink)), size, 'white');
-}

@@ -6,8 +6,82 @@
   "license": "Google Cloud Platform icons, redistributed under Google's terms of use",
   "accent": "#A142F4",
   "order": 30,
-  "tags": ["gcp", "google cloud"],
-
+  "tags": [
+    "gcp",
+    "google cloud"
+  ],
+  "_styling_note": "The 2026 marks are drawn with more internal detail than the legacy set, so they hold up at a slightly larger default size. Label colour follows the set accent rather than product blue, which keeps the two Google Cloud sets visually separable when icons from both land on one canvas.",
+  "defaults": {
+    "showLabel": true,
+    "labelFontFamily": 1,
+    "labelFontSize": 18,
+    "labelColor": "#a142f4",
+    "iconScale": 1.25
+  },
+  "presets": [
+    {
+      "id": "default",
+      "label": "Default",
+      "hint": "Excalifont 18px, 120px marks"
+    },
+    {
+      "id": "sketch",
+      "label": "Sketch",
+      "hint": "Hand-drawn frame",
+      "options": {
+        "showCard": true,
+        "cardStyle": "sketch-box",
+        "roughness": 2,
+        "cardBgColor": "transparent",
+        "cardStrokeColor": "#a142f4",
+        "padding": 12
+      }
+    },
+    {
+      "id": "dark-card",
+      "label": "Dark card",
+      "hint": "Soft dark panel",
+      "options": {
+        "showCard": true,
+        "cardStyle": "soft-card",
+        "roughness": 0,
+        "cardBgColor": "rgba(30, 41, 59, 0.8)",
+        "cardStrokeColor": "#a142f4",
+        "labelColor": "#f8fafc",
+        "padding": 12
+      }
+    },
+    {
+      "id": "outline",
+      "label": "Outline",
+      "hint": "Unfilled frame, keeps the canvas showing through",
+      "options": {
+        "showCard": true,
+        "cardStyle": "outline",
+        "roughness": 0,
+        "cardStrokeColor": "#a142f4",
+        "padding": 12
+      }
+    },
+    {
+      "id": "compact",
+      "label": "Compact",
+      "hint": "Smaller marks for a dense diagram",
+      "options": {
+        "iconScale": 0.75,
+        "labelFontSize": 12
+      }
+    },
+    {
+      "id": "bare",
+      "label": "Bare",
+      "hint": "Just the mark",
+      "options": {
+        "showLabel": false,
+        "showCard": false
+      }
+    }
+  ],
   "categories": [
     {
       "id": "ai-ml",
@@ -40,49 +114,161 @@
       "color": "#BDC1C6"
     }
   ],
-
   "_rules_note": "Ordered and first-wins, substring-matched against the filename. Written as explicit product names rather than short keywords: with only 19 files a clever pattern buys nothing and 'ai' alone is one new filename away from swallowing something it should not. 'general' is last and therefore the fallback; it is currently empty, and the chip bar hides empty buckets.",
-
   "rules": [
     {
       "category": "ai-ml",
-      "match": ["ai-hypercomputer", "vertex"]
+      "match": [
+        "ai-hypercomputer",
+        "vertex"
+      ]
     },
     {
       "category": "security",
-      "match": ["mandiant", "security", "threat"]
+      "match": [
+        "mandiant",
+        "security",
+        "threat"
+      ]
     },
     {
       "category": "data",
-      "match": ["alloydb", "bigquery", "spanner", "sql", "storage", "hyperdisk", "looker"]
+      "match": [
+        "alloydb",
+        "bigquery",
+        "spanner",
+        "sql",
+        "storage",
+        "hyperdisk",
+        "looker"
+      ]
     },
     {
       "category": "compute",
-      "match": ["anthos", "apigee", "cloud-run", "compute", "distributed", "gke"]
+      "match": [
+        "anthos",
+        "apigee",
+        "cloud-run",
+        "compute",
+        "distributed",
+        "gke"
+      ]
     }
   ],
-
   "_synonyms_note": "Bidirectional search aliases: any term in a group finds any other. Product marks are the case where this matters most, because the short form is what people actually type.",
-
   "synonyms": [
-    ["gke", "kubernetes", "k8s", "kubernetes engine", "containers"],
-    ["gce", "compute engine", "vm", "virtual machine"],
-    ["gcs", "cloud storage", "bucket", "object storage"],
-    ["bq", "bigquery", "data warehouse", "analytics"],
-    ["cloud sql", "sql", "mysql", "postgres", "database"],
-    ["alloydb", "postgresql", "postgres"],
-    ["cloud spanner", "spanner", "distributed sql"],
-    ["cloud run", "serverless", "containers", "faas"],
-    ["apigee", "api", "api gateway", "api management"],
-    ["anthos", "hybrid", "multicloud"],
-    ["distributed cloud", "gdc", "edge", "on prem"],
-    ["hyperdisk", "disk", "block storage"],
-    ["looker", "bi", "business intelligence", "dashboards"],
-    ["vertex ai", "vertex", "ml", "machine learning", "model garden"],
-    ["ai hypercomputer", "tpu", "gpu", "accelerator", "training"],
-    ["mandiant", "incident response", "forensics"],
-    ["security command center", "scc", "posture", "cspm"],
-    ["security operations", "secops", "siem", "soar"],
-    ["threat intelligence", "cti", "ioc", "threat feed"]
+    [
+      "gke",
+      "kubernetes",
+      "k8s",
+      "kubernetes engine",
+      "containers"
+    ],
+    [
+      "gce",
+      "compute engine",
+      "vm",
+      "virtual machine"
+    ],
+    [
+      "gcs",
+      "cloud storage",
+      "bucket",
+      "object storage"
+    ],
+    [
+      "bq",
+      "bigquery",
+      "data warehouse",
+      "analytics"
+    ],
+    [
+      "cloud sql",
+      "sql",
+      "mysql",
+      "postgres",
+      "database"
+    ],
+    [
+      "alloydb",
+      "postgresql",
+      "postgres"
+    ],
+    [
+      "cloud spanner",
+      "spanner",
+      "distributed sql"
+    ],
+    [
+      "cloud run",
+      "serverless",
+      "containers",
+      "faas"
+    ],
+    [
+      "apigee",
+      "api",
+      "api gateway",
+      "api management"
+    ],
+    [
+      "anthos",
+      "hybrid",
+      "multicloud"
+    ],
+    [
+      "distributed cloud",
+      "gdc",
+      "edge",
+      "on prem"
+    ],
+    [
+      "hyperdisk",
+      "disk",
+      "block storage"
+    ],
+    [
+      "looker",
+      "bi",
+      "business intelligence",
+      "dashboards"
+    ],
+    [
+      "vertex ai",
+      "vertex",
+      "ml",
+      "machine learning",
+      "model garden"
+    ],
+    [
+      "ai hypercomputer",
+      "tpu",
+      "gpu",
+      "accelerator",
+      "training"
+    ],
+    [
+      "mandiant",
+      "incident response",
+      "forensics"
+    ],
+    [
+      "security command center",
+      "scc",
+      "posture",
+      "cspm"
+    ],
+    [
+      "security operations",
+      "secops",
+      "siem",
+      "soar"
+    ],
+    [
+      "threat intelligence",
+      "cti",
+      "ioc",
+      "threat feed"
+    ]
   ]
 }

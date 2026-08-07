@@ -58,12 +58,6 @@ export const asStringArray = (raw: unknown): string[] | null =>
 export const asBoolean = (raw: unknown): boolean | null =>
   typeof raw === 'boolean' ? raw : null;
 
-/** Accepts only values present in `allowed`, so a removed option cannot stick. */
-export function asOneOf<T extends string>(allowed: readonly T[]) {
-  return (raw: unknown): T | null =>
-    typeof raw === 'string' && (allowed as readonly string[]).includes(raw) ? (raw as T) : null;
-}
-
 /**
  * Merges a stored object over defaults, keeping only keys the defaults define
  * and only when the stored value has the same primitive type. A field added or

@@ -1,12 +1,11 @@
 import { useState, useMemo, useEffect, useCallback, useDeferredValue } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { ExcalidrawOptions, IconSet } from '../types';
-import { loadIconSet } from '../utils/iconSets';
-import { DEFAULT_EXCALIDRAW_OPTIONS } from '../utils/defaultOptions';
+import { findIconSetSummary, loadIconSet } from '../utils/iconSets';
+import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from '../utils/defaultOptions';
 import { IconsToolbar } from '../components/IconsToolbar';
 import { SidebarOptions } from '../components/SidebarOptions';
 import { IconGrid } from '../components/IconGrid';
-import { LivePreviewModal } from '../components/LivePreviewModal';
 import { Toast } from '../components/Toast';
 import { Link } from '../router';
 import {
@@ -22,19 +21,27 @@ interface IconsPageProps {
 }
 
 export function IconsPage({ setId }: IconsPageProps) {
+  /**
+   * Available synchronously, unlike the icons themselves.
+   *
+   * The styling defaults have to be known on the very first render because
+   * they seed `usePersistentState`, and waiting for the set to materialise
+   * would mean opening with the wrong look and then snapping.
+   */
+  const summary = useMemo(() => findIconSetSummary(setId), [setId]);
+
   const [set, setSet] = useState<IconSet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   // Everything the user has set up is restored on reload. Losing a styled
   // selection to an accidental refresh is not acceptable.
   //
-  // Search, category and selection are namespaced per set: they describe a
-  // specific corpus, and leaking a GCP selection into another pack would show
-  // a count that matches nothing on screen. Style options are deliberately
-  // *not* namespaced - a look you have dialled in should follow you between
-  // sets.
+  // All of it is namespaced per set, styling included. Sets now declare their
+  // own defaults and presets - flat product marks and hand-drawn category
+  // badges do not want the same label font - and a single shared styling key
+  // would mean the first set opened won, and every other set's declared
+  // defaults could never apply.
   const [searchQuery, setSearchQuery] = usePersistentState(`icons.${setId}.search`, '', asString);
   const [activeCategory, setActiveCategory] = usePersistentState(
     `icons.${setId}.category`,
@@ -51,12 +58,17 @@ export function IconsPage({ setId }: IconsPageProps) {
     false,
     asBoolean
   );
+  const setDefaults = summary?.defaults ?? DEFAULT_EXCALIDRAW_OPTIONS;
+
   const [options, setOptions] = usePersistentState<ExcalidrawOptions>(
-    'icons.options',
-    DEFAULT_EXCALIDRAW_OPTIONS,
-    asPartialOf(DEFAULT_EXCALIDRAW_OPTIONS as unknown as Record<string, unknown>) as (
-      raw: unknown
-    ) => ExcalidrawOptions | null
+    `icons.${setId}.options`,
+    setDefaults,
+    raw => {
+      const merged = asPartialOf(setDefaults as unknown as Record<string, unknown>)(
+        raw
+      ) as ExcalidrawOptions | null;
+      return merged && normaliseOptions(merged);
+    }
   );
 
   // Materialising a set runs SVGO over every file in it, so it happens after
@@ -133,12 +145,6 @@ export function IconsPage({ setId }: IconsPageProps) {
   const gridOptions = useDeferredValue(options);
   const isRestyling = gridOptions !== options;
 
-  const previewIcons = useMemo(() => {
-    if (selectedIds.length === 0) return filteredIcons;
-    const selected = new Set(selectedIds);
-    return icons.filter(i => selected.has(i.id));
-  }, [icons, filteredIcons, selectedIds]);
-
   if (!isLoading && !set) {
     return (
       <main className="page page-doc">
@@ -162,7 +168,11 @@ export function IconsPage({ setId }: IconsPageProps) {
   return (
     <>
       <div className="main-layout">
-        <SidebarOptions options={options} setOptions={setOptions} />
+        <SidebarOptions
+          options={options}
+          setOptions={setOptions}
+          presets={summary?.presets ?? []}
+        />
 
         <main className="content-area">
           <nav className="set-breadcrumb">
@@ -190,7 +200,6 @@ export function IconsPage({ setId }: IconsPageProps) {
             filteredIcons={filteredIcons}
             allIcons={icons}
             options={options}
-            onOpenPreview={() => setIsPreviewOpen(true)}
             activeCategory={activeCategory}
             setActiveCategory={setActiveCategory}
             categoryCounts={categoryCounts}
@@ -220,19 +229,6 @@ export function IconsPage({ setId }: IconsPageProps) {
           )}
         </main>
       </div>
-
-      {/* Mounted only while open: its memos run `parseSvgToExcalidrawElements`
-          and stringify the whole clipboard payload, and the early `return null`
-          sits after the hooks, so a closed modal still paid for every keystroke
-          and every slider step. */}
-      {isPreviewOpen && (
-        <LivePreviewModal
-          isOpen={isPreviewOpen}
-          onClose={() => setIsPreviewOpen(false)}
-          icons={previewIcons}
-          options={options}
-        />
-      )}
 
       <Toast message={toast} onDismiss={() => setToast(null)} />
     </>

@@ -63,6 +63,17 @@ Two properties of that module are load-bearing:
   first-wins, so reordering or merging the lists silently reclassifies icons.
   There is a check for this: the six-bucket distribution is 51/40/35/34/29/27.
 
+Sets also declare how they open (`defaults`) and their preset buttons
+(`presets`), both as patches so an author states only what differs. Two
+consequences worth knowing:
+
+- **Styling state is per set.** A single shared key would mean whichever set
+  you opened first won, and no other set's declared defaults could ever apply.
+- **Manifest option patches are validated, not trusted.** `set.json` is
+  hand-authored and untypechecked, so `optionsSchema.ts` drops unknown keys and
+  out-of-range values with a warning. Silently accepting `labelFontFamily: 9`
+  would put the UI in a state none of its controls can represent or undo.
+
 Search aliases are declared as bidirectional `synonyms` groups and expanded
 into each icon's tag list at load time, which is why `vpc` and
 `virtual private cloud` find the same icon without either being canonical.

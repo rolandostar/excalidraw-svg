@@ -1688,15 +1688,28 @@ export function createExcalidrawItem(
   const labelY = baseY + layout.labelDy;
 
   // 1. Frame Card
+  //
+  // Three styles, each differing in something Excalidraw can actually render:
+  //
+  //   soft-card   rounded corners, hairline stroke, filled
+  //   sketch-box  square corners, hairline stroke, hachure fill
+  //   outline     square corners, 2px stroke, NOT filled
+  //
+  // `outline` used to be filled, which made it a soft card with a thicker edge
+  // rather than an outline. A fourth `badge` style used to exist and emitted a
+  // rectangle byte-identical to `soft-card` - see the note on `CardStyle`.
   if (options.showCard && options.cardStyle !== 'none') {
+    const outlined = options.cardStyle === 'outline';
+    const sketched = options.cardStyle === 'sketch-box';
+
     elements.push(createBaseElement('rectangle', baseX, baseY, cardWidth, cardHeight, groupId, {
       index: 'a0',
       strokeColor: options.cardStrokeColor,
-      backgroundColor: options.cardBgColor,
-      fillStyle: options.cardStyle === 'sketch-box' ? 'hachure' : 'solid',
-      strokeWidth: options.cardStyle === 'outline' ? 2 : 1,
+      backgroundColor: outlined ? 'transparent' : options.cardBgColor,
+      fillStyle: sketched ? 'hachure' : 'solid',
+      strokeWidth: outlined ? 2 : 1,
       roughness: options.roughness,
-      roundness: options.cardStyle === 'soft-card' || options.cardStyle === 'badge' ? { type: 3 } : null,
+      roundness: outlined || sketched ? null : { type: 3 },
     }));
   }
 

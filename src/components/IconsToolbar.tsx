@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Copy, Download, CheckSquare, Square, Sparkles, X } from 'lucide-react';
+import { Search, Copy, Download, CheckSquare, Square, X } from 'lucide-react';
 import { IconAsset, IconCategory, ExcalidrawOptions } from '../types';
 import {
   buildExcalidrawLibraryPackage,
@@ -17,7 +17,6 @@ interface IconsToolbarProps {
   filteredIcons: IconAsset[];
   allIcons: IconAsset[];
   options: ExcalidrawOptions;
-  onOpenPreview: () => void;
   activeCategory: string;
   setActiveCategory: (id: string) => void;
   categoryCounts: Record<string, number>;
@@ -53,7 +52,6 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
   filteredIcons,
   allIcons,
   options,
-  onOpenPreview,
   activeCategory,
   setActiveCategory,
   categoryCounts,
@@ -174,11 +172,6 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
               {selectedIds.length > 0 ? `${selectedIds.length} selected` : 'Select all'}
             </button>
           )}
-
-          <button className="btn btn-secondary btn-sm" onClick={onOpenPreview}>
-            <Sparkles size={15} />
-            Inspect
-          </button>
 
           <button className="btn btn-secondary btn-sm" onClick={handleCopy}>
             <Copy size={15} />

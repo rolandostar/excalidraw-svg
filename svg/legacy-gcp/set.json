@@ -6,10 +6,85 @@
   "license": "Google Cloud Platform icons, redistributed under Google's terms of use",
   "accent": "#4285F4",
   "order": 10,
-  "tags": ["gcp", "google cloud"],
-
+  "tags": [
+    "gcp",
+    "google cloud"
+  ],
+  "_styling_note": "How this set opens, and the preset buttons in the styling sidebar. Both are patches over the app-wide defaults, so only the fields that differ need stating. Flat two-tone product marks read best with the hand-drawn label font they will sit next to on a canvas, in the blue that dominates the artwork.",
+  "defaults": {
+    "showLabel": true,
+    "labelFontFamily": 1,
+    "labelFontSize": 18,
+    "labelColor": "#4285f4",
+    "iconScale": 1
+  },
+  "presets": [
+    {
+      "id": "default",
+      "label": "Default",
+      "hint": "Excalifont 18px in Google blue, no frame"
+    },
+    {
+      "id": "sketch",
+      "label": "Sketch",
+      "hint": "Hand-drawn frame, matches a sketched diagram",
+      "options": {
+        "showCard": true,
+        "cardStyle": "sketch-box",
+        "roughness": 2,
+        "cardBgColor": "transparent",
+        "cardStrokeColor": "#4285f4",
+        "padding": 12
+      }
+    },
+    {
+      "id": "dark-card",
+      "label": "Dark card",
+      "hint": "Soft dark panel for dark canvases",
+      "options": {
+        "showCard": true,
+        "cardStyle": "soft-card",
+        "roughness": 0,
+        "cardBgColor": "rgba(30, 41, 59, 0.8)",
+        "cardStrokeColor": "#4285f4",
+        "labelColor": "#f8fafc",
+        "padding": 12
+      }
+    },
+    {
+      "id": "light-card",
+      "label": "Light card",
+      "hint": "Clean white panel for printed diagrams",
+      "options": {
+        "showCard": true,
+        "cardStyle": "soft-card",
+        "roughness": 0,
+        "cardBgColor": "#ffffff",
+        "cardStrokeColor": "#cbd5e1",
+        "labelColor": "#1e293b",
+        "padding": 12
+      }
+    },
+    {
+      "id": "bare",
+      "label": "Bare",
+      "hint": "Just the mark, no label or frame",
+      "options": {
+        "showLabel": false,
+        "showCard": false
+      }
+    },
+    {
+      "id": "large",
+      "label": "Large",
+      "hint": "Double size for a title or a legend",
+      "options": {
+        "iconScale": 2,
+        "labelFontSize": 24
+      }
+    }
+  ],
   "_categories_note": "Six display buckets. Ten was too many to scan: the chip bar overflowed at every viewport width and four buckets held under twenty icons each, so the filter mostly told you which of ten near-synonymous labels Google had picked. The ten fine-grained matchers still exist below in `rules` - merging their keyword lists would change first-wins precedence and silently reclassify icons that are currently correct.",
-
   "categories": [
     {
       "id": "ai-ml",
@@ -48,113 +123,315 @@
       "color": "#BDC1C6"
     }
   ],
-
   "_rules_note": "Ordered, first-wins, tested as substrings against the lowercased filename. Order is load-bearing: 'access' would swallow half the networking bucket if it ran earlier, and 'api' must run after the AI and compute buckets. Anything unmatched falls through to the category with no rules, i.e. 'general'.",
-
   "rules": [
     {
       "category": "ai-ml",
       "match": [
-        "ai", "automl", "dialogflow", "speech", "translation", "vision",
-        "natural-language", "agent", "nlp", "tensorflow", "datalab",
-        "inference", "recommendations", "retail-api"
+        "ai",
+        "automl",
+        "dialogflow",
+        "speech",
+        "translation",
+        "vision",
+        "natural-language",
+        "agent",
+        "nlp",
+        "tensorflow",
+        "datalab",
+        "inference",
+        "recommendations",
+        "retail-api"
       ]
     },
     {
       "category": "compute",
       "match": [
-        "compute", "kubernetes", "gke", "anthos", "app-engine", "cloud-run",
-        "bare-metal", "vmware", "container", "gpu", "tpu", "kuberun",
-        "batch", "quantum"
+        "compute",
+        "kubernetes",
+        "gke",
+        "anthos",
+        "app-engine",
+        "cloud-run",
+        "bare-metal",
+        "vmware",
+        "container",
+        "gpu",
+        "tpu",
+        "kuberun",
+        "batch",
+        "quantum"
       ]
     },
     {
       "category": "data",
       "match": [
-        "storage", "sql", "spanner", "bigtable", "datastore", "firestore",
-        "memorystore", "filestore", "disk", "database", "ssd"
+        "storage",
+        "sql",
+        "spanner",
+        "bigtable",
+        "datastore",
+        "firestore",
+        "memorystore",
+        "filestore",
+        "disk",
+        "database",
+        "ssd"
       ]
     },
     {
       "category": "data",
       "match": [
-        "bigquery", "dataflow", "dataproc", "dataprep", "dataplex", "datapol",
-        "looker", "pubsub", "data-studio", "analytics", "data-catalog",
-        "data-loss", "datashare", "data-transfer", "data-qna", "insights"
+        "bigquery",
+        "dataflow",
+        "dataproc",
+        "dataprep",
+        "dataplex",
+        "datapol",
+        "looker",
+        "pubsub",
+        "data-studio",
+        "analytics",
+        "data-catalog",
+        "data-loss",
+        "datashare",
+        "data-transfer",
+        "data-qna",
+        "insights"
       ]
     },
     {
       "category": "network-security",
       "match": [
-        "dns", "cdn", "load-balancing", "nat", "vpn", "vpc",
-        "virtual-private", "interconnect", "router", "routes", "network",
-        "connectivity", "traffic", "firewall", "ip-addresses"
+        "dns",
+        "cdn",
+        "load-balancing",
+        "nat",
+        "vpn",
+        "vpc",
+        "virtual-private",
+        "interconnect",
+        "router",
+        "routes",
+        "network",
+        "connectivity",
+        "traffic",
+        "firewall",
+        "ip-addresses"
       ]
     },
     {
       "category": "network-security",
       "match": [
-        "identity", "iam", "security", "secret", "armor", "key", "kms",
-        "beyondcorp", "binary-authorization", "certificate", "ekm", "hsm",
-        "ids", "phishing", "risk", "assured", "access", "permissions", "iap"
+        "identity",
+        "iam",
+        "security",
+        "secret",
+        "armor",
+        "key",
+        "kms",
+        "beyondcorp",
+        "binary-authorization",
+        "certificate",
+        "ekm",
+        "hsm",
+        "ids",
+        "phishing",
+        "risk",
+        "assured",
+        "access",
+        "permissions",
+        "iap"
       ]
     },
     {
       "category": "compute",
       "match": [
-        "apigee", "api", "gateway", "connector", "eventarc", "workflow",
-        "tasks", "scheduler", "composer", "functions", "endpoints"
+        "apigee",
+        "api",
+        "gateway",
+        "connector",
+        "eventarc",
+        "workflow",
+        "tasks",
+        "scheduler",
+        "composer",
+        "functions",
+        "endpoints"
       ]
     },
     {
       "category": "operations",
       "match": [
-        "logging", "monitoring", "ops", "stackdriver", "trace", "debugger",
-        "profiler", "error-reporting", "os-", "billing", "asset", "audit",
-        "quotas", "policy", "dashboard", "gce-systems"
+        "logging",
+        "monitoring",
+        "ops",
+        "stackdriver",
+        "trace",
+        "debugger",
+        "profiler",
+        "error-reporting",
+        "os-",
+        "billing",
+        "asset",
+        "audit",
+        "quotas",
+        "policy",
+        "dashboard",
+        "gce-systems"
       ]
     },
     {
       "category": "operations",
       "match": [
-        "build", "code", "deploy", "registry", "shell", "powershell",
+        "build",
+        "code",
+        "deploy",
+        "registry",
+        "shell",
+        "powershell",
         "release-notes"
       ]
     }
   ],
-
   "_synonyms_note": "Bidirectional search aliases: any term in a group finds any other, so the Virtual Private Cloud icon answers to 'vpc' and 'vpc' answers to the full name. Matched whole-word against the normalised filename and title, which is why 'ids' does not fire on 'identity'.",
-
   "synonyms": [
-    ["vpc", "virtual private cloud"],
-    ["gke", "kubernetes engine", "google kubernetes engine", "k8s"],
-    ["gce", "compute engine", "virtual machine", "vm"],
-    ["gcs", "cloud storage", "bucket"],
-    ["iam", "identity and access management"],
-    ["kms", "key management service"],
-    ["cdn", "content delivery network"],
-    ["dns", "domain name system"],
-    ["vpn", "virtual private network"],
-    ["nat", "network address translation"],
-    ["lb", "load balancing", "load balancer"],
-    ["pubsub", "pub sub", "publish subscribe", "message queue"],
-    ["bq", "bigquery", "big query", "data warehouse"],
-    ["gcf", "cloud functions", "serverless"],
-    ["gar", "artifact registry"],
-    ["gcr", "container registry"],
-    ["ai", "artificial intelligence", "ml", "machine learning"],
-    ["nlp", "natural language", "natural language api"],
-    ["ocr", "vision api"],
-    ["iap", "identity aware proxy"],
-    ["mig", "instance group", "managed instance group"],
-    ["tpu", "tensor processing unit"],
-    ["gpu", "graphics processing unit"],
-    ["ids", "intrusion detection"],
-    ["dlp", "data loss prevention"],
-    ["scc", "security command center"],
-    ["hsm", "hardware security module"],
-    ["ekm", "external key manager"],
-    ["iot", "internet of things"],
-    ["cicd", "ci cd", "cloud build", "continuous delivery"]
+    [
+      "vpc",
+      "virtual private cloud"
+    ],
+    [
+      "gke",
+      "kubernetes engine",
+      "google kubernetes engine",
+      "k8s"
+    ],
+    [
+      "gce",
+      "compute engine",
+      "virtual machine",
+      "vm"
+    ],
+    [
+      "gcs",
+      "cloud storage",
+      "bucket"
+    ],
+    [
+      "iam",
+      "identity and access management"
+    ],
+    [
+      "kms",
+      "key management service"
+    ],
+    [
+      "cdn",
+      "content delivery network"
+    ],
+    [
+      "dns",
+      "domain name system"
+    ],
+    [
+      "vpn",
+      "virtual private network"
+    ],
+    [
+      "nat",
+      "network address translation"
+    ],
+    [
+      "lb",
+      "load balancing",
+      "load balancer"
+    ],
+    [
+      "pubsub",
+      "pub sub",
+      "publish subscribe",
+      "message queue"
+    ],
+    [
+      "bq",
+      "bigquery",
+      "big query",
+      "data warehouse"
+    ],
+    [
+      "gcf",
+      "cloud functions",
+      "serverless"
+    ],
+    [
+      "gar",
+      "artifact registry"
+    ],
+    [
+      "gcr",
+      "container registry"
+    ],
+    [
+      "ai",
+      "artificial intelligence",
+      "ml",
+      "machine learning"
+    ],
+    [
+      "nlp",
+      "natural language",
+      "natural language api"
+    ],
+    [
+      "ocr",
+      "vision api"
+    ],
+    [
+      "iap",
+      "identity aware proxy"
+    ],
+    [
+      "mig",
+      "instance group",
+      "managed instance group"
+    ],
+    [
+      "tpu",
+      "tensor processing unit"
+    ],
+    [
+      "gpu",
+      "graphics processing unit"
+    ],
+    [
+      "ids",
+      "intrusion detection"
+    ],
+    [
+      "dlp",
+      "data loss prevention"
+    ],
+    [
+      "scc",
+      "security command center"
+    ],
+    [
+      "hsm",
+      "hardware security module"
+    ],
+    [
+      "ekm",
+      "external key manager"
+    ],
+    [
+      "iot",
+      "internet of things"
+    ],
+    [
+      "cicd",
+      "ci cd",
+      "cloud build",
+      "continuous delivery"
+    ]
   ]
 }

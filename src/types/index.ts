@@ -45,6 +45,30 @@ export interface IconCategoryRule {
  * manifest at all has to produce a working, browsable set - requiring
  * boilerplate before an icon shows up would defeat the point of the drop.
  */
+/**
+ * A named styling preset declared by a set.
+ *
+ * `options` is a *patch*: only the fields it changes need stating, and it is
+ * merged over the set's `defaults`, which are themselves merged over
+ * `DEFAULT_EXCALIDRAW_OPTIONS`. Authors therefore write the two or three
+ * things that make the preset interesting, not all twelve.
+ */
+export interface IconSetPreset {
+  id: string;
+  label: string;
+  /** Tooltip. One short line describing what the preset is for. */
+  hint?: string;
+  options: Partial<ExcalidrawOptions>;
+}
+
+/** A preset with every field filled in, ready to hand to `setOptions`. */
+export interface ResolvedPreset {
+  id: string;
+  label: string;
+  hint?: string;
+  options: ExcalidrawOptions;
+}
+
 export interface IconSetManifest {
   /** Display name. Defaults to a title-cased folder name. */
   name?: string;
@@ -59,6 +83,14 @@ export interface IconSetManifest {
   order?: number;
   /** Added to the search tags of every icon in the set. */
   tags?: string[];
+  /**
+   * The look this set opens with, as a patch over `DEFAULT_EXCALIDRAW_OPTIONS`.
+   * Flat product marks and hand-drawn category badges do not want the same
+   * label font, so the sensible starting point belongs with the set.
+   */
+  defaults?: Partial<ExcalidrawOptions>;
+  /** Preset buttons in the styling sidebar. Omit to get a generic built-in set. */
+  presets?: IconSetPreset[];
   categories?: IconCategory[];
   rules?: IconCategoryRule[];
   /**
@@ -81,6 +113,10 @@ export interface IconSetSummary {
   accent: string;
   order: number;
   count: number;
+  /** Fully resolved and validated; what the set opens with. */
+  defaults: ExcalidrawOptions;
+  /** Fully resolved and validated; always contains a "Default" entry. */
+  presets: ResolvedPreset[];
   categories: IconCategory[];
   /** Whether `set.json` was present, or everything was inferred. */
   hasManifest: boolean;
@@ -92,7 +128,14 @@ export interface IconSet extends IconSetSummary {
   icons: IconAsset[];
 }
 
-export type CardStyle = 'none' | 'soft-card' | 'sketch-box' | 'outline' | 'badge';
+/**
+ * `badge` was removed. Excalidraw's `getCornerRadius` returns
+ * `shorterSide * 0.25` for both PROPORTIONAL_RADIUS and ADAPTIVE_RADIUS while
+ * the shorter side is <= 128, and a default card is ~120 units - so `badge`
+ * and `soft-card` emitted byte-identical rectangles at every realistic size.
+ * A stored `'badge'` is normalised to `'soft-card'` on load.
+ */
+export type CardStyle = 'none' | 'soft-card' | 'sketch-box' | 'outline';
 export type LabelPosition = 'bottom' | 'right' | 'top' | 'inside';
 export type LabelFontFamily = 1 | 2 | 3 | 4 | 5; // 1: Excalifont, 2: Helvetica, 3: Comic Shanns, 4: Lilita One, 5: Nunito
 

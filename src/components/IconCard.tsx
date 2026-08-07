@@ -111,6 +111,34 @@ const IconCardImpl: React.FC<IconCardProps> = ({
     [exportPx]
   );
 
+  /**
+   * CSS approximation of the exported frame rectangle.
+   *
+   * Honest about its limits: CSS cannot draw Excalidraw's roughness or its
+   * hachure fill, so `sketch-box` is shown as a dashed border and the sketchy
+   * edge only appears once pasted. Everything CSS *can* represent - stroke
+   * width, corner radius, whether the panel is filled at all - now tracks the
+   * export, because the previous mock rendered `badge` and `soft-card`
+   * identically and drew a fill under `outline` that the export does not have.
+   */
+  const frameStyle = React.useMemo((): React.CSSProperties => {
+    if (!options.showCard || options.cardStyle === 'none') {
+      return { backgroundColor: 'transparent', borderWidth: 0, borderStyle: 'solid' };
+    }
+
+    const outlined = options.cardStyle === 'outline';
+
+    return {
+      backgroundColor: outlined ? 'transparent' : options.cardBgColor,
+      borderWidth: outlined ? '2px' : '1px',
+      borderStyle: options.cardStyle === 'sketch-box' ? 'dashed' : 'solid',
+      borderColor: options.cardStrokeColor,
+      // Excalidraw uses shorterSide * 0.25 below 128 units; 12px is the
+      // closest fixed value for a default-sized card.
+      borderRadius: options.cardStyle === 'soft-card' ? '12px' : '0px',
+    };
+  }, [options.showCard, options.cardStyle, options.cardBgColor, options.cardStrokeColor]);
+
   const handleCopySingle = async () => {
     const { jsonText } = buildExcalidrawClipboardData([icon], options);
     try {
@@ -176,14 +204,7 @@ const IconCardImpl: React.FC<IconCardProps> = ({
       <div
         className="icon-preview-box"
         style={{
-          backgroundColor: options.showCard ? options.cardBgColor : 'transparent',
-          borderWidth: options.showCard && options.cardStyle !== 'none' ? '1px' : '0px',
-          borderStyle: options.cardStyle === 'sketch-box' ? 'dashed' : 'solid',
-          borderColor: options.cardStrokeColor,
-          borderRadius:
-            options.showCard && (options.cardStyle === 'soft-card' || options.cardStyle === 'badge')
-              ? '12px'
-              : '0px',
+          ...frameStyle,
           padding: options.showCard ? `${options.padding}px` : '0px',
           flexDirection:
             options.labelPosition === 'right'

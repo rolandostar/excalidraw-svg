@@ -4,11 +4,10 @@
  * ids - but it means the harness would rewrite all 216 `.excalidraw` fixtures
  * with a fresh diff on every run, drowning any real change in noise.
  *
- * These helpers produce a deterministic projection for on-disk snapshots only.
- * Nothing here is used by the shipped export path.
+ * These helpers produce a deterministic projection for on-disk snapshots only:
+ * `id`, `seed`, `versionNonce`, `updated`, `created` and `fileId` are all
+ * replaced with stable values. Nothing here is used by the shipped export path.
  */
-const VOLATILE_KEYS = ['id', 'seed', 'versionNonce', 'updated', 'created', 'fileId'] as const;
-
 function stableId(prefix: string, index: number): string {
   return `${prefix}${String(index).padStart(6, '0')}`;
 }
@@ -59,4 +58,3 @@ export function stabiliseFiles(
   return out;
 }
 
-export const VOLATILE_ELEMENT_KEYS = VOLATILE_KEYS;

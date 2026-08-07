@@ -14,10 +14,7 @@
 import headline from './generated/evidence-headline.json';
 
 export const REPO_URL = 'https://github.com/rolandostar/excalidraw-svg';
-export const REPO_SLUG = 'rolandostar/excalidraw-svg';
 export const NEW_ISSUE_URL = `${REPO_URL}/issues/new`;
-
-export const EVIDENCE = headline;
 
 export const STATS = {
   iconCount: headline.icons.total,

@@ -245,65 +245,186 @@ body {
   border-radius: var(--radius-sm);
 }
 
-/* Sidebar Customization Controls */
+/* --- Styling sidebar ---------------------------------------------------- */
+
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 1.25rem;
   position: sticky;
   top: calc(var(--header-h) + 1.5rem);
   max-height: calc(100vh - var(--header-h) - 3rem);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.35rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
 }
 
-.section-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.control-group {
+/* Sections carry their own separation, so the panel needs no <hr>s. */
+.opt-section {
   display: flex;
   flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.9rem 0.85rem;
+  border-radius: var(--radius-md);
+}
+
+.opt-section + .opt-section {
+  border-top: 1px solid var(--border-color);
+}
+
+.opt-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.opt-heading svg {
+  color: var(--gcp-blue);
+}
+
+.opt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.opt-field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
-.control-label {
-  font-size: 0.8rem;
+.opt-field-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.opt-field-value {
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  color: var(--gcp-blue);
+}
+
+/* --- Presets ------------------------------------------------------------ */
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.preset-btn {
+  padding: 0.5rem 0.4rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.preset-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-color-hover);
+}
+
+.preset-btn.is-active {
+  color: #fff;
+  font-weight: 600;
+  background: var(--gcp-blue);
+  border-color: var(--gcp-blue);
+}
+
+/* --- Switch ------------------------------------------------------------- */
+
+.opt-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-primary);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  cursor: pointer;
 }
 
-.control-value {
-  color: var(--gcp-blue);
-  font-weight: 600;
-  font-family: var(--font-mono);
+/* Visually hidden rather than display:none, so it stays focusable and the
+   label keeps its native association with the control. */
+.opt-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Segmented Control / Radio Buttons */
+.opt-switch-track {
+  flex-shrink: 0;
+  width: 34px;
+  height: 20px;
+  padding: 2px;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  transition: var(--transition-fast);
+}
+
+.opt-switch-thumb {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.opt-switch input:checked ~ .opt-switch-track {
+  background: var(--gcp-blue);
+  border-color: var(--gcp-blue);
+}
+
+.opt-switch input:checked ~ .opt-switch-track .opt-switch-thumb {
+  background: #fff;
+  transform: translateX(14px);
+}
+
+.opt-switch input:focus-visible ~ .opt-switch-track {
+  outline: 2px solid var(--gcp-blue);
+  outline-offset: 2px;
+}
+
+/* --- Segmented control -------------------------------------------------- */
+
 .segmented-control {
   display: flex;
-  background: var(--bg-primary);
-  padding: 0.25rem;
+  background: var(--bg-secondary);
+  padding: 0.2rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
-  gap: 0.25rem;
+  gap: 0.15rem;
 }
 
 .segment-btn {
   flex: 1;
-  padding: 0.4rem 0.5rem;
-  font-size: 0.75rem;
+  min-width: 0;
+  padding: 0.35rem 0.3rem;
+  font-family: inherit;
+  font-size: 0.72rem;
   font-weight: 500;
   background: transparent;
   color: var(--text-secondary);
@@ -312,41 +433,117 @@ body {
   cursor: pointer;
   transition: var(--transition-fast);
   text-align: center;
+  white-space: nowrap;
+}
+
+.segment-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--hover-tint);
 }
 
 .segment-btn.active {
   background: var(--gcp-blue);
   color: #fff;
   font-weight: 600;
-  box-shadow: 0 2px 8px var(--accent-glow);
 }
 
-/* Color Palette Picker */
+/* --- Font picker -------------------------------------------------------- */
+
+/*
+ * Each option is rendered in the font it selects. A list of names in the UI
+ * font makes you apply one, look at the grid, and come back - the whole point
+ * of the control is the shape of the letters.
+ */
+.font-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+}
+
+.font-btn {
+  padding: 0.4rem 0.45rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.font-btn[data-font="1"] { font-family: 'Excalifont', 'Kalam', cursive; }
+.font-btn[data-font="2"] { font-family: 'Helvetica', 'Inter', sans-serif; }
+.font-btn[data-font="3"] { font-family: 'Comic Shanns', 'JetBrains Mono', monospace; }
+.font-btn[data-font="4"] { font-family: 'Lilita One', cursive; }
+.font-btn[data-font="5"] { font-family: 'Nunito', sans-serif; }
+
+/* The last row holds a single button; let it span so the grid stays even. */
+.font-btn:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.font-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-color-hover);
+}
+
+.font-btn.is-active {
+  color: #fff;
+  background: var(--gcp-blue);
+  border-color: var(--gcp-blue);
+}
+
+/* --- Colour swatches ---------------------------------------------------- */
+
 .color-picker-grid {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
 .color-swatch {
-  width: 26px;
-  height: 26px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
   border-radius: 50%;
   /* Outlined rather than bare: white and transparent swatches are otherwise
      indistinguishable from the panel behind them in light mode. */
   border: 1px solid var(--border-color);
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
   cursor: pointer;
-  transition: transform var(--transition-fast);
+  color: #fff;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.color-swatch[data-transparent] {
+  border-style: dashed;
+  border-color: var(--text-muted);
 }
 
 .color-swatch:hover {
-  transform: scale(1.15);
+  transform: scale(1.12);
 }
 
 .color-swatch.active {
-  border-color: var(--text-primary);
-  box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--gcp-blue);
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--gcp-blue);
+}
+
+/* Light swatches need a dark tick, or the check disappears into the fill. */
+.color-swatch[style*="#ffffff"],
+.color-swatch[style*="#f8fafc"],
+.color-swatch[style*="#e8f0fe"],
+.color-swatch[style*="#e6f4ea"],
+.color-swatch[style*="#fef7e0"],
+.color-swatch[style*="#fce8e6"],
+.color-swatch[style*="#cbd5e1"],
+.color-swatch[style*="#fbbc05"],
+.color-swatch[data-transparent] {
+  color: #0f172a;
 }
 
 /* Range Slider */
@@ -410,6 +607,29 @@ input[type="range"] {
   font-size: 0.7rem;
   padding: 0.1rem 0.4rem;
   border-radius: var(--radius-full);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The chip bar is the single biggest consumer of vertical space above the
+ * grid on a phone: seven chips at desktop sizing wrap to three rows and push
+ * the icons - the reason anyone opened the page - off the screen. Shrinking
+ * the chips gets it to two rows; dropping the counts gets it to one.
+ */
+@media (max-width: 640px) {
+  .category-bar {
+    gap: 0.3rem;
+  }
+
+  .category-chip {
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.72rem;
+  }
+
+  .count-badge {
+    display: none;
+  }
 }
 
 /*
@@ -434,25 +654,48 @@ input[type="range"] {
 }
 
 /* Icon Cards Grid */
+/*
+ * Track width drives the column count, so it is the number to reason about.
+ *
+ * The content column is ~1048px at a 1440px viewport, and `auto-fill` fits
+ * `floor((1048 + gap) / (track + gap))` columns. 170px gave 5; anything in
+ * 118-136px gives 7. 132px sits in the middle of that band, so a small change
+ * in viewport or sidebar width does not flip the count.
+ *
+ * A 7-column track is 136px wide, which is why `.icon-card` trims its
+ * horizontal padding below: the preview box can be up to 112px and would
+ * otherwise be clipped at the largest icon scale.
+ */
 .icon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 0.75rem;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Single Icon Card */
+/*
+ * Single icon card.
+ *
+ * Deliberately frameless. This tile used to carry its own background and
+ * border, which meant every icon looked framed whether or not "Show card
+ * frame" was on - so the option appeared to do nothing, and the grid could not
+ * be trusted to show what the export would contain. The only frame drawn now
+ * is the one the export will actually carry.
+ *
+ * Hover and selection still need to be visible, so they are the one case where
+ * the tile paints itself.
+ */
 .icon-card {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 0.85rem 0.85rem;
+  padding: 0.9rem 0.5rem 0.7rem;
   border-radius: var(--radius-md);
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: transparent;
+  border: 1px solid transparent;
   transition: all var(--transition-fast);
   cursor: pointer;
   user-select: none;
@@ -463,6 +706,7 @@ input[type="range"] {
 }
 
 .icon-card:hover {
+  background: var(--bg-card);
   border-color: var(--border-color-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-card);
@@ -537,13 +781,13 @@ input[type="range"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 128px;
+  min-height: 112px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  margin-bottom: 0.75rem;
-  padding: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding: 0.35rem;
   transition: all var(--transition-fast);
 }
 
@@ -608,14 +852,26 @@ input[type="range"] {
   margin-top: 0.25rem;
 }
 
+/*
+ * Wraps freely rather than truncating.
+ *
+ * Excalidraw renders the whole label and grows the card to fit, so an ellipsis
+ * here would be the preview claiming an export that will not happen - the
+ * exact class of lie this project exists to avoid.
+ *
+ * No line clamp: `-webkit-line-clamp` computed to `display: flow-root` in
+ * Chrome 151 and clipped the second line instead of showing it, which is the
+ * same lie with extra steps. Names are short enough that free wrapping is
+ * fine, and the grid row grows to match its tallest card.
+ */
 .icon-title-text {
-  display: inline-block;
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* `anywhere` split "Containers" into "Contain/ers"; `break-word` only
+     breaks a word that cannot fit a line by itself. */
+  overflow-wrap: break-word;
   font-weight: 500;
   text-align: center;
+  line-height: 1.25;
 }
 
 .subtle-caption-text {
