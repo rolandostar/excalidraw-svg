@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import type { ExcalidrawElement, ExcalidrawFile } from '../types';
 import { withFrame, type FrameWindow } from '../utils/sceneFrame';
 
@@ -18,6 +18,17 @@ type Exporter = (typeof import('@excalidraw/utils'))['exportToSvg'];
 
 let exporterPromise: Promise<Exporter> | null = null;
 
+/**
+ * Hoisted so the default is *identity-stable*.
+ *
+ * As a `files = {}` default parameter this allocated a fresh object on every
+ * render, and it is an effect dependency. That silently defeated every
+ * `useMemo` upstream: a single tick of the font-size slider re-ran
+ * `exportToSvg` for all 216 grid cards even though nothing about their
+ * geometry had changed.
+ */
+const NO_FILES: Record<string, ExcalidrawFile> = {};
+
 function loadExporter(): Promise<Exporter> {
   exporterPromise ??= import('@excalidraw/utils').then(m => m.exportToSvg);
   return exporterPromise;
@@ -36,14 +47,21 @@ interface ExcalidrawPreviewProps {
   frame?: FrameWindow;
 }
 
-export function ExcalidrawPreview({ elements, files = {}, label, frame }: ExcalidrawPreviewProps) {
+function ExcalidrawPreviewImpl({
+  elements,
+  files = NO_FILES,
+  label,
+  frame,
+}: ExcalidrawPreviewProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     let cancelled = false;
-    setStatus('loading');
+    // Only announce "Rendering…" if there is nothing on screen yet. Flipping a
+    // ready preview back to loading on every re-export made the grid strobe.
+    setStatus(prev => (prev === 'ready' ? prev : 'loading'));
 
     const scene = frame ? withFrame(elements, frame) : elements;
 
@@ -101,3 +119,10 @@ export function ExcalidrawPreview({ elements, files = {}, label, frame }: Excali
     </div>
   );
 }
+
+/**
+ * Memoised because the icon grid mounts 216 of these. Every prop it takes is
+ * either a primitive or memoised by the caller, so a shallow compare is enough
+ * to skip the exporter entirely when only a cosmetic option changed.
+ */
+export const ExcalidrawPreview = memo(ExcalidrawPreviewImpl);

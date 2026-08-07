@@ -412,6 +412,27 @@ input[type="range"] {
   border-radius: var(--radius-full);
 }
 
+/*
+ * Wrapper around the grid so a restyle in flight can be shown without
+ * remounting anything. The grid lags the sidebar on purpose (useDeferredValue)
+ * and silently stale cards would read as a broken control.
+ */
+.grid-region {
+  min-width: 0;
+  width: 100%;
+}
+
+.grid-region.is-restyling {
+  opacity: 0.55;
+  transition: opacity 120ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-region.is-restyling {
+    transition: none;
+  }
+}
+
 /* Icon Cards Grid */
 .icon-grid {
   display: grid;
