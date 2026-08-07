@@ -18,14 +18,42 @@ import {
   type ReactNode,
 } from 'react';
 
-export type RoutePath = '/' | '/icons' | '/methodology';
+export type RoutePath = '/' | '/icons' | '/methodology' | `/icons/${string}`;
 
-const ROUTES: RoutePath[] = ['/', '/icons', '/methodology'];
+const STATIC_ROUTES: RoutePath[] = ['/', '/icons', '/methodology'];
+
+/**
+ * Set ids come from folder names on disk, so they are trusted, but they still
+ * reach this function from `window.location`. Anything outside this shape is
+ * not a set id and collapses to the gallery rather than being reflected back
+ * into the DOM.
+ */
+const SET_ID = /^[a-z0-9][a-z0-9._-]*$/i;
 
 /** Trailing slashes and unknown paths both collapse onto a known route. */
 export function normalizePath(raw: string): RoutePath {
   const trimmed = raw.replace(/\/+$/, '') || '/';
-  return (ROUTES.find(r => r === trimmed) ?? '/') as RoutePath;
+
+  const known = STATIC_ROUTES.find(r => r === trimmed);
+  if (known) return known;
+
+  const setMatch = trimmed.match(/^\/icons\/([^/]+)$/);
+  if (setMatch) {
+    const id = decodeURIComponent(setMatch[1]);
+    return SET_ID.test(id) ? (`/icons/${id}` as RoutePath) : '/icons';
+  }
+
+  return '/';
+}
+
+/** The set id in `/icons/<id>`, or null on any other route. */
+export function iconSetIdFromPath(path: RoutePath): string | null {
+  const match = path.match(/^\/icons\/([^/]+)$/);
+  return match ? match[1] : null;
+}
+
+export function iconSetPath(setId: string): RoutePath {
+  return `/icons/${setId}` as RoutePath;
 }
 
 interface RouterValue {

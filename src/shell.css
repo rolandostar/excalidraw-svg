@@ -1268,3 +1268,196 @@ code.trap-mistake {
 .case-grid + .btn {
   margin-top: 1rem;
 }
+
+/* --- Icon set gallery (/icons) ------------------------------------------ */
+
+.set-grid {
+  list-style: none;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.set-grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.set-card {
+  --set-accent: var(--gcp-blue);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: var(--transition-fast);
+}
+
+.set-card:hover {
+  border-color: var(--set-accent);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+/*
+ * Preview strip. `color-mix` tints the band with the set's own accent so two
+ * sets are distinguishable at a glance before either has been opened.
+ */
+.set-card-previews {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1rem 1.1rem;
+  min-height: 60px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--set-accent) 9%, transparent);
+}
+
+.set-card-previews img {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.set-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem 1.1rem 1.15rem;
+}
+
+.set-card-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+.set-card-count {
+  flex-shrink: 0;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--set-accent);
+  border: 1px solid color-mix(in srgb, var(--set-accent) 45%, transparent);
+  border-radius: var(--radius-full);
+}
+
+.set-card-desc {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.set-card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.set-card-chip {
+  padding: 0.1rem 0.45rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+.set-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--set-accent);
+}
+
+.set-card:hover .set-card-cta svg {
+  transform: translateX(3px);
+}
+
+.set-card-cta svg {
+  transition: var(--transition-fast);
+}
+
+.set-card-source {
+  margin: 0;
+  padding: 0 0.2rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.set-card-source a {
+  color: var(--text-muted);
+}
+
+.set-card-license {
+  opacity: 0.8;
+}
+
+/* --- Breadcrumb on a single set page ------------------------------------ */
+
+.set-breadcrumb {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  min-width: 0;
+}
+
+.set-breadcrumb-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.set-breadcrumb-back:hover {
+  color: var(--gcp-blue);
+}
+
+.set-breadcrumb-current {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.set-breadcrumb-desc {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .set-breadcrumb-desc {
+    display: none;
+  }
+}

@@ -10,8 +10,8 @@ framed.
 ## Running
 
 ```bash
-pnpm test                    # 216 GCP icons
-pnpm test:torture            # 25 edge-case SVGs
+pnpm test                    # every icon in svg/, all sets
+pnpm test:torture            # the edge-case SVGs
 
 pnpm test:update             # accept current numbers as the new baseline
 pnpm test:torture:update
@@ -27,6 +27,38 @@ tsx scripts/run-fidelity.ts --input=svg --only=bigquery   # substring filter
 `--name` defaults to the input folder's name with a trailing `-svg` stripped.
 It selects both `tests/results/<name>/` and `tests/baselines/<name>.json`, so
 suites never collide.
+
+### Baseline keys and icon sets
+
+The input directory is walked recursively, and the first level below it names
+the *set*:
+
+| layout | baseline key |
+|---|---|
+| `tests/torture-svg/17-gradients.svg` (flat) | `17-gradients` |
+| `svg/legacy-gcp/BigQuery.svg` (nested) | `legacy-gcp__BigQuery` |
+
+Nested files are prefixed **unconditionally**, not only when something
+collides. Two Google Cloud icon sets will share most of their filenames, and
+deriving the prefix from whether a collision exists today would silently rename
+a baselined icon the moment a second set landed — dropping it from the gate
+without failing anything.
+
+A new set therefore starts with no baseline entries, and the harness will
+**not** invent them — a baseline written by the same run that produced it gates
+nothing. Instead the run scores those files, lists them under `NOT GATED`, and
+carries on:
+
+```
+NOT GATED - 45 file(s) have no baseline entry:
+  category-icons  26 file(s)
+  unique-icons  19 file(s)
+  Review the scores above, then run with --update-baseline to accept them.
+  Until then these files can regress without failing anything.
+```
+
+**Read those numbers before accepting them** with `pnpm test:update`: the gate
+can only hold a limit somebody agreed to.
 
 A `--only` run reads and writes **no** baseline — it sees a subset, so letting
 it touch the reference would corrupt it.
@@ -115,7 +147,7 @@ They are **self-verifying** — resvg is the oracle, so no expected output is
 written by hand. That is the whole point: you do not need to know what the
 correct answer looks like, only to construct a file that exercises the feature.
 
-Guidelines that made the existing 25 useful:
+Guidelines that made the existing set useful:
 
 - **One feature per file**, named so the failure is self-describing.
 - **Comment the trap at the top** — what a naive converter does wrong and what
@@ -134,7 +166,7 @@ it.
 
 ## Deliberate failures
 
-Three torture files are over threshold **by construction**. They are not
+Four torture files are over threshold **by construction**. They are not
 outstanding bugs and there is no intention to make them pass — each one exists
 to pin a documented limit in place so that it cannot quietly change.
 
@@ -143,8 +175,9 @@ to pin a documented limit in place so that it cannot quietly change.
 | `20-unsupported-features` | ~58 % | Contains one of everything the converter refuses to guess at: text, pattern, filter, marker, dasharray, skew. The requirement is that each is **reported** by `collectUnsupportedFeatures`, not that it renders. A high pixel error is the correct outcome; a low one would mean something was silently approximated. |
 | `17-gradients` | ~28 % | Excalidraw has no gradient paint server, so a gradient is flattened to a single averaged colour. That is the designed behaviour. The error is a measure of how much colour information the format cannot carry, and it should stay roughly constant. |
 | `15-viewbox-offset` | 0.00 % shape, 0.57 px placement | Shape is exact. The placement number is an artefact of measuring a 0.5-unit hairline border against a pixel grid, not a conversion defect. It sits just over the 0.5 px gate, which is left in place rather than loosening the threshold for every other case. |
+| `27-implicit-default-fill` | ~5.8 % | The fill decision under test — undeclared `fill` means black, not `none` — is correct. The ink is four very small shapes, so the one-pixel antialiasing ring around the circle is a large fraction of the total area. The number measures the measurement. What holds this case is the baseline, not the threshold. |
 
-These are the reason the suite reports "3 failing" rather than "0 failing". A
+These are the reason the suite reports "4 failing" rather than "0 failing". A
 green board would require either deleting the cases or weakening the
 thresholds, and both would make the number meaningless.
 

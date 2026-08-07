@@ -61,6 +61,15 @@ interface Shot {
 
 const TORTURE = path.join(ROOT, 'tests/torture-svg/20-unsupported-features.svg');
 
+/** The set the shots are taken against. Any other set would do. */
+const SET_ROUTE = '/icons/legacy-gcp';
+
+const waitForGrid = async (page: Page) => {
+  await page.waitForSelector('.icon-card', { timeout: 30_000 });
+  await page.waitForSelector('.icon-card .excalidraw-preview-host svg', { timeout: 30_000 });
+  await page.waitForTimeout(600);
+};
+
 const uploadSvg = (file: string) => async (page: Page) => {
   await page.setInputFiles('input[type=file]', file);
   // The Excalidraw exporter is dynamically imported on first use.
@@ -88,16 +97,23 @@ const SHOTS: Shot[] = [
     height: 1100,
     prepare: uploadSvg(TORTURE),
   },
-  { name: 'icons-dark', route: '/icons', theme: 'dark', width: 1440, height: 950 },
-  { name: 'icons-light', route: '/icons', theme: 'light', width: 1440, height: 950 },
-  { name: 'icons-mobile-light', route: '/icons', theme: 'light', width: 390, height: 844 },
+  { name: 'sets-dark', route: '/icons', theme: 'dark', width: 1440, height: 950 },
+  { name: 'sets-light', route: '/icons', theme: 'light', width: 1440, height: 950 },
+  { name: 'sets-mobile-light', route: '/icons', theme: 'light', width: 390, height: 844 },
+
+  // A set materialises after first paint - SVGO runs over the whole folder -
+  // so `networkidle` is not enough to know the grid exists.
+  { name: 'icons-dark', route: SET_ROUTE, theme: 'dark', width: 1440, height: 950, prepare: waitForGrid },
+  { name: 'icons-light', route: SET_ROUTE, theme: 'light', width: 1440, height: 950, prepare: waitForGrid },
+  { name: 'icons-mobile-light', route: SET_ROUTE, theme: 'light', width: 390, height: 844, prepare: waitForGrid },
   {
     name: 'icons-sketch',
-    route: '/icons',
+    route: SET_ROUTE,
     theme: 'dark',
     width: 1440,
     height: 700,
     prepare: async page => {
+      await waitForGrid(page);
       await page.getByRole('button', { name: 'Virgil Sketch' }).click();
       await page.waitForTimeout(1200);
     },

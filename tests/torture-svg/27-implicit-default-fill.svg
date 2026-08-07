@@ -1,0 +1,37 @@
+<!-- The SVG initial value of `fill` is black, not `none`. Nothing in the top
+     row declares a fill, so all four shapes must render solid black.
+
+     The converter used to treat "undeclared" and "explicitly none" as the same
+     thing, which discarded all of it. The rows below are the controls: an
+     explicit `fill="none"` really does mean no fill and must stay hollow, and
+     `none` has to be recognised whatever its case.
+
+     Opacity interactions are deliberately not exercised here; 16-opacity.svg
+     owns that.
+
+     This file scores a few percent of shape error against the browser even
+     when perfectly correct: the ink is a handful of small shapes, so the
+     one-pixel antialiasing ring around the circle is a large fraction of the
+     total. What is being asserted is the fill decision, and the baseline gate
+     is what holds it. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- No fill declared anywhere: all four must be black. -->
+  <rect x="1" y="1" width="5" height="5"/>
+  <circle cx="10.5" cy="3.5" r="2.5"/>
+  <polygon points="15,1 20,1 20,6 15,6"/>
+  <path d="M21 1 H23 V6 H21 Z"/>
+
+  <!-- Explicit none, with a stroke: outlines only, no black. -->
+  <rect x="1.5" y="9.5" width="4" height="4" fill="none" stroke="#34a853" stroke-width="1"/>
+
+  <!-- Explicit none with no stroke either: genuinely invisible. -->
+  <rect x="15" y="9" width="5" height="5" fill="none"/>
+
+  <!-- Case-insensitive `none` must still be honoured as none. -->
+  <rect x="1.5" y="17.5" width="4" height="4" fill="NONE" stroke="#ea4335" stroke-width="1"/>
+
+  <!-- Undeclared fill inherited through a group that declares only a stroke. -->
+  <g stroke="#4285f4" stroke-width="1">
+    <rect x="9.5" y="17.5" width="4" height="4"/>
+  </g>
+</svg>

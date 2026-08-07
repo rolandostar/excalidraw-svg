@@ -4,8 +4,10 @@ Converts SVG artwork into **native Excalidraw elements** — real polygons and
 ellipses, not an embedded bitmap — so pasted icons stay editable, restyleable
 and resolution-independent.
 
-Ships with 216 Google Cloud Platform icons, but the conversion pipeline is
-general: any SVG folder can be run through it.
+Ships with 261 Google Cloud icons across three sets, but the conversion
+pipeline is general: any SVG folder can be run through it. Icon sets are just folders —
+drop one into `svg/` and it appears on the site at `/icons/<folder-name>`,
+no registration step. See [Adding an icon set](#adding-an-icon-set).
 
 ```
 SVG  →  normalise  →  resolve regions  →  Excalidraw elements
@@ -19,8 +21,8 @@ pnpm install
 pnpm dev                 # web UI on :3000
 pnpm build               # typecheck + production bundle
 
-pnpm test                # score all 216 icons against a real renderer
-pnpm test:torture        # score the 25 edge-case SVGs
+pnpm test                # score every icon in svg/ against a real renderer
+pnpm test:torture        # score the edge-case SVGs
 ```
 
 `pnpm test` is not a smoke test. It rasterises every icon, pixel-diffs it
@@ -31,17 +33,18 @@ baseline. Run it before and after every change to conversion code.
 
 | suite | files | mean shape error | worst | worst placement | failing |
 |---|---|---|---|---|---|
-| icons | 216 | **0.000 %** | 0.10 % | 0.200 px | **0** |
-| torture | 25 | 3.44 % | 58 % | — | 3 (deliberate) |
+| icons | 261 | **0.000 %** | 0.10 % | 0.200 px | **0** |
+| torture | 29 | 3.16 % | 58 % | — | 4 (deliberate) |
 
-214 of 216 icons are at *exactly* 0.00 %.
+258 of 261 icons are at *exactly* 0.00 %.
 
-The three failing torture files fail **by construction** and are meant to stay
+The four failing torture files fail **by construction** and are meant to stay
 that way — they pin documented limits in place so those limits cannot drift
 unnoticed. One is a file made entirely of features the converter refuses to
-guess at, one measures how much colour a flattened gradient loses, and one sits
-a fraction over the placement gate on a hairline border. None is an outstanding
-bug; see [Deliberate failures](docs/TESTING.md#deliberate-failures).
+guess at, one measures how much colour a flattened gradient loses, one sits a
+fraction over the placement gate on a hairline border, and one is so small that
+antialiasing dominates the diff. None is an outstanding bug; see
+[Deliberate failures](docs/TESTING.md#deliberate-failures).
 
 A suite reporting 0 failing here would mean the thresholds had been loosened or
 the cases deleted.
@@ -56,8 +59,8 @@ src/
     strokeOutline.ts         strokes -> filled areas
     svgOptimizer.ts          SVGO + style cascade + <use> expansion
     svgSupport.ts            reports features that cannot be converted
-    svgLoader.ts             bundles svg/ into the web UI
-    categorizer.ts           icon naming/categorisation (cosmetic)
+    iconSets.ts              discovers svg/<set>/ folders and their set.json
+    categorizer.ts           title casing + the category/synonym match engine
     defaultOptions.ts        single source of truth for export options
   components/                React UI
 scripts/
@@ -65,14 +68,72 @@ scripts/
   excalidrawRenderer.ts      renders via Excalidraw's own exportToSvg
   lib/                       rasterisation, metrics, reporting
 tests/
-  torture-svg/               25 edge-case SVGs
+  torture-svg/               edge-case SVGs
   baselines/                 committed regression references (icons, torture)
   results/                   generated output — gitignored
-svg/                         216 GCP icon sources
+svg/
+  legacy-gcp/                216 pre-2026 GCP product marks
+    set.json                 name, categories, match rules, search synonyms
+  category-icons/            26 category marks (2026 refresh)
+  unique-icons/              19 product marks (2026 refresh)
+  <your-set>/                any folder here becomes /icons/<your-set>
 docs/
   ARCHITECTURE.md            how conversion works and why
   TESTING.md                 how the harness works and how to extend it
 ```
+
+## Adding an icon set
+
+Drop a folder of `.svg` files into `svg/`. That is the whole requirement — the
+folder name becomes the URL, each filename becomes an icon title, and the set
+shows up in the gallery at `/icons` on the next dev-server tick.
+
+To name and categorise it, add `svg/<folder>/set.json`. Every field is
+optional:
+
+```jsonc
+{
+  "name": "Google Cloud 2026",
+  "description": "The refreshed product marks.",
+  "accent": "#4285F4",
+  "order": 20,                       // lower sorts first in the gallery
+  "tags": ["gcp", "google cloud"],   // added to every icon's search tags
+
+  "categories": [                    // filter chips, in display order
+    { "id": "compute", "name": "Compute", "color": "#81C995" },
+    { "id": "general", "name": "General" }
+  ],
+
+  // Ordered and FIRST-WINS, substring-matched against the filename.
+  // Anything unmatched falls through to the last category, so list the
+  // catch-all bucket last.
+  "rules": [
+    { "category": "compute", "match": ["run", "gke", "engine"] }
+  ],
+
+  // Bidirectional search aliases: any term in a group finds any other.
+  "synonyms": [
+    ["vpc", "virtual private cloud"]
+  ],
+
+  // Per-file corrections, keyed by filename without the extension.
+  "overrides": {
+    "weird-file-name": { "title": "Cloud Run", "category": "compute" }
+  }
+}
+```
+
+`svg/legacy-gcp/set.json` is a complete worked example.
+
+Two things to know:
+
+- **Fidelity baselines are keyed `<set>__<filename>`.** A new set has no
+  baseline entries, and `pnpm test` will **not** invent them — it scores the
+  files, reports them under `NOT GATED`, and leaves them ungated. Review those
+  scores, then run `pnpm test:update` to accept them. The gate can only hold a
+  limit somebody agreed to.
+- **Icons must live in a set folder.** Loose `.svg` files directly under `svg/`
+  are ignored, and the dev build logs a warning saying so.
 
 ## Read this before changing conversion code
 

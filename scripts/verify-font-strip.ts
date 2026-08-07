@@ -26,7 +26,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SAMPLES = [
   'tests/torture-svg/20-unsupported-features.svg',
   'tests/torture-svg/07-stroke-caps-joins.svg',
-  'svg/Cloud-Run.svg',
+  'svg/legacy-gcp/Cloud-Run.svg',
 ];
 
 function findChrome(): string {

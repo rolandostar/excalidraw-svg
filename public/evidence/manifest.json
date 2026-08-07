@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-06T08:16:47.172Z",
+  "builtAt": "2026-08-07T03:24:32.645Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,17 +7,251 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-06T08:16:45.343Z",
-    "total": 216,
-    "meanShapeScore": 0.0000049387597926240235,
+    "generatedAt": "2026-08-07T03:23:59.324Z",
+    "total": 261,
+    "meanShapeScore": 0.000004493184497008677,
     "worstShapeScore": 0.000989282769991756,
-    "meanPlacementErrorPx": 0.09313657407407396,
+    "meanPlacementErrorPx": 0.08757662835249037,
     "worstPlacementErrorPx": 0.19999999999999574,
     "failing": 0,
     "auditIssueCount": 0,
     "cases": [
       {
-        "id": "Access-Context-Manager",
+        "id": "category-icons__Agents",
+        "label": "Agents",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0049999999999954525,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__AI-Machine-Learning",
+        "label": "AI & Machine Learning",
+        "shapeScore": 0,
+        "placementErrorPx": 0.10250000000000625,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Business-Intelligence",
+        "label": "Business Intelligence",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0049999999999954525,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Collaboration",
+        "label": "Collaboration",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Compute",
+        "label": "Compute",
+        "shapeScore": 0,
+        "placementErrorPx": 0.007500000000000284,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Containers",
+        "label": "Containers",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1424999999999983,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Data-Analytics",
+        "label": "Data Analytics",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0049999999999954525,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Databases",
+        "label": "Databases",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0049999999999954525,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Developer-Tools",
+        "label": "Developer Tools",
+        "shapeScore": 0,
+        "placementErrorPx": 0.12250000000000227,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__DevOps",
+        "label": "DevOps",
+        "shapeScore": 0,
+        "placementErrorPx": 0.005000000000002558,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Hybrid-Multicloud",
+        "label": "Hybrid & Multicloud",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09875000000000966,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Integration-Services",
+        "label": "Integration Services",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09250000000000114,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Management-Tools",
+        "label": "Management Tools",
+        "shapeScore": 0,
+        "placementErrorPx": 0.005000000000002558,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Maps-Geospatial",
+        "label": "Maps & Geospatial",
+        "shapeScore": 0,
+        "placementErrorPx": 0.10250000000000625,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Marketplace",
+        "label": "Marketplace",
+        "shapeScore": 0,
+        "placementErrorPx": 0.012500000000000178,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Media-Services",
+        "label": "Media Services",
+        "shapeScore": 0,
+        "placementErrorPx": 0.005000000000002558,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Migration",
+        "label": "Migration",
+        "shapeScore": 0,
+        "placementErrorPx": 0.10250000000000625,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Mixed-Reality",
+        "label": "Mixed Reality",
+        "shapeScore": 0,
+        "placementErrorPx": 0.12250000000000227,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Networking",
+        "label": "Networking",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09250000000000114,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Observability",
+        "label": "Observability",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09250000000000114,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Operations",
+        "label": "Operations",
+        "shapeScore": 0,
+        "placementErrorPx": 0.005000000000002558,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Security-Identity",
+        "label": "Security Identity",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09250000000000114,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Serverless-Computing",
+        "label": "Serverless Computing",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0024999999999977263,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Storage",
+        "label": "Storage",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0049999999999954525,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Web-Mobile",
+        "label": "Web & Mobile",
+        "shapeScore": 0,
+        "placementErrorPx": 0.012500000000000178,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "category-icons__Web3",
+        "label": "Web3",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1424999999999983,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Access-Context-Manager",
         "label": "Access Context Manager",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -26,7 +260,7 @@
         "failing": false
       },
       {
-        "id": "Administration",
+        "id": "legacy-gcp__Administration",
         "label": "Administration",
         "shapeScore": 0,
         "placementErrorPx": 0,
@@ -35,7 +269,7 @@
         "failing": false
       },
       {
-        "id": "Advanced-Agent-Modeling",
+        "id": "legacy-gcp__Advanced-Agent-Modeling",
         "label": "Advanced Agent Modeling",
         "shapeScore": 0,
         "placementErrorPx": 0.00999999999999801,
@@ -44,7 +278,7 @@
         "failing": false
       },
       {
-        "id": "Advanced-Solutions-Lab",
+        "id": "legacy-gcp__Advanced-Solutions-Lab",
         "label": "Advanced Solutions Lab",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -53,7 +287,7 @@
         "failing": false
       },
       {
-        "id": "Agent-Assist",
+        "id": "legacy-gcp__Agent-Assist",
         "label": "Agent Assist",
         "shapeScore": 0,
         "placementErrorPx": 0.00999999999999801,
@@ -62,7 +296,7 @@
         "failing": false
       },
       {
-        "id": "AI-Hub",
+        "id": "legacy-gcp__AI-Hub",
         "label": "AI Hub",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -71,16 +305,7 @@
         "failing": false
       },
       {
-        "id": "AI-Platform-Unified",
-        "label": "AI Platform Unified",
-        "shapeScore": 0,
-        "placementErrorPx": 0.054999999999999716,
-        "elementCount": 8,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "AI-Platform",
+        "id": "legacy-gcp__AI-Platform",
         "label": "AI Platform",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -89,7 +314,16 @@
         "failing": false
       },
       {
-        "id": "Analytics-Hub",
+        "id": "legacy-gcp__AI-Platform-Unified",
+        "label": "AI Platform Unified",
+        "shapeScore": 0,
+        "placementErrorPx": 0.054999999999999716,
+        "elementCount": 8,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Analytics-Hub",
         "label": "Analytics Hub",
         "shapeScore": 0,
         "placementErrorPx": 0.027499999999999858,
@@ -98,25 +332,7 @@
         "failing": false
       },
       {
-        "id": "Anthos-Config-Management",
-        "label": "Anthos Config Management",
-        "shapeScore": 0,
-        "placementErrorPx": 0.07249999999999801,
-        "elementCount": 3,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Anthos-Service-Mesh",
-        "label": "Anthos Service Mesh",
-        "shapeScore": 0,
-        "placementErrorPx": 0.0625,
-        "elementCount": 4,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Anthos",
+        "id": "legacy-gcp__Anthos",
         "label": "Anthos",
         "shapeScore": 0,
         "placementErrorPx": 0.02499999999999858,
@@ -125,25 +341,25 @@
         "failing": false
       },
       {
-        "id": "API-Analytics",
-        "label": "API Analytics",
+        "id": "legacy-gcp__Anthos-Config-Management",
+        "label": "Anthos Config Management",
         "shapeScore": 0,
-        "placementErrorPx": 0.14499999999999602,
-        "elementCount": 5,
+        "placementErrorPx": 0.07249999999999801,
+        "elementCount": 3,
         "auditIssues": [],
         "failing": false
       },
       {
-        "id": "API-Monetization",
-        "label": "API Monetization",
+        "id": "legacy-gcp__Anthos-Service-Mesh",
+        "label": "Anthos Service Mesh",
         "shapeScore": 0,
-        "placementErrorPx": 0.09000000000000341,
-        "elementCount": 10,
+        "placementErrorPx": 0.0625,
+        "elementCount": 4,
         "auditIssues": [],
         "failing": false
       },
       {
-        "id": "API",
+        "id": "legacy-gcp__API",
         "label": "API",
         "shapeScore": 0,
         "placementErrorPx": 0.006250000000001421,
@@ -152,7 +368,25 @@
         "failing": false
       },
       {
-        "id": "Apigee-API-Platform",
+        "id": "legacy-gcp__API-Analytics",
+        "label": "API Analytics",
+        "shapeScore": 0,
+        "placementErrorPx": 0.14499999999999602,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__API-Monetization",
+        "label": "API Monetization",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09000000000000341,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Apigee-API-Platform",
         "label": "Apigee API Platform",
         "shapeScore": 0,
         "placementErrorPx": 0.14000000000000057,
@@ -161,7 +395,7 @@
         "failing": false
       },
       {
-        "id": "Apigee-Sense",
+        "id": "legacy-gcp__Apigee-Sense",
         "label": "Apigee Sense",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -170,7 +404,7 @@
         "failing": false
       },
       {
-        "id": "App-Engine",
+        "id": "legacy-gcp__App-Engine",
         "label": "App Engine",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -179,7 +413,7 @@
         "failing": false
       },
       {
-        "id": "Artifact-Registry",
+        "id": "legacy-gcp__Artifact-Registry",
         "label": "Artifact Registry",
         "shapeScore": 0,
         "placementErrorPx": 0.06875000000000142,
@@ -188,7 +422,7 @@
         "failing": false
       },
       {
-        "id": "Asset-Inventory",
+        "id": "legacy-gcp__Asset-Inventory",
         "label": "Asset Inventory",
         "shapeScore": 0,
         "placementErrorPx": 0.07249999999999446,
@@ -197,7 +431,7 @@
         "failing": false
       },
       {
-        "id": "Assured-Workloads",
+        "id": "legacy-gcp__Assured-Workloads",
         "label": "Assured Workloads",
         "shapeScore": 0,
         "placementErrorPx": 0.05375000000000085,
@@ -206,52 +440,7 @@
         "failing": false
       },
       {
-        "id": "AutoML-Natural-Language",
-        "label": "AutoML Natural Language",
-        "shapeScore": 0,
-        "placementErrorPx": 0.08875000000000455,
-        "elementCount": 5,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "AutoML-Tables",
-        "label": "AutoML Tables",
-        "shapeScore": 0,
-        "placementErrorPx": 0.125,
-        "elementCount": 4,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "AutoML-Translation",
-        "label": "AutoML Translation",
-        "shapeScore": 0,
-        "placementErrorPx": 0.125,
-        "elementCount": 4,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "AutoML-Video-Intelligence",
-        "label": "AutoML Video Intelligence",
-        "shapeScore": 0,
-        "placementErrorPx": 0.125,
-        "elementCount": 4,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "AutoML-Vision",
-        "label": "AutoML Vision",
-        "shapeScore": 0,
-        "placementErrorPx": 0.125,
-        "elementCount": 3,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "AutoML",
+        "id": "legacy-gcp__AutoML",
         "label": "AutoML",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -260,7 +449,52 @@
         "failing": false
       },
       {
-        "id": "Bare-Metal-Solutions",
+        "id": "legacy-gcp__AutoML-Natural-Language",
+        "label": "AutoML Natural Language",
+        "shapeScore": 0,
+        "placementErrorPx": 0.08875000000000455,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__AutoML-Tables",
+        "label": "AutoML Tables",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__AutoML-Translation",
+        "label": "AutoML Translation",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__AutoML-Video-Intelligence",
+        "label": "AutoML Video Intelligence",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__AutoML-Vision",
+        "label": "AutoML Vision",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Bare-Metal-Solutions",
         "label": "Bare Metal Solutions",
         "shapeScore": 0,
         "placementErrorPx": 0.01999999999999602,
@@ -269,7 +503,7 @@
         "failing": false
       },
       {
-        "id": "Batch",
+        "id": "legacy-gcp__Batch",
         "label": "Batch",
         "shapeScore": 0,
         "placementErrorPx": 0.09499999999999886,
@@ -278,7 +512,7 @@
         "failing": false
       },
       {
-        "id": "Beyondcorp",
+        "id": "legacy-gcp__Beyondcorp",
         "label": "BeyondCorp",
         "shapeScore": 0,
         "placementErrorPx": 0.05875000000000341,
@@ -287,7 +521,7 @@
         "failing": false
       },
       {
-        "id": "BigQuery",
+        "id": "legacy-gcp__BigQuery",
         "label": "BigQuery",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -296,7 +530,7 @@
         "failing": false
       },
       {
-        "id": "Bigtable",
+        "id": "legacy-gcp__Bigtable",
         "label": "Bigtable",
         "shapeScore": 0,
         "placementErrorPx": 0.11499999999999488,
@@ -305,7 +539,7 @@
         "failing": false
       },
       {
-        "id": "Billing",
+        "id": "legacy-gcp__Billing",
         "label": "Billing",
         "shapeScore": 0,
         "placementErrorPx": 0.006249999999999645,
@@ -314,7 +548,7 @@
         "failing": false
       },
       {
-        "id": "Binary-Authorization",
+        "id": "legacy-gcp__Binary-Authorization",
         "label": "Binary Authorization",
         "shapeScore": 0,
         "placementErrorPx": 0.11875000000000568,
@@ -323,17 +557,17 @@
         "failing": false
       },
       {
-        "id": "Catalog",
+        "id": "legacy-gcp__Catalog",
         "label": "Catalog",
         "shapeScore": 0.000989282769991756,
         "placementErrorPx": 0.006249999999999645,
         "elementCount": 5,
         "auditIssues": [],
         "failing": false,
-        "image": "icons/Catalog.png"
+        "image": "icons/legacy-gcp__Catalog.png"
       },
       {
-        "id": "Certificate-Authority-Service",
+        "id": "legacy-gcp__Certificate-Authority-Service",
         "label": "Certificate Authority Service",
         "shapeScore": 0,
         "placementErrorPx": 0.012499999999995737,
@@ -342,7 +576,7 @@
         "failing": false
       },
       {
-        "id": "Certificate-Manager",
+        "id": "legacy-gcp__Certificate-Manager",
         "label": "Certificate Manager",
         "shapeScore": 0,
         "placementErrorPx": 0,
@@ -351,7 +585,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-API-Gateway",
+        "id": "legacy-gcp__Cloud-API-Gateway",
         "label": "Cloud API Gateway",
         "shapeScore": 0,
         "placementErrorPx": 0.1287499999999966,
@@ -360,7 +594,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-APIs",
+        "id": "legacy-gcp__Cloud-APIs",
         "label": "Cloud APIs",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -369,7 +603,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Armor",
+        "id": "legacy-gcp__Cloud-Armor",
         "label": "Cloud Armor",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -378,7 +612,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Asset-Inventory",
+        "id": "legacy-gcp__Cloud-Asset-Inventory",
         "label": "Cloud Asset Inventory",
         "shapeScore": 0,
         "placementErrorPx": 0.08624999999999972,
@@ -387,7 +621,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Audit-Logs",
+        "id": "legacy-gcp__Cloud-Audit-Logs",
         "label": "Cloud Audit Logs",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -396,7 +630,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Build",
+        "id": "legacy-gcp__Cloud-Build",
         "label": "Cloud Build",
         "shapeScore": 0,
         "placementErrorPx": 0.12125000000000341,
@@ -405,7 +639,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-CDN",
+        "id": "legacy-gcp__Cloud-CDN",
         "label": "Cloud CDN",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -414,7 +648,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Code",
+        "id": "legacy-gcp__Cloud-Code",
         "label": "Cloud Code",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -423,7 +657,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Composer",
+        "id": "legacy-gcp__Cloud-Composer",
         "label": "Cloud Composer",
         "shapeScore": 0,
         "placementErrorPx": 0.15749999999999886,
@@ -432,7 +666,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Data-Fusion",
+        "id": "legacy-gcp__Cloud-Data-Fusion",
         "label": "Cloud Data Fusion",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -441,7 +675,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Deploy",
+        "id": "legacy-gcp__Cloud-Deploy",
         "label": "Cloud Deploy",
         "shapeScore": 0,
         "placementErrorPx": 0.13625000000000398,
@@ -450,7 +684,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Deployment-Manager",
+        "id": "legacy-gcp__Cloud-Deployment-Manager",
         "label": "Cloud Deployment Manager",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -459,7 +693,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-DNS",
+        "id": "legacy-gcp__Cloud-DNS",
         "label": "Cloud DNS",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -468,7 +702,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Domains",
+        "id": "legacy-gcp__Cloud-Domains",
         "label": "Cloud Domains",
         "shapeScore": 0,
         "placementErrorPx": 0.017499999999998295,
@@ -477,7 +711,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-EKM",
+        "id": "legacy-gcp__Cloud-EKM",
         "label": "Cloud EKM",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -486,7 +720,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Endpoints",
+        "id": "legacy-gcp__Cloud-Endpoints",
         "label": "Cloud Endpoints",
         "shapeScore": 0,
         "placementErrorPx": 0.13125000000000142,
@@ -495,7 +729,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-External-IP-Addresses",
+        "id": "legacy-gcp__Cloud-External-IP-Addresses",
         "label": "Cloud External IP Addresses",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -504,7 +738,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Firewall-Rules",
+        "id": "legacy-gcp__Cloud-Firewall-Rules",
         "label": "Cloud Firewall Rules",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -513,7 +747,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-For-Marketing",
+        "id": "legacy-gcp__Cloud-For-Marketing",
         "label": "Cloud For Marketing",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -522,7 +756,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Functions",
+        "id": "legacy-gcp__Cloud-Functions",
         "label": "Cloud Functions",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -531,7 +765,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Generic",
+        "id": "legacy-gcp__Cloud-Generic",
         "label": "Cloud Generic",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -540,7 +774,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-GPU",
+        "id": "legacy-gcp__Cloud-GPU",
         "label": "Cloud GPU",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -549,7 +783,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Healthcare-API",
+        "id": "legacy-gcp__Cloud-Healthcare-API",
         "label": "Cloud Healthcare API",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -558,7 +792,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Healthcare-Marketplace",
+        "id": "legacy-gcp__Cloud-Healthcare-Marketplace",
         "label": "Cloud Healthcare Marketplace",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -567,7 +801,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-HSM",
+        "id": "legacy-gcp__Cloud-HSM",
         "label": "Cloud HSM",
         "shapeScore": 0,
         "placementErrorPx": 0.02874999999999517,
@@ -576,7 +810,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-IDS",
+        "id": "legacy-gcp__Cloud-IDS",
         "label": "Cloud IDS",
         "shapeScore": 0,
         "placementErrorPx": 0.09000000000000341,
@@ -585,7 +819,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Inference-API",
+        "id": "legacy-gcp__Cloud-Inference-API",
         "label": "Cloud Inference API",
         "shapeScore": 0,
         "placementErrorPx": 0,
@@ -594,7 +828,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Interconnect",
+        "id": "legacy-gcp__Cloud-Interconnect",
         "label": "Cloud Interconnect",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -603,7 +837,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Jobs-API",
+        "id": "legacy-gcp__Cloud-Jobs-API",
         "label": "Cloud Jobs API",
         "shapeScore": 0,
         "placementErrorPx": 0.09749999999999659,
@@ -612,7 +846,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Load-Balancing",
+        "id": "legacy-gcp__Cloud-Load-Balancing",
         "label": "Cloud Load Balancing",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -621,7 +855,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Logging",
+        "id": "legacy-gcp__Cloud-Logging",
         "label": "Cloud Logging",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -630,7 +864,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Media-Edge",
+        "id": "legacy-gcp__Cloud-Media-Edge",
         "label": "Cloud Media Edge",
         "shapeScore": 0,
         "placementErrorPx": 0.11499999999999488,
@@ -639,7 +873,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Monitoring",
+        "id": "legacy-gcp__Cloud-Monitoring",
         "label": "Cloud Monitoring",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -648,7 +882,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-NAT",
+        "id": "legacy-gcp__Cloud-NAT",
         "label": "Cloud NAT",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -657,7 +891,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Natural-Language-API",
+        "id": "legacy-gcp__Cloud-Natural-Language-API",
         "label": "Cloud Natural Language API",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -666,7 +900,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Network",
+        "id": "legacy-gcp__Cloud-Network",
         "label": "Cloud Network",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -675,7 +909,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Ops",
+        "id": "legacy-gcp__Cloud-Ops",
         "label": "Cloud Ops",
         "shapeScore": 0,
         "placementErrorPx": 0.10000000000000142,
@@ -684,16 +918,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Optimization-AI---Fleet-Routing-API",
-        "label": "Cloud Optimization AI Fleet Routing API",
-        "shapeScore": 0,
-        "placementErrorPx": 0.045000000000001705,
-        "elementCount": 9,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Cloud-Optimization-AI",
+        "id": "legacy-gcp__Cloud-Optimization-AI",
         "label": "Cloud Optimization AI",
         "shapeScore": 0,
         "placementErrorPx": 0.0799999999999983,
@@ -702,7 +927,16 @@
         "failing": false
       },
       {
-        "id": "Cloud-Router",
+        "id": "legacy-gcp__Cloud-Optimization-AI---Fleet-Routing-API",
+        "label": "Cloud Optimization AI Fleet Routing API",
+        "shapeScore": 0,
+        "placementErrorPx": 0.045000000000001705,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Cloud-Router",
         "label": "Cloud Router",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -711,7 +945,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Routes",
+        "id": "legacy-gcp__Cloud-Routes",
         "label": "Cloud Routes",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -720,16 +954,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Run-For-Anthos",
-        "label": "Cloud Run For Anthos",
-        "shapeScore": 0,
-        "placementErrorPx": 0.04624999999999968,
-        "elementCount": 2,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Cloud-Run",
+        "id": "legacy-gcp__Cloud-Run",
         "label": "Cloud Run",
         "shapeScore": 0,
         "placementErrorPx": 0.03624999999999989,
@@ -738,7 +963,16 @@
         "failing": false
       },
       {
-        "id": "Cloud-Scheduler",
+        "id": "legacy-gcp__Cloud-Run-For-Anthos",
+        "label": "Cloud Run For Anthos",
+        "shapeScore": 0,
+        "placementErrorPx": 0.04624999999999968,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Cloud-Scheduler",
         "label": "Cloud Scheduler",
         "shapeScore": 0,
         "placementErrorPx": 0.030000000000001137,
@@ -747,7 +981,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Security-Scanner",
+        "id": "legacy-gcp__Cloud-Security-Scanner",
         "label": "Cloud Security Scanner",
         "shapeScore": 0,
         "placementErrorPx": 0.09375,
@@ -756,7 +990,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Shell",
+        "id": "legacy-gcp__Cloud-Shell",
         "label": "Cloud Shell",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -765,7 +999,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Spanner",
+        "id": "legacy-gcp__Cloud-Spanner",
         "label": "Cloud Spanner",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -774,7 +1008,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-SQL",
+        "id": "legacy-gcp__Cloud-SQL",
         "label": "Cloud SQL",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -783,7 +1017,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Storage",
+        "id": "legacy-gcp__Cloud-Storage",
         "label": "Cloud Storage",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -792,7 +1026,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Tasks",
+        "id": "legacy-gcp__Cloud-Tasks",
         "label": "Cloud Tasks",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -801,7 +1035,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Test-Lab",
+        "id": "legacy-gcp__Cloud-Test-Lab",
         "label": "Cloud Test Lab",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -810,7 +1044,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-TPU",
+        "id": "legacy-gcp__Cloud-TPU",
         "label": "Cloud TPU",
         "shapeScore": 0,
         "placementErrorPx": 0,
@@ -819,7 +1053,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Translation-API",
+        "id": "legacy-gcp__Cloud-Translation-API",
         "label": "Cloud Translation API",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -828,7 +1062,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-Vision-API",
+        "id": "legacy-gcp__Cloud-Vision-API",
         "label": "Cloud Vision API",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -837,7 +1071,7 @@
         "failing": false
       },
       {
-        "id": "Cloud-VPN",
+        "id": "legacy-gcp__Cloud-VPN",
         "label": "Cloud VPN",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -846,7 +1080,7 @@
         "failing": false
       },
       {
-        "id": "Compute-Engine",
+        "id": "legacy-gcp__Compute-Engine",
         "label": "Compute Engine",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -855,7 +1089,7 @@
         "failing": false
       },
       {
-        "id": "Configuration-Management",
+        "id": "legacy-gcp__Configuration-Management",
         "label": "Configuration Management",
         "shapeScore": 0,
         "placementErrorPx": 0.08624999999999972,
@@ -864,7 +1098,7 @@
         "failing": false
       },
       {
-        "id": "Connectivity-Test",
+        "id": "legacy-gcp__Connectivity-Test",
         "label": "Connectivity Test",
         "shapeScore": 0,
         "placementErrorPx": 0.11375000000000313,
@@ -873,7 +1107,7 @@
         "failing": false
       },
       {
-        "id": "Connectors",
+        "id": "legacy-gcp__Connectors",
         "label": "Connectors",
         "shapeScore": 0,
         "placementErrorPx": 0.03125,
@@ -882,7 +1116,7 @@
         "failing": false
       },
       {
-        "id": "Contact-Center-AI",
+        "id": "legacy-gcp__Contact-Center-AI",
         "label": "Contact Center AI",
         "shapeScore": 0,
         "placementErrorPx": 0.09749999999999659,
@@ -891,7 +1125,7 @@
         "failing": false
       },
       {
-        "id": "Container-Optimized-OS",
+        "id": "legacy-gcp__Container-Optimized-OS",
         "label": "Container Optimized OS",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -900,7 +1134,7 @@
         "failing": false
       },
       {
-        "id": "Container-Registry",
+        "id": "legacy-gcp__Container-Registry",
         "label": "Container Registry",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -909,7 +1143,7 @@
         "failing": false
       },
       {
-        "id": "Data-Catalog",
+        "id": "legacy-gcp__Data-Catalog",
         "label": "Data Catalog",
         "shapeScore": 0,
         "placementErrorPx": 0.04999999999999716,
@@ -918,7 +1152,7 @@
         "failing": false
       },
       {
-        "id": "Data-Labeling",
+        "id": "legacy-gcp__Data-Labeling",
         "label": "Data Labeling",
         "shapeScore": 0,
         "placementErrorPx": 0.0625,
@@ -927,7 +1161,7 @@
         "failing": false
       },
       {
-        "id": "Data-Layers",
+        "id": "legacy-gcp__Data-Layers",
         "label": "Data Layers",
         "shapeScore": 0,
         "placementErrorPx": 0.04999999999999716,
@@ -936,7 +1170,7 @@
         "failing": false
       },
       {
-        "id": "Data-Loss-Prevention-API",
+        "id": "legacy-gcp__Data-Loss-Prevention-API",
         "label": "Data Loss Prevention API",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -945,7 +1179,7 @@
         "failing": false
       },
       {
-        "id": "Data-QnA",
+        "id": "legacy-gcp__Data-QnA",
         "label": "Data QnA",
         "shapeScore": 0,
         "placementErrorPx": 0.00999999999999801,
@@ -954,7 +1188,7 @@
         "failing": false
       },
       {
-        "id": "Data-Studio",
+        "id": "legacy-gcp__Data-Studio",
         "label": "Data Studio",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -963,7 +1197,7 @@
         "failing": false
       },
       {
-        "id": "Data-Transfer",
+        "id": "legacy-gcp__Data-Transfer",
         "label": "Data Transfer",
         "shapeScore": 0,
         "placementErrorPx": 0.10999999999999943,
@@ -972,7 +1206,7 @@
         "failing": false
       },
       {
-        "id": "Database-Migration-Service",
+        "id": "legacy-gcp__Database-Migration-Service",
         "label": "Database Migration Service",
         "shapeScore": 0,
         "placementErrorPx": 0.0799999999999983,
@@ -981,7 +1215,7 @@
         "failing": false
       },
       {
-        "id": "Dataflow",
+        "id": "legacy-gcp__Dataflow",
         "label": "Dataflow",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -990,7 +1224,7 @@
         "failing": false
       },
       {
-        "id": "Datalab",
+        "id": "legacy-gcp__Datalab",
         "label": "Datalab",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -999,7 +1233,7 @@
         "failing": false
       },
       {
-        "id": "Dataplex",
+        "id": "legacy-gcp__Dataplex",
         "label": "Dataplex",
         "shapeScore": 0,
         "placementErrorPx": 0.00999999999999801,
@@ -1008,7 +1242,7 @@
         "failing": false
       },
       {
-        "id": "Datapol",
+        "id": "legacy-gcp__Datapol",
         "label": "Datapol",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1017,7 +1251,7 @@
         "failing": false
       },
       {
-        "id": "Dataprep",
+        "id": "legacy-gcp__Dataprep",
         "label": "Dataprep",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1026,16 +1260,7 @@
         "failing": false
       },
       {
-        "id": "Dataproc-Metastore",
-        "label": "Dataproc Metastore",
-        "shapeScore": 0,
-        "placementErrorPx": 0.03625000000000256,
-        "elementCount": 4,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Dataproc",
+        "id": "legacy-gcp__Dataproc",
         "label": "Dataproc",
         "shapeScore": 0,
         "placementErrorPx": 0.0625,
@@ -1044,7 +1269,16 @@
         "failing": false
       },
       {
-        "id": "Datashare",
+        "id": "legacy-gcp__Dataproc-Metastore",
+        "label": "Dataproc Metastore",
+        "shapeScore": 0,
+        "placementErrorPx": 0.03625000000000256,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Datashare",
         "label": "Datashare",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1053,7 +1287,7 @@
         "failing": false
       },
       {
-        "id": "Datastore",
+        "id": "legacy-gcp__Datastore",
         "label": "Datastore",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1062,7 +1296,7 @@
         "failing": false
       },
       {
-        "id": "Datastream",
+        "id": "legacy-gcp__Datastream",
         "label": "Datastream",
         "shapeScore": 0,
         "placementErrorPx": 0.05250000000000199,
@@ -1071,7 +1305,7 @@
         "failing": false
       },
       {
-        "id": "Debugger",
+        "id": "legacy-gcp__Debugger",
         "label": "Debugger",
         "shapeScore": 0,
         "placementErrorPx": 0,
@@ -1080,7 +1314,7 @@
         "failing": false
       },
       {
-        "id": "Developer-Portal",
+        "id": "legacy-gcp__Developer-Portal",
         "label": "Developer Portal",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1089,25 +1323,7 @@
         "failing": false
       },
       {
-        "id": "Dialogflow-CX",
-        "label": "Dialogflow CX",
-        "shapeScore": 0,
-        "placementErrorPx": 0.007500000000000284,
-        "elementCount": 3,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Dialogflow-Insights",
-        "label": "Dialogflow Insights",
-        "shapeScore": 0,
-        "placementErrorPx": 0.00999999999999801,
-        "elementCount": 10,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Dialogflow",
+        "id": "legacy-gcp__Dialogflow",
         "label": "Dialogflow",
         "shapeScore": 0,
         "placementErrorPx": 0.0799999999999983,
@@ -1116,7 +1332,25 @@
         "failing": false
       },
       {
-        "id": "Document-AI",
+        "id": "legacy-gcp__Dialogflow-CX",
+        "label": "Dialogflow CX",
+        "shapeScore": 0,
+        "placementErrorPx": 0.007500000000000284,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Dialogflow-Insights",
+        "label": "Dialogflow Insights",
+        "shapeScore": 0,
+        "placementErrorPx": 0.00999999999999801,
+        "elementCount": 10,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Document-AI",
         "label": "Document AI",
         "shapeScore": 0,
         "placementErrorPx": 0.09375,
@@ -1125,7 +1359,7 @@
         "failing": false
       },
       {
-        "id": "Early-Access-Center",
+        "id": "legacy-gcp__Early-Access-Center",
         "label": "Early Access Center",
         "shapeScore": 0,
         "placementErrorPx": 0.03125,
@@ -1134,7 +1368,7 @@
         "failing": false
       },
       {
-        "id": "Error-Reporting",
+        "id": "legacy-gcp__Error-Reporting",
         "label": "Error Reporting",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1143,7 +1377,7 @@
         "failing": false
       },
       {
-        "id": "Eventarc",
+        "id": "legacy-gcp__Eventarc",
         "label": "Eventarc",
         "shapeScore": 0,
         "placementErrorPx": 0.09999999999999432,
@@ -1152,7 +1386,7 @@
         "failing": false
       },
       {
-        "id": "Filestore",
+        "id": "legacy-gcp__Filestore",
         "label": "Filestore",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1161,7 +1395,7 @@
         "failing": false
       },
       {
-        "id": "Financial-Services-Marketplace",
+        "id": "legacy-gcp__Financial-Services-Marketplace",
         "label": "Financial Services Marketplace",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1170,7 +1404,7 @@
         "failing": false
       },
       {
-        "id": "Firestore",
+        "id": "legacy-gcp__Firestore",
         "label": "Firestore",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1179,7 +1413,7 @@
         "failing": false
       },
       {
-        "id": "Fleet-Engine",
+        "id": "legacy-gcp__Fleet-Engine",
         "label": "Fleet Engine",
         "shapeScore": 0,
         "placementErrorPx": 0.04999999999999716,
@@ -1188,7 +1422,7 @@
         "failing": false
       },
       {
-        "id": "Free-Trial",
+        "id": "legacy-gcp__Free-Trial",
         "label": "Free Trial",
         "shapeScore": 0,
         "placementErrorPx": 0.006249999999999645,
@@ -1197,7 +1431,7 @@
         "failing": false
       },
       {
-        "id": "Game-Servers",
+        "id": "legacy-gcp__Game-Servers",
         "label": "Game Servers",
         "shapeScore": 0,
         "placementErrorPx": 0.0625,
@@ -1206,7 +1440,7 @@
         "failing": false
       },
       {
-        "id": "GCE-Systems-Management",
+        "id": "legacy-gcp__GCE-Systems-Management",
         "label": "GCE Systems Management",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1215,7 +1449,7 @@
         "failing": false
       },
       {
-        "id": "Genomics",
+        "id": "legacy-gcp__Genomics",
         "label": "Genomics",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1224,7 +1458,7 @@
         "failing": false
       },
       {
-        "id": "GKE-On-prem",
+        "id": "legacy-gcp__GKE-On-prem",
         "label": "GKE On Prem",
         "shapeScore": 0,
         "placementErrorPx": 0.08125000000000426,
@@ -1233,7 +1467,7 @@
         "failing": false
       },
       {
-        "id": "Google-Cloud-Marketplace",
+        "id": "legacy-gcp__Google-Cloud-Marketplace",
         "label": "Google Cloud Marketplace",
         "shapeScore": 0,
         "placementErrorPx": 0.19999999999999574,
@@ -1242,7 +1476,7 @@
         "failing": false
       },
       {
-        "id": "Google-Kubernetes-Engine",
+        "id": "legacy-gcp__Google-Kubernetes-Engine",
         "label": "Google Kubernetes Engine",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1251,7 +1485,7 @@
         "failing": false
       },
       {
-        "id": "Google-Maps-Platform",
+        "id": "legacy-gcp__Google-Maps-Platform",
         "label": "Google Maps Platform",
         "shapeScore": 0,
         "placementErrorPx": 0.0449999999999946,
@@ -1260,7 +1494,7 @@
         "failing": false
       },
       {
-        "id": "Healthcare-NLP-API",
+        "id": "legacy-gcp__Healthcare-NLP-API",
         "label": "Healthcare NLP API",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1269,7 +1503,7 @@
         "failing": false
       },
       {
-        "id": "Home",
+        "id": "legacy-gcp__Home",
         "label": "Home",
         "shapeScore": 0,
         "placementErrorPx": 0.02499999999999858,
@@ -1278,7 +1512,7 @@
         "failing": false
       },
       {
-        "id": "Identity-And-Access-Management",
+        "id": "legacy-gcp__Identity-And-Access-Management",
         "label": "Identity And Access Management",
         "shapeScore": 0,
         "placementErrorPx": 0.1599999999999966,
@@ -1287,7 +1521,7 @@
         "failing": false
       },
       {
-        "id": "Identity-Aware-Proxy",
+        "id": "legacy-gcp__Identity-Aware-Proxy",
         "label": "Identity Aware Proxy",
         "shapeScore": 0,
         "placementErrorPx": 0.08624999999999972,
@@ -1296,7 +1530,7 @@
         "failing": false
       },
       {
-        "id": "Identity-Platform",
+        "id": "legacy-gcp__Identity-Platform",
         "label": "Identity Platform",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1305,7 +1539,7 @@
         "failing": false
       },
       {
-        "id": "Iot-Core",
+        "id": "legacy-gcp__Iot-Core",
         "label": "IoT Core",
         "shapeScore": 0,
         "placementErrorPx": 0.13250000000000028,
@@ -1314,7 +1548,7 @@
         "failing": false
       },
       {
-        "id": "Iot-Edge",
+        "id": "legacy-gcp__Iot-Edge",
         "label": "IoT Edge",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1323,7 +1557,7 @@
         "failing": false
       },
       {
-        "id": "Key-Access-Justifications",
+        "id": "legacy-gcp__Key-Access-Justifications",
         "label": "Key Access Justifications",
         "shapeScore": 0,
         "placementErrorPx": 0.07875000000000032,
@@ -1332,7 +1566,7 @@
         "failing": false
       },
       {
-        "id": "Key-Management-Service",
+        "id": "legacy-gcp__Key-Management-Service",
         "label": "Key Management Service",
         "shapeScore": 0,
         "placementErrorPx": 0.1599999999999966,
@@ -1341,7 +1575,7 @@
         "failing": false
       },
       {
-        "id": "Kuberun",
+        "id": "legacy-gcp__Kuberun",
         "label": "Kuberun",
         "shapeScore": 0,
         "placementErrorPx": 0.07000000000000028,
@@ -1350,7 +1584,7 @@
         "failing": false
       },
       {
-        "id": "Launcher",
+        "id": "legacy-gcp__Launcher",
         "label": "Launcher",
         "shapeScore": 0,
         "placementErrorPx": 0.025000000000005684,
@@ -1359,7 +1593,7 @@
         "failing": false
       },
       {
-        "id": "Local-SSD",
+        "id": "legacy-gcp__Local-SSD",
         "label": "Local SSD",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1368,7 +1602,7 @@
         "failing": false
       },
       {
-        "id": "Looker",
+        "id": "legacy-gcp__Looker",
         "label": "Looker",
         "shapeScore": 0,
         "placementErrorPx": 0.05624999999999858,
@@ -1377,7 +1611,7 @@
         "failing": false
       },
       {
-        "id": "Managed-Service-For-Microsoft-Active-Directory",
+        "id": "legacy-gcp__Managed-Service-For-Microsoft-Active-Directory",
         "label": "Managed Service For Microsoft Active Directory",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1386,7 +1620,7 @@
         "failing": false
       },
       {
-        "id": "Media-Translation-API",
+        "id": "legacy-gcp__Media-Translation-API",
         "label": "Media Translation API",
         "shapeScore": 0,
         "placementErrorPx": 0.08125000000000426,
@@ -1395,7 +1629,7 @@
         "failing": false
       },
       {
-        "id": "Memorystore",
+        "id": "legacy-gcp__Memorystore",
         "label": "Memorystore",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1404,7 +1638,7 @@
         "failing": false
       },
       {
-        "id": "Migrate-For-Anthos",
+        "id": "legacy-gcp__Migrate-For-Anthos",
         "label": "Migrate For Anthos",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1413,7 +1647,7 @@
         "failing": false
       },
       {
-        "id": "Migrate-For-Compute-Engine",
+        "id": "legacy-gcp__Migrate-For-Compute-Engine",
         "label": "Migrate For Compute Engine",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1422,7 +1656,7 @@
         "failing": false
       },
       {
-        "id": "My-Cloud",
+        "id": "legacy-gcp__My-Cloud",
         "label": "My Cloud",
         "shapeScore": 0,
         "placementErrorPx": 0.04374999999999574,
@@ -1431,7 +1665,7 @@
         "failing": false
       },
       {
-        "id": "Network-Connectivity-Center",
+        "id": "legacy-gcp__Network-Connectivity-Center",
         "label": "Network Connectivity Center",
         "shapeScore": 0,
         "placementErrorPx": 0.02750000000000341,
@@ -1440,7 +1674,7 @@
         "failing": false
       },
       {
-        "id": "Network-Intelligence-Center",
+        "id": "legacy-gcp__Network-Intelligence-Center",
         "label": "Network Intelligence Center",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1449,7 +1683,7 @@
         "failing": false
       },
       {
-        "id": "Network-Security",
+        "id": "legacy-gcp__Network-Security",
         "label": "Network Security",
         "shapeScore": 0,
         "placementErrorPx": 0.11874999999999858,
@@ -1458,7 +1692,7 @@
         "failing": false
       },
       {
-        "id": "Network-Tiers",
+        "id": "legacy-gcp__Network-Tiers",
         "label": "Network Tiers",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1467,7 +1701,7 @@
         "failing": false
       },
       {
-        "id": "Network-Topology",
+        "id": "legacy-gcp__Network-Topology",
         "label": "Network Topology",
         "shapeScore": 0,
         "placementErrorPx": 0.03125,
@@ -1476,7 +1710,7 @@
         "failing": false
       },
       {
-        "id": "Onboarding",
+        "id": "legacy-gcp__Onboarding",
         "label": "Onboarding",
         "shapeScore": 0,
         "placementErrorPx": 0.050000000000000044,
@@ -1485,7 +1719,7 @@
         "failing": false
       },
       {
-        "id": "OS-Configuration-Management",
+        "id": "legacy-gcp__OS-Configuration-Management",
         "label": "OS Configuration Management",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1494,7 +1728,7 @@
         "failing": false
       },
       {
-        "id": "OS-Inventory-Management",
+        "id": "legacy-gcp__OS-Inventory-Management",
         "label": "OS Inventory Management",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1503,7 +1737,7 @@
         "failing": false
       },
       {
-        "id": "OS-Patch-Management",
+        "id": "legacy-gcp__OS-Patch-Management",
         "label": "OS Patch Management",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1512,7 +1746,7 @@
         "failing": false
       },
       {
-        "id": "Partner-Interconnect",
+        "id": "legacy-gcp__Partner-Interconnect",
         "label": "Partner Interconnect",
         "shapeScore": 0,
         "placementErrorPx": 0.1474999999999973,
@@ -1521,7 +1755,7 @@
         "failing": false
       },
       {
-        "id": "Partner-Portal",
+        "id": "legacy-gcp__Partner-Portal",
         "label": "Partner Portal",
         "shapeScore": 0,
         "placementErrorPx": 0.028750000000002274,
@@ -1530,7 +1764,7 @@
         "failing": false
       },
       {
-        "id": "Performance-Dashboard",
+        "id": "legacy-gcp__Performance-Dashboard",
         "label": "Performance Dashboard",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1539,7 +1773,7 @@
         "failing": false
       },
       {
-        "id": "Permissions",
+        "id": "legacy-gcp__Permissions",
         "label": "Permissions",
         "shapeScore": 0,
         "placementErrorPx": 0.012500000000002842,
@@ -1548,7 +1782,7 @@
         "failing": false
       },
       {
-        "id": "Persistent-Disk",
+        "id": "legacy-gcp__Persistent-Disk",
         "label": "Persistent Disk",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1557,7 +1791,7 @@
         "failing": false
       },
       {
-        "id": "Phishing-Protection",
+        "id": "legacy-gcp__Phishing-Protection",
         "label": "Phishing Protection",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1566,7 +1800,7 @@
         "failing": false
       },
       {
-        "id": "Policy-Analyzer",
+        "id": "legacy-gcp__Policy-Analyzer",
         "label": "Policy Analyzer",
         "shapeScore": 0,
         "placementErrorPx": 0.0625,
@@ -1575,7 +1809,7 @@
         "failing": false
       },
       {
-        "id": "Premium-Network-Tier",
+        "id": "legacy-gcp__Premium-Network-Tier",
         "label": "Premium Network Tier",
         "shapeScore": 0,
         "placementErrorPx": 0.06499999999999773,
@@ -1584,7 +1818,7 @@
         "failing": false
       },
       {
-        "id": "Private-Connectivity",
+        "id": "legacy-gcp__Private-Connectivity",
         "label": "Private Connectivity",
         "shapeScore": 0,
         "placementErrorPx": 0.09499999999999886,
@@ -1593,7 +1827,7 @@
         "failing": false
       },
       {
-        "id": "Private-Service-Connect",
+        "id": "legacy-gcp__Private-Service-Connect",
         "label": "Private Service Connect",
         "shapeScore": 0,
         "placementErrorPx": 0.03625000000000256,
@@ -1602,7 +1836,7 @@
         "failing": false
       },
       {
-        "id": "Producer-Portal",
+        "id": "legacy-gcp__Producer-Portal",
         "label": "Producer Portal",
         "shapeScore": 0,
         "placementErrorPx": 0.012500000000002842,
@@ -1611,7 +1845,7 @@
         "failing": false
       },
       {
-        "id": "Profiler",
+        "id": "legacy-gcp__Profiler",
         "label": "Profiler",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1620,7 +1854,7 @@
         "failing": false
       },
       {
-        "id": "Project",
+        "id": "legacy-gcp__Project",
         "label": "Project",
         "shapeScore": 0,
         "placementErrorPx": 0.05000000000000426,
@@ -1629,17 +1863,17 @@
         "failing": false
       },
       {
-        "id": "PubSub",
+        "id": "legacy-gcp__PubSub",
         "label": "Pub/Sub",
         "shapeScore": 0.00007748934521503293,
         "placementErrorPx": 0.125,
         "elementCount": 10,
         "auditIssues": [],
         "failing": false,
-        "image": "icons/PubSub.png"
+        "image": "icons/legacy-gcp__PubSub.png"
       },
       {
-        "id": "Quantum-Engine",
+        "id": "legacy-gcp__Quantum-Engine",
         "label": "Quantum Engine",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1648,7 +1882,7 @@
         "failing": false
       },
       {
-        "id": "Quotas",
+        "id": "legacy-gcp__Quotas",
         "label": "Quotas",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1657,7 +1891,7 @@
         "failing": false
       },
       {
-        "id": "Real-world-Insights",
+        "id": "legacy-gcp__Real-world-Insights",
         "label": "Real World Insights",
         "shapeScore": 0,
         "placementErrorPx": 0.08125000000000426,
@@ -1666,7 +1900,7 @@
         "failing": false
       },
       {
-        "id": "Recommendations-AI",
+        "id": "legacy-gcp__Recommendations-AI",
         "label": "Recommendations AI",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1675,7 +1909,7 @@
         "failing": false
       },
       {
-        "id": "Release-Notes",
+        "id": "legacy-gcp__Release-Notes",
         "label": "Release Notes",
         "shapeScore": 0,
         "placementErrorPx": 0.03125,
@@ -1684,7 +1918,7 @@
         "failing": false
       },
       {
-        "id": "Retail-API",
+        "id": "legacy-gcp__Retail-API",
         "label": "Retail API",
         "shapeScore": 0,
         "placementErrorPx": 0.06499999999999773,
@@ -1693,7 +1927,7 @@
         "failing": false
       },
       {
-        "id": "Risk-Manager",
+        "id": "legacy-gcp__Risk-Manager",
         "label": "Risk Manager",
         "shapeScore": 0,
         "placementErrorPx": 0.0625,
@@ -1702,7 +1936,7 @@
         "failing": false
       },
       {
-        "id": "Runtime-Config",
+        "id": "legacy-gcp__Runtime-Config",
         "label": "Runtime Config",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1711,7 +1945,7 @@
         "failing": false
       },
       {
-        "id": "Secret-Manager",
+        "id": "legacy-gcp__Secret-Manager",
         "label": "Secret Manager",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1720,34 +1954,7 @@
         "failing": false
       },
       {
-        "id": "Security-Command-Center",
-        "label": "Security Command Center",
-        "shapeScore": 0,
-        "placementErrorPx": 0.14000000000000057,
-        "elementCount": 5,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Security-Health-Advisor",
-        "label": "Security Health Advisor",
-        "shapeScore": 0,
-        "placementErrorPx": 0.125,
-        "elementCount": 5,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Security-Key-Enforcement",
-        "label": "Security Key Enforcement",
-        "shapeScore": 0,
-        "placementErrorPx": 0.06125000000000114,
-        "elementCount": 2,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Security",
+        "id": "legacy-gcp__Security",
         "label": "Security",
         "shapeScore": 0,
         "placementErrorPx": 0.0625,
@@ -1756,7 +1963,34 @@
         "failing": false
       },
       {
-        "id": "Service-Discovery",
+        "id": "legacy-gcp__Security-Command-Center",
+        "label": "Security Command Center",
+        "shapeScore": 0,
+        "placementErrorPx": 0.14000000000000057,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Security-Health-Advisor",
+        "label": "Security Health Advisor",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Security-Key-Enforcement",
+        "label": "Security Key Enforcement",
+        "shapeScore": 0,
+        "placementErrorPx": 0.06125000000000114,
+        "elementCount": 2,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__Service-Discovery",
         "label": "Service Discovery",
         "shapeScore": 0,
         "placementErrorPx": 0.0762500000000017,
@@ -1765,7 +1999,7 @@
         "failing": false
       },
       {
-        "id": "Speech-To-Text",
+        "id": "legacy-gcp__Speech-To-Text",
         "label": "Speech To Text",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1774,7 +2008,7 @@
         "failing": false
       },
       {
-        "id": "Stackdriver",
+        "id": "legacy-gcp__Stackdriver",
         "label": "Stackdriver",
         "shapeScore": 0,
         "placementErrorPx": 0.022500000000007958,
@@ -1783,7 +2017,7 @@
         "failing": false
       },
       {
-        "id": "Standard-Network-Tier",
+        "id": "legacy-gcp__Standard-Network-Tier",
         "label": "Standard Network Tier",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1792,7 +2026,7 @@
         "failing": false
       },
       {
-        "id": "Stream-Suite",
+        "id": "legacy-gcp__Stream-Suite",
         "label": "Stream Suite",
         "shapeScore": 0,
         "placementErrorPx": 0.09125000000000227,
@@ -1801,7 +2035,7 @@
         "failing": false
       },
       {
-        "id": "Support",
+        "id": "legacy-gcp__Support",
         "label": "Support",
         "shapeScore": 0,
         "placementErrorPx": 0.08124999999999982,
@@ -1810,7 +2044,7 @@
         "failing": false
       },
       {
-        "id": "Tensorflow-Enterprise",
+        "id": "legacy-gcp__Tensorflow-Enterprise",
         "label": "Tensorflow Enterprise",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1819,7 +2053,7 @@
         "failing": false
       },
       {
-        "id": "Text-To-Speech",
+        "id": "legacy-gcp__Text-To-Speech",
         "label": "Text To Speech",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1828,7 +2062,7 @@
         "failing": false
       },
       {
-        "id": "Tools-For-Powershell",
+        "id": "legacy-gcp__Tools-For-Powershell",
         "label": "Tools For Powershell",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1837,7 +2071,7 @@
         "failing": false
       },
       {
-        "id": "Trace",
+        "id": "legacy-gcp__Trace",
         "label": "Trace",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1846,7 +2080,7 @@
         "failing": false
       },
       {
-        "id": "Traffic-Director",
+        "id": "legacy-gcp__Traffic-Director",
         "label": "Traffic Director",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1855,16 +2089,7 @@
         "failing": false
       },
       {
-        "id": "Transfer-Appliance",
-        "label": "Transfer Appliance",
-        "shapeScore": 0,
-        "placementErrorPx": 0.06750000000000256,
-        "elementCount": 6,
-        "auditIssues": [],
-        "failing": false
-      },
-      {
-        "id": "Transfer",
+        "id": "legacy-gcp__Transfer",
         "label": "Transfer",
         "shapeScore": 0,
         "placementErrorPx": 0.0625,
@@ -1873,7 +2098,16 @@
         "failing": false
       },
       {
-        "id": "User-Preferences",
+        "id": "legacy-gcp__Transfer-Appliance",
+        "label": "Transfer Appliance",
+        "shapeScore": 0,
+        "placementErrorPx": 0.06750000000000256,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "legacy-gcp__User-Preferences",
         "label": "User Preferences",
         "shapeScore": 0,
         "placementErrorPx": 0.028750000000002274,
@@ -1882,7 +2116,7 @@
         "failing": false
       },
       {
-        "id": "Vertex-AI",
+        "id": "legacy-gcp__Vertex-AI",
         "label": "Vertex AI",
         "shapeScore": 0,
         "placementErrorPx": 0.11499999999999488,
@@ -1891,7 +2125,7 @@
         "failing": false
       },
       {
-        "id": "Video-Intelligence-API",
+        "id": "legacy-gcp__Video-Intelligence-API",
         "label": "Video Intelligence API",
         "shapeScore": 0,
         "placementErrorPx": 0.05124999999999602,
@@ -1900,7 +2134,7 @@
         "failing": false
       },
       {
-        "id": "Virtual-Private-Cloud",
+        "id": "legacy-gcp__Virtual-Private-Cloud",
         "label": "Virtual Private Cloud",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1909,7 +2143,7 @@
         "failing": false
       },
       {
-        "id": "Visual-Inspection",
+        "id": "legacy-gcp__Visual-Inspection",
         "label": "Visual Inspection",
         "shapeScore": 0,
         "placementErrorPx": 0.1075000000000017,
@@ -1918,7 +2152,7 @@
         "failing": false
       },
       {
-        "id": "VMware-Engine",
+        "id": "legacy-gcp__VMware-Engine",
         "label": "VMware Engine",
         "shapeScore": 0,
         "placementErrorPx": 0.04124999999999801,
@@ -1927,7 +2161,7 @@
         "failing": false
       },
       {
-        "id": "Web-Risk",
+        "id": "legacy-gcp__Web-Risk",
         "label": "Web Risk",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
@@ -1936,7 +2170,7 @@
         "failing": false
       },
       {
-        "id": "Web-Security-Scanner",
+        "id": "legacy-gcp__Web-Security-Scanner",
         "label": "Web Security Scanner",
         "shapeScore": 0,
         "placementErrorPx": 0.12749999999999773,
@@ -1945,7 +2179,7 @@
         "failing": false
       },
       {
-        "id": "Workflows",
+        "id": "legacy-gcp__Workflows",
         "label": "Workflows",
         "shapeScore": 0,
         "placementErrorPx": 0.06374999999999975,
@@ -1954,11 +2188,183 @@
         "failing": false
       },
       {
-        "id": "Workload-Identity-Pool",
+        "id": "legacy-gcp__Workload-Identity-Pool",
         "label": "Workload Identity Pool",
         "shapeScore": 0,
         "placementErrorPx": 0.125,
         "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__AI-Hypercomputer",
+        "label": "AI Hypercomputer",
+        "shapeScore": 0,
+        "placementErrorPx": 0.13250000000000028,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__AlloyDB",
+        "label": "AlloyDB",
+        "shapeScore": 0,
+        "placementErrorPx": 0.13250000000000028,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Anthos",
+        "label": "Anthos",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09250000000000114,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Apigee",
+        "label": "Apigee",
+        "shapeScore": 0.0001059490385124755,
+        "placementErrorPx": 0.005000000000002558,
+        "elementCount": 13,
+        "auditIssues": [],
+        "failing": false,
+        "image": "icons/unique-icons__Apigee.png"
+      },
+      {
+        "id": "unique-icons__BigQuery",
+        "label": "BigQuery",
+        "shapeScore": 0,
+        "placementErrorPx": 0.00749999999999984,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Cloud-Run",
+        "label": "Cloud Run",
+        "shapeScore": 0,
+        "placementErrorPx": 0.007500000000000284,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Cloud-Spanner",
+        "label": "Cloud Spanner",
+        "shapeScore": 0,
+        "placementErrorPx": 0.05250000000000199,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Cloud-SQL",
+        "label": "Cloud SQL",
+        "shapeScore": 0,
+        "placementErrorPx": 0.015000000000000568,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Cloud-Storage",
+        "label": "Cloud Storage",
+        "shapeScore": 0,
+        "placementErrorPx": 0.028750000000002274,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Compute-Engine",
+        "label": "Compute Engine",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0024999999999977263,
+        "elementCount": 16,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Distributed-Cloud",
+        "label": "Distributed Cloud",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09250000000000114,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__GKE",
+        "label": "GKE",
+        "shapeScore": 0,
+        "placementErrorPx": 0.13249999999999318,
+        "elementCount": 11,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Hyperdisk",
+        "label": "Hyperdisk",
+        "shapeScore": 0,
+        "placementErrorPx": 0.0049999999999954525,
+        "elementCount": 5,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Looker",
+        "label": "Looker",
+        "shapeScore": 0,
+        "placementErrorPx": 0.015000000000000568,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Mandiant",
+        "label": "Mandiant",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1424999999999983,
+        "elementCount": 4,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Security-Command-Center",
+        "label": "Security Command Center",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1424999999999983,
+        "elementCount": 7,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Security-Operations",
+        "label": "Security Operations",
+        "shapeScore": 0,
+        "placementErrorPx": 0.1424999999999983,
+        "elementCount": 6,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Threat-Intelligence",
+        "label": "Threat Intelligence",
+        "shapeScore": 0,
+        "placementErrorPx": 0.07499999999999574,
+        "elementCount": 9,
+        "auditIssues": [],
+        "failing": false
+      },
+      {
+        "id": "unique-icons__Vertex-AI",
+        "label": "Vertex AI",
+        "shapeScore": 0,
+        "placementErrorPx": 0.005000000000002558,
+        "elementCount": 16,
         "auditIssues": [],
         "failing": false
       }
@@ -1966,13 +2372,13 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-06T08:16:45.372Z",
-    "total": 25,
-    "meanShapeScore": 0.034392924214972566,
+    "generatedAt": "2026-08-07T03:24:18.444Z",
+    "total": 29,
+    "meanShapeScore": 0.031647372432723586,
     "worstShapeScore": 0.5800853249389056,
-    "meanPlacementErrorPx": 0.26044999999999985,
+    "meanPlacementErrorPx": 0.23142241379310344,
     "worstPlacementErrorPx": 4.03125,
-    "failing": 3,
+    "failing": 4,
     "auditIssueCount": 0,
     "cases": [
       {
@@ -2251,6 +2657,48 @@
         "auditIssues": [],
         "failing": false,
         "image": "torture/25-obb-degenerate.png"
+      },
+      {
+        "id": "26-root-svg-presentation-attrs",
+        "label": "Root Svg Presentation Attrs",
+        "shapeScore": 0,
+        "placementErrorPx": 0,
+        "elementCount": 1,
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/26-root-svg-presentation-attrs.png"
+      },
+      {
+        "id": "27-implicit-default-fill",
+        "label": "Implicit Default Fill",
+        "shapeScore": 0.057950695174669935,
+        "placementErrorPx": 0.09375,
+        "elementCount": 8,
+        "trap": "The SVG initial value of `fill` is black, not `none`. Nothing in the top row declares a fill, so all four shapes must render solid black. The converter used to treat \"undeclared\" and \"explicitly none\" as the same thing, which discarded all of it. The rows below are the controls: an explicit `fill=\"none\"` really does mean no fill and must stay hollow, and `none` has to be recognised whatever its case. Opacity interactions are deliberately not exercised here; 16-opacity.svg owns that. This file scores a few percent of shape error against the browser even when perfectly correct: the ink is a handful of small shapes, so the one-pixel antialiasing ring around the circle is a large fraction of the total. What is being asserted is the fill decision, and the baseline gate is what holds it.",
+        "auditIssues": [],
+        "failing": true,
+        "image": "torture/27-implicit-default-fill.png"
+      },
+      {
+        "id": "28-ancestor-style-and-class",
+        "label": "Ancestor Style And Class",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09375,
+        "elementCount": 9,
+        "trap": "Paint inherited from a <g> through `style=` and `class=`, not just through presentation attributes. Ancestors used to be read for attributes only, so `<g style=\"fill:...\">` and `<g class=\"...\">` contributed nothing and their children fell through to \"no fill and no stroke\". Nesting is included because the *nearest* declaration has to win, and because `style` outranks `class` on the same element.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/28-ancestor-style-and-class.png"
+      },
+      {
+        "id": "29-artboard-spanning-artwork",
+        "label": "Artboard Spanning Artwork",
+        "shapeScore": 0,
+        "placementErrorPx": 0.012500000000002842,
+        "elementCount": 3,
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/29-artboard-spanning-artwork.png"
       }
     ]
   }

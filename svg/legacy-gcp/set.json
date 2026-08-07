@@ -1,0 +1,160 @@
+{
+  "name": "Google Cloud (legacy)",
+  "description": "Google's pre-2026 Cloud Platform icon set. 216 product marks in flat two-tone vector, still the ones most architecture diagrams use.",
+  "source": "Google Cloud",
+  "sourceUrl": "https://cloud.google.com/icons",
+  "license": "Google Cloud Platform icons, redistributed under Google's terms of use",
+  "accent": "#4285F4",
+  "order": 10,
+  "tags": ["gcp", "google cloud"],
+
+  "_categories_note": "Six display buckets. Ten was too many to scan: the chip bar overflowed at every viewport width and four buckets held under twenty icons each, so the filter mostly told you which of ten near-synonymous labels Google had picked. The ten fine-grained matchers still exist below in `rules` - merging their keyword lists would change first-wins precedence and silently reclassify icons that are currently correct.",
+
+  "categories": [
+    {
+      "id": "ai-ml",
+      "name": "AI & ML",
+      "description": "Vertex AI, AutoML, Dialogflow, Speech & Vision APIs",
+      "color": "#8AB4F8"
+    },
+    {
+      "id": "compute",
+      "name": "Compute",
+      "description": "GKE, Compute Engine, Cloud Run, Functions, Apigee, Workflows",
+      "color": "#81C995"
+    },
+    {
+      "id": "data",
+      "name": "Data & Storage",
+      "description": "BigQuery, Dataflow, Cloud Storage, Spanner, Firestore",
+      "color": "#FDE293"
+    },
+    {
+      "id": "network-security",
+      "name": "Network & Security",
+      "description": "VPC, Load Balancing, DNS, IAM, KMS, BeyondCorp",
+      "color": "#C58AF9"
+    },
+    {
+      "id": "operations",
+      "name": "Operations",
+      "description": "Logging, Monitoring, Billing, Cloud Build, Artifact Registry",
+      "color": "#9BBBD4"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "description": "Marketplace, Healthcare, Maps, Gaming, IoT",
+      "color": "#BDC1C6"
+    }
+  ],
+
+  "_rules_note": "Ordered, first-wins, tested as substrings against the lowercased filename. Order is load-bearing: 'access' would swallow half the networking bucket if it ran earlier, and 'api' must run after the AI and compute buckets. Anything unmatched falls through to the category with no rules, i.e. 'general'.",
+
+  "rules": [
+    {
+      "category": "ai-ml",
+      "match": [
+        "ai", "automl", "dialogflow", "speech", "translation", "vision",
+        "natural-language", "agent", "nlp", "tensorflow", "datalab",
+        "inference", "recommendations", "retail-api"
+      ]
+    },
+    {
+      "category": "compute",
+      "match": [
+        "compute", "kubernetes", "gke", "anthos", "app-engine", "cloud-run",
+        "bare-metal", "vmware", "container", "gpu", "tpu", "kuberun",
+        "batch", "quantum"
+      ]
+    },
+    {
+      "category": "data",
+      "match": [
+        "storage", "sql", "spanner", "bigtable", "datastore", "firestore",
+        "memorystore", "filestore", "disk", "database", "ssd"
+      ]
+    },
+    {
+      "category": "data",
+      "match": [
+        "bigquery", "dataflow", "dataproc", "dataprep", "dataplex", "datapol",
+        "looker", "pubsub", "data-studio", "analytics", "data-catalog",
+        "data-loss", "datashare", "data-transfer", "data-qna", "insights"
+      ]
+    },
+    {
+      "category": "network-security",
+      "match": [
+        "dns", "cdn", "load-balancing", "nat", "vpn", "vpc",
+        "virtual-private", "interconnect", "router", "routes", "network",
+        "connectivity", "traffic", "firewall", "ip-addresses"
+      ]
+    },
+    {
+      "category": "network-security",
+      "match": [
+        "identity", "iam", "security", "secret", "armor", "key", "kms",
+        "beyondcorp", "binary-authorization", "certificate", "ekm", "hsm",
+        "ids", "phishing", "risk", "assured", "access", "permissions", "iap"
+      ]
+    },
+    {
+      "category": "compute",
+      "match": [
+        "apigee", "api", "gateway", "connector", "eventarc", "workflow",
+        "tasks", "scheduler", "composer", "functions", "endpoints"
+      ]
+    },
+    {
+      "category": "operations",
+      "match": [
+        "logging", "monitoring", "ops", "stackdriver", "trace", "debugger",
+        "profiler", "error-reporting", "os-", "billing", "asset", "audit",
+        "quotas", "policy", "dashboard", "gce-systems"
+      ]
+    },
+    {
+      "category": "operations",
+      "match": [
+        "build", "code", "deploy", "registry", "shell", "powershell",
+        "release-notes"
+      ]
+    }
+  ],
+
+  "_synonyms_note": "Bidirectional search aliases: any term in a group finds any other, so the Virtual Private Cloud icon answers to 'vpc' and 'vpc' answers to the full name. Matched whole-word against the normalised filename and title, which is why 'ids' does not fire on 'identity'.",
+
+  "synonyms": [
+    ["vpc", "virtual private cloud"],
+    ["gke", "kubernetes engine", "google kubernetes engine", "k8s"],
+    ["gce", "compute engine", "virtual machine", "vm"],
+    ["gcs", "cloud storage", "bucket"],
+    ["iam", "identity and access management"],
+    ["kms", "key management service"],
+    ["cdn", "content delivery network"],
+    ["dns", "domain name system"],
+    ["vpn", "virtual private network"],
+    ["nat", "network address translation"],
+    ["lb", "load balancing", "load balancer"],
+    ["pubsub", "pub sub", "publish subscribe", "message queue"],
+    ["bq", "bigquery", "big query", "data warehouse"],
+    ["gcf", "cloud functions", "serverless"],
+    ["gar", "artifact registry"],
+    ["gcr", "container registry"],
+    ["ai", "artificial intelligence", "ml", "machine learning"],
+    ["nlp", "natural language", "natural language api"],
+    ["ocr", "vision api"],
+    ["iap", "identity aware proxy"],
+    ["mig", "instance group", "managed instance group"],
+    ["tpu", "tensor processing unit"],
+    ["gpu", "graphics processing unit"],
+    ["ids", "intrusion detection"],
+    ["dlp", "data loss prevention"],
+    ["scc", "security command center"],
+    ["hsm", "hardware security module"],
+    ["ekm", "external key manager"],
+    ["iot", "internet of things"],
+    ["cicd", "ci cd", "cloud build", "continuous delivery"]
+  ]
+}

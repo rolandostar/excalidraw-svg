@@ -18,6 +18,8 @@ const DELIBERATE: Record<string, string> = {
     'Excalidraw has no gradient paint server, so a gradient flattens to one averaged colour. The number measures how much colour the format cannot carry.',
   '15-viewbox-offset':
     'Shape is exact. The placement number is an artefact of measuring a 0.5-unit hairline against a pixel grid, and sits just over the gate rather than loosening the threshold for everything else.',
+  '27-implicit-default-fill':
+    'The fill decision is correct. The ink is a handful of very small shapes, so the one-pixel antialiasing ring around the circle is a large fraction of the total area — the number measures the measurement, not the conversion. The baseline gate is what actually holds this case.',
 };
 
 /** From the "traps that were already fallen into" table in docs/ARCHITECTURE.md. */

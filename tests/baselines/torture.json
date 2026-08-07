@@ -23,5 +23,9 @@
   "22-mask-contentunits-obb": 0,
   "23-mask-units-obb-tight": 0,
   "24-luminosity-filterunits-default": 0,
-  "25-obb-degenerate": 0
+  "25-obb-degenerate": 0,
+  "26-root-svg-presentation-attrs": 0,
+  "27-implicit-default-fill": 0.057951,
+  "28-ancestor-style-and-class": 0,
+  "29-artboard-spanning-artwork": 0
 }

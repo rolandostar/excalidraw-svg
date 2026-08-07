@@ -1,10 +1,10 @@
 import React from 'react';
-import { GCPIcon, ExcalidrawOptions } from '../types';
+import { IconAsset, ExcalidrawOptions } from '../types';
 import { IconCard } from './IconCard';
 import { SearchX } from 'lucide-react';
 
 interface IconGridProps {
-  icons: GCPIcon[];
+  icons: IconAsset[];
   selectedIds: string[];
   setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
   isSelectionMode: boolean;
@@ -20,11 +20,16 @@ export const IconGrid: React.FC<IconGridProps> = ({
   options,
   onToast,
 }) => {
-  const handleToggleSelect = (id: string) => {
-    setSelectedIds(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
-  };
+  // Identity-stable, or `React.memo` on IconCard would never hold.
+  const handleToggleSelect = React.useCallback(
+    (id: string) => {
+      setSelectedIds(prev => (prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]));
+    },
+    [setSelectedIds]
+  );
+
+  // `selectedIds.includes` inside the map was O(n^2) over 216 cards.
+  const selected = React.useMemo(() => new Set(selectedIds), [selectedIds]);
 
   if (icons.length === 0) {
     return (
@@ -57,7 +62,7 @@ export const IconGrid: React.FC<IconGridProps> = ({
         <IconCard
           key={icon.id}
           icon={icon}
-          isSelected={selectedIds.includes(icon.id)}
+          isSelected={selected.has(icon.id)}
           isSelectionMode={isSelectionMode}
           onToggleSelect={handleToggleSelect}
           options={options}

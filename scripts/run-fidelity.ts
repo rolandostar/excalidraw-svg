@@ -39,9 +39,9 @@ import {
   buildExcalidrawLibraryPackage,
   buildExcalidrawClipboardData,
 } from '../src/utils/excalidrawGenerator';
-import { categorizeIcon, formatTitle } from '../src/utils/categorizer';
+import { IMPLICIT_CATEGORY, categorizeByRules, formatTitle } from '../src/utils/categorizer';
 import { collectUnsupportedFeatures, describeWarnings } from '../src/utils/svgSupport';
-import { GCPIcon } from '../src/types';
+import { IconAsset, IconSetManifest } from '../src/types';
 
 import { renderExcalidrawSceneInWindow, auditSceneFidelity } from './excalidrawRenderer';
 import { Box, inkBox, readViewBox } from './lib/raster';
@@ -106,18 +106,113 @@ function ensureDirs() {
   }
 }
 
-/** Mirrors `svgLoader.loadAllGCPIcons` so the harness feeds the shipped code the same shape of input. */
-function buildIcon(name: string, rawSvg: string): GCPIcon {
+/**
+ * One SVG on disk, plus the set it belongs to.
+ *
+ * `id` is the baseline key, so it has to be unique and stable. A file sitting
+ * directly in the input directory keeps its bare filename - that is the
+ * torture corpus, and its ids are referenced by name from the methodology page
+ * and the evidence manifest. A file inside a set folder is always prefixed
+ * `<set>__<name>`, even when nothing currently collides.
+ *
+ * Prefixing unconditionally is the point: two Google Cloud icon sets will
+ * share most of their filenames, and deriving the prefix from whether a
+ * collision happens to exist today would silently rename a baselined icon the
+ * moment a second set landed, quietly dropping it from the regression gate.
+ */
+interface Candidate {
+  id: string;
+  name: string;
+  setId: string;
+  absPath: string;
+}
+
+/** `svg/<set>/set.json`, or `{}` for a bare folder / a flat input directory. */
+const manifestCache = new Map<string, IconSetManifest>();
+
+function manifestFor(dir: string): IconSetManifest {
+  const cached = manifestCache.get(dir);
+  if (cached) return cached;
+
+  const file = path.join(dir, 'set.json');
+  let manifest: IconSetManifest = {};
+  if (fs.existsSync(file)) {
+    try {
+      manifest = JSON.parse(fs.readFileSync(file, 'utf-8')) as IconSetManifest;
+    } catch (err: any) {
+      console.warn(`  ! ${path.relative(process.cwd(), file)} is not valid JSON: ${err?.message}`);
+    }
+  }
+
+  manifestCache.set(dir, manifest);
+  return manifest;
+}
+
+/**
+ * Every `.svg` under `root`, recursing into set folders.
+ *
+ * A flat input directory still works unchanged - that is the torture corpus -
+ * and recursion is what lets `--input=svg` keep scoring the whole library now
+ * that it is split into `svg/<set>/`.
+ */
+function collectSvgFiles(root: string): Candidate[] {
+  const found: Candidate[] = [];
+
+  const walk = (dir: string, setId: string) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const abs = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        // The first level below the input root names the set; anything deeper
+        // is organisation inside that set and does not extend the prefix.
+        walk(abs, setId || entry.name);
+        continue;
+      }
+
+      if (!entry.name.toLowerCase().endsWith('.svg')) continue;
+
+      const name = path.basename(entry.name, '.svg');
+      found.push({
+        name,
+        setId: setId || path.basename(root),
+        absPath: abs,
+        id: setId ? `${setId}__${name}` : name,
+      });
+    }
+  };
+
+  walk(root, '');
+
+  const seen = new Set<string>();
+  for (const file of found) {
+    if (seen.has(file.id)) {
+      throw new Error(
+        `Duplicate baseline id "${file.id}": two files in the same set resolve to the same key.`
+      );
+    }
+    seen.add(file.id);
+  }
+
+  return found.sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/** Mirrors `iconSets.loadIconSet` so the harness feeds the shipped code the same shape of input. */
+function buildIcon(candidate: Candidate, rawSvg: string): IconAsset {
   const optimizedSvg = optimizeSvgString(rawSvg);
   const viewBox = readViewBox(optimizedSvg) ?? { x: 0, y: 0, width: 48, height: 48 };
-  const title = formatTitle(name);
+  const manifest = manifestFor(path.dirname(candidate.absPath));
+  const override = manifest.overrides?.[candidate.name] ?? {};
+  const categories = manifest.categories?.length ? manifest.categories : [IMPLICIT_CATEGORY];
+  const title = override.title?.trim() || formatTitle(candidate.name);
   const encoded = encodeURIComponent(optimizedSvg).replace(/'/g, '%27').replace(/"/g, '%22');
 
   return {
-    id: name,
-    name,
+    id: candidate.id,
+    setId: candidate.setId,
+    name: candidate.name,
     title,
-    category: categorizeIcon(name),
+    category:
+      override.category || categorizeByRules(candidate.name, manifest.rules ?? [], categories),
     tags: [],
     rawSvg: optimizedSvg,
     optimizedSvg,
@@ -134,28 +229,32 @@ function describeIssues(prefix: string, issues: ReturnType<typeof auditSceneFide
 async function run() {
   ensureDirs();
 
-  let files = fs.readdirSync(INPUT_DIR).filter(f => f.toLowerCase().endsWith('.svg'));
-  if (onlyFilter) files = files.filter(f => f.toLowerCase().includes(onlyFilter));
+  let files = collectSvgFiles(INPUT_DIR);
+  if (onlyFilter) files = files.filter(f => f.id.toLowerCase().includes(onlyFilter));
 
-  console.log(`Suite "${SUITE}": scoring ${files.length} SVG(s) from ${path.relative(process.cwd(), INPUT_DIR)}`);
+  const setIds = [...new Set(files.map(f => f.setId))];
+  console.log(
+    `Suite "${SUITE}": scoring ${files.length} SVG(s) from ${path.relative(process.cwd(), INPUT_DIR)}` +
+      (setIds.length > 1 ? ` across ${setIds.length} sets (${setIds.join(', ')})` : '')
+  );
 
   const baseline: Record<string, number> | null = fs.existsSync(BASELINE_FILE)
     ? JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf-8'))
     : null;
 
-  const icons: GCPIcon[] = [];
+  const icons: IconAsset[] = [];
   const metrics: IconMetrics[] = [];
   const startedAt = Date.now();
 
   for (let i = 0; i < files.length; i++) {
-    const filename = files[i];
-    const name = path.basename(filename, '.svg');
-    const rawSvg = fs.readFileSync(path.join(INPUT_DIR, filename), 'utf-8');
+    const candidate = files[i];
+    const name = candidate.id;
+    const rawSvg = fs.readFileSync(candidate.absPath, 'utf-8');
 
     const record: IconMetrics = {
       id: name,
-      title: formatTitle(name),
-      category: categorizeIcon(name),
+      title: formatTitle(candidate.name),
+      category: '',
       elementCount: 0,
       shapeScore: null,
       placementErrorPx: null,
@@ -165,8 +264,10 @@ async function run() {
     };
 
     try {
-      const icon = buildIcon(name, rawSvg);
+      const icon = buildIcon(candidate, rawSvg);
       icons.push(icon);
+      record.category = icon.category;
+      record.title = icon.title;
       record.optimizedBytes = icon.optimizedSvg.length;
 
       // Reported, never fatal: an approximation is a documented trade-off and
@@ -332,10 +433,23 @@ async function run() {
   });
 
   const regressions: string[] = [];
+  /**
+   * Ids the baseline has never seen.
+   *
+   * These are NOT gated - there is nothing to compare against - so they have
+   * to be reported. Adding a set otherwise buys it silent exemption from the
+   * regression suite, which is the failure mode this whole harness exists to
+   * prevent.
+   */
+  const unbaselined: string[] = [];
+
   if (baseline && !updateBaseline && !onlyFilter) {
     for (const [id, score] of Object.entries(currentScores)) {
       const before = baseline[id];
-      if (before === undefined) continue;
+      if (before === undefined) {
+        unbaselined.push(id);
+        continue;
+      }
       if (score > before + DEFAULT_THRESHOLDS.regressionSlack) {
         regressions.push(`${id}: ${(before * 100).toFixed(2)}% -> ${(score * 100).toFixed(2)}%`);
       }
@@ -381,6 +495,21 @@ Unsupported/approximated features (${flagged.length} file(s)):`);
   if (packageIssues.length) {
     console.log(`\nPackage-level issues (${packageIssues.length}):`);
     [...new Set(packageIssues)].slice(0, 20).forEach(i => console.log(`  ${i}`));
+  }
+
+  if (unbaselined.length) {
+    const bySet = new Map<string, number>();
+    unbaselined.forEach(id => {
+      const set = id.includes('__') ? id.slice(0, id.indexOf('__')) : '(root)';
+      bySet.set(set, (bySet.get(set) ?? 0) + 1);
+    });
+
+    console.log(`\nNOT GATED - ${unbaselined.length} file(s) have no baseline entry:`);
+    [...bySet].forEach(([set, n]) => console.log(`  ${set}  ${n} file(s)`));
+    console.log(
+      `  Review the scores above, then run with --update-baseline to accept them.\n` +
+        `  Until then these files can regress without failing anything.`
+    );
   }
 
   if (regressions.length) {

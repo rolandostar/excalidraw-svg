@@ -1,0 +1,88 @@
+{
+  "name": "Google Cloud products",
+  "description": "Individual product marks from Google's 2026 icon refresh — the flagship services, redrawn. Fewer icons than the legacy set, but these are the current artwork.",
+  "source": "Google Cloud",
+  "sourceUrl": "https://cloud.google.com/icons",
+  "license": "Google Cloud Platform icons, redistributed under Google's terms of use",
+  "accent": "#A142F4",
+  "order": 30,
+  "tags": ["gcp", "google cloud"],
+
+  "categories": [
+    {
+      "id": "ai-ml",
+      "name": "AI & ML",
+      "description": "Vertex AI and the AI Hypercomputer stack",
+      "color": "#8AB4F8"
+    },
+    {
+      "id": "compute",
+      "name": "Compute",
+      "description": "Cloud Run, GKE, Compute Engine, Anthos, Apigee",
+      "color": "#81C995"
+    },
+    {
+      "id": "data",
+      "name": "Data & Storage",
+      "description": "BigQuery, AlloyDB, Spanner, Cloud SQL, Cloud Storage, Looker",
+      "color": "#FDE293"
+    },
+    {
+      "id": "security",
+      "name": "Security",
+      "description": "Mandiant, Security Command Center, Security Operations",
+      "color": "#C58AF9"
+    },
+    {
+      "id": "general",
+      "name": "General",
+      "description": "Anything not matched by a rule above",
+      "color": "#BDC1C6"
+    }
+  ],
+
+  "_rules_note": "Ordered and first-wins, substring-matched against the filename. Written as explicit product names rather than short keywords: with only 19 files a clever pattern buys nothing and 'ai' alone is one new filename away from swallowing something it should not. 'general' is last and therefore the fallback; it is currently empty, and the chip bar hides empty buckets.",
+
+  "rules": [
+    {
+      "category": "ai-ml",
+      "match": ["ai-hypercomputer", "vertex"]
+    },
+    {
+      "category": "security",
+      "match": ["mandiant", "security", "threat"]
+    },
+    {
+      "category": "data",
+      "match": ["alloydb", "bigquery", "spanner", "sql", "storage", "hyperdisk", "looker"]
+    },
+    {
+      "category": "compute",
+      "match": ["anthos", "apigee", "cloud-run", "compute", "distributed", "gke"]
+    }
+  ],
+
+  "_synonyms_note": "Bidirectional search aliases: any term in a group finds any other. Product marks are the case where this matters most, because the short form is what people actually type.",
+
+  "synonyms": [
+    ["gke", "kubernetes", "k8s", "kubernetes engine", "containers"],
+    ["gce", "compute engine", "vm", "virtual machine"],
+    ["gcs", "cloud storage", "bucket", "object storage"],
+    ["bq", "bigquery", "data warehouse", "analytics"],
+    ["cloud sql", "sql", "mysql", "postgres", "database"],
+    ["alloydb", "postgresql", "postgres"],
+    ["cloud spanner", "spanner", "distributed sql"],
+    ["cloud run", "serverless", "containers", "faas"],
+    ["apigee", "api", "api gateway", "api management"],
+    ["anthos", "hybrid", "multicloud"],
+    ["distributed cloud", "gdc", "edge", "on prem"],
+    ["hyperdisk", "disk", "block storage"],
+    ["looker", "bi", "business intelligence", "dashboards"],
+    ["vertex ai", "vertex", "ml", "machine learning", "model garden"],
+    ["ai hypercomputer", "tpu", "gpu", "accelerator", "training"],
+    ["mandiant", "incident response", "forensics"],
+    ["security command center", "scc", "posture", "cspm"],
+    ["security operations", "secops", "siem", "soar"],
+    ["threat intelligence", "cti", "ioc", "threat feed"]
+  ]
+}

@@ -39,6 +39,30 @@ raw SVG string
 `DEFAULT_EXCALIDRAW_OPTIONS` (`src/utils/defaultOptions.ts`) is the single
 source of truth for export settings; the UI and the harness both read it.
 
+## Icon sets
+
+`svg/<set-id>/` is a set; `svg/<set-id>/set.json` optionally names and
+categorises it. `src/utils/iconSets.ts` discovers both with `import.meta.glob`,
+so a folder dropped into `svg/` needs no registration anywhere — Vite watches
+the glob patterns and invalidates the module when the match list changes.
+
+Two properties of that module are load-bearing:
+
+- **Discovery is cheap, materialisation is not.** `listIconSets()` reads only
+  manifests and the raw markup of the first eight files per set, and is what
+  the `/icons` gallery renders. `loadIconSet()` is where SVGO runs, so it is
+  per-set, on demand, and memoised. A tenth set costs the gallery one card, not
+  another second of optimisation.
+- **Category rules live in the manifest, not in code.** `categorizer.ts` keeps
+  only the matching engine and `formatTitle`. The GCP keyword lists moved
+  verbatim into `svg/legacy-gcp/set.json`, order preserved — the matcher is
+  first-wins, so reordering or merging the lists silently reclassifies icons.
+  There is a check for this: the six-bucket distribution is 51/40/35/34/29/27.
+
+Search aliases are declared as bidirectional `synonyms` groups and expanded
+into each icon's tag list at load time, which is why `vpc` and
+`virtual private cloud` find the same icon without either being canonical.
+
 ---
 
 ## Invariants

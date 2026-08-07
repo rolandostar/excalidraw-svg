@@ -1,6 +1,6 @@
 import * as pointsOnPathModule from 'points-on-path';
 import {
-  GCPIcon,
+  IconAsset,
   ExcalidrawOptions,
   ExcalidrawElement,
   ExcalidrawFile,
@@ -19,6 +19,7 @@ import {
   rectRegion,
   regionToBridgedRings,
   resolveFilledRegions,
+  signedArea,
   unionMultiPolygons,
 } from './pathRegions';
 import { LineCap, LineJoin, strokeToRegion } from './strokeOutline';
@@ -66,6 +67,20 @@ const MIN_STROKE_WIDTH = 0.25;
 
 /** The SVG initial value of the `fill` property. Undeclared is *not* `none`. */
 const DEFAULT_FILL = '#000000';
+
+/**
+ * How close to the artboard edge a shape must reach, as a fraction of the
+ * viewBox, before it is a background-plate candidate. Half a unit on the 24x24
+ * artboard these icons are authored against.
+ */
+const ARTBOARD_MARGIN_FRACTION = 0.5 / 24;
+
+/**
+ * Fraction of its own bounding box a shape must ink to count as a background
+ * plate rather than artwork. A rectangle is 1.0 and a full ellipse is pi/4;
+ * anything with real internal structure is far below both.
+ */
+const BACKGROUND_PLATE_SOLIDITY = 0.75;
 
 /** 2D Affine Matrix transformation representation: [a, b, c, d, e, f] */
 type Matrix2D = [number, number, number, number, number, number];
@@ -1440,10 +1455,35 @@ export function parseSvgToExcalidrawElements(
 
     if (uniqueRawShapes.length === 0) return [];
 
+    /**
+     * Drops a full-artboard background plate, which design tools emit on
+     * almost every export and which would otherwise paste as an opaque slab
+     * over whatever the user already had on the canvas.
+     *
+     * Two conditions, and both are necessary.
+     *
+     * The bounds test is expressed as a fraction of the *actual* viewBox. It
+     * used to be the literal constants `0.5` and `23.5`, hard-coded for a 24x24
+     * artboard and compared against root user-space coordinates - so on a
+     * `viewBox="0 0 32 32"` file, `23.5` sat at 73% of the width and any shape
+     * reaching that far was treated as a background.
+     *
+     * The solidity test is what stops the filter from eating artwork. Spanning
+     * the artboard does not make something a background: a silhouette logo
+     * spans it too. A background *plate* is solid - it fills essentially all of
+     * its own bounding box - whereas real artwork does not. The reported
+     * squirrel line-art measured 0.245 here, a rectangle measures 1.0, and a
+     * full-artboard ellipse measures pi/4 = 0.785.
+     */
     let activeShapes = uniqueRawShapes;
     if (activeShapes.length > 1) {
+      const marginX = vbW * ARTBOARD_MARGIN_FRACTION;
+      const marginY = vbH * ARTBOARD_MARGIN_FRACTION;
+
       const contentShapes = activeShapes.filter(shape => {
         let sMinX = Infinity, sMinY = Infinity, sMaxX = -Infinity, sMaxY = -Infinity;
+        let solidity = 0;
+
         if (shape.type === 'line' && shape.absPoints) {
           shape.absPoints.forEach(([x, y]) => {
             sMinX = Math.min(sMinX, x);
@@ -1451,13 +1491,23 @@ export function parseSvgToExcalidrawElements(
             sMaxX = Math.max(sMaxX, x);
             sMaxY = Math.max(sMaxY, y);
           });
+          const boxArea = (sMaxX - sMinX) * (sMaxY - sMinY);
+          solidity = boxArea > 0 ? Math.abs(signedArea(shape.absPoints)) / boxArea : 0;
         } else if (shape.type === 'ellipse' && shape.cx !== undefined && shape.rx !== undefined) {
           sMinX = shape.cx - shape.rx;
           sMinY = shape.cy! - shape.ry!;
           sMaxX = shape.cx + shape.rx;
           sMaxY = shape.cy! + shape.ry!;
+          solidity = Math.PI / 4;
         }
-        return !(sMinX <= 0.5 && sMinY <= 0.5 && sMaxX >= 23.5 && sMaxY >= 23.5);
+
+        const spansArtboard =
+          sMinX <= vbX + marginX &&
+          sMinY <= vbY + marginY &&
+          sMaxX >= vbX + vbW - marginX &&
+          sMaxY >= vbY + vbH - marginY;
+
+        return !(spansArtboard && solidity >= BACKGROUND_PLATE_SOLIDITY);
       });
       if (contentShapes.length > 0) activeShapes = contentShapes;
     }
@@ -1559,7 +1609,7 @@ export interface ItemLayout {
  * unit pitch, which silently overlapped neighbours as soon as a card grew -
  * long service names and any `iconScale` above 1 both did it.
  */
-export function measureExcalidrawItem(icon: GCPIcon, options: ExcalidrawOptions): ItemLayout {
+export function measureExcalidrawItem(icon: IconAsset, options: ExcalidrawOptions): ItemLayout {
   const iconWidth = Math.round(ICON_BASE_SIZE * options.iconScale);
   const iconHeight = iconWidth;
   const padding = options.showCard ? options.padding : 0;
@@ -1619,7 +1669,7 @@ export function measureExcalidrawItem(icon: GCPIcon, options: ExcalidrawOptions)
 }
 
 export function createExcalidrawItem(
-  icon: GCPIcon,
+  icon: IconAsset,
   options: ExcalidrawOptions,
   baseX = 0,
   baseY = 0
@@ -1706,7 +1756,7 @@ export function createExcalidrawItem(
  * with a short label and overlapped as soon as either grew.
  */
 function gridPitch(
-  icons: GCPIcon[],
+  icons: IconAsset[],
   options: ExcalidrawOptions,
   gutter: number
 ): { pitchX: number; pitchY: number } {
@@ -1722,7 +1772,7 @@ function gridPitch(
   return { pitchX: Math.ceil(widest) + gutter, pitchY: Math.ceil(tallest) + gutter };
 }
 
-export function buildExcalidrawLibraryPackage(icons: GCPIcon[], options: ExcalidrawOptions): ExcalidrawLibraryPackage {
+export function buildExcalidrawLibraryPackage(icons: IconAsset[], options: ExcalidrawOptions): ExcalidrawLibraryPackage {
   const allFiles: Record<string, ExcalidrawFile> = {};
   const { pitchX, pitchY } = gridPitch(icons, options, 32);
 
@@ -1759,7 +1809,7 @@ export function buildExcalidrawLibraryPackage(icons: GCPIcon[], options: Excalid
 }
 
 export function buildExcalidrawClipboardData(
-  icons: GCPIcon[],
+  icons: IconAsset[],
   options: ExcalidrawOptions
 ): { jsonText: string; excalidrawClipboardJson: string } {
   let allElements: ExcalidrawElement[] = [];

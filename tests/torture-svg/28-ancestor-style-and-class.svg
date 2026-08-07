@@ -1,0 +1,50 @@
+<!-- Paint inherited from a <g> through `style=` and `class=`, not just through
+     presentation attributes.
+
+     Ancestors used to be read for attributes only, so `<g style="fill:...">`
+     and `<g class="...">` contributed nothing and their children fell through
+     to "no fill and no stroke". Nesting is included because the *nearest*
+     declaration has to win, and because `style` outranks `class` on the same
+     element. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <style>
+    .blue { fill: #4285f4; }
+    .green { fill: #34a853; }
+    .thick { stroke: #ea4335; stroke-width: 1.5; }
+  </style>
+
+  <!-- style= on the group. -->
+  <g style="fill:#fbbc04">
+    <rect x="1" y="1" width="5" height="5"/>
+    <circle cx="10.5" cy="3.5" r="2.5"/>
+  </g>
+
+  <!-- class= on the group. -->
+  <g class="blue">
+    <rect x="15" y="1" width="5" height="5"/>
+  </g>
+
+  <!-- Nested: the nearer group wins over the outer one. -->
+  <g class="blue">
+    <g class="green">
+      <rect x="1" y="9" width="5" height="5"/>
+    </g>
+    <rect x="8" y="9" width="5" height="5"/>
+  </g>
+
+  <!-- style= outranks class= on the same ancestor. -->
+  <g class="blue" style="fill:#673ab7">
+    <rect x="15" y="9" width="5" height="5"/>
+  </g>
+
+  <!-- A child's own declaration still beats anything inherited. -->
+  <g style="fill:#fbbc04">
+    <rect x="1" y="17" width="5" height="5" fill="#202124"/>
+    <rect x="8" y="17" width="5" height="5" style="fill:#5f6368"/>
+  </g>
+
+  <!-- stroke and stroke-width inherited from a class on the group. -->
+  <g class="thick" style="fill:none">
+    <rect x="15.75" y="17.75" width="3.5" height="3.5"/>
+  </g>
+</svg>

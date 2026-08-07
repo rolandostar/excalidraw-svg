@@ -4,9 +4,12 @@ import { ConversionResultPanel } from '../components/ConversionResult';
 import { SvgDropzone, type SvgInput } from '../components/SvgDropzone';
 import { Link } from '../router';
 import { STATS, formatPct } from '../site';
+import { listIconSets, totalIconCount } from '../utils/iconSets';
 
 export function ConvertPage() {
   const [input, setInput] = useState<SvgInput | null>(null);
+  const setCount = listIconSets().length;
+  const iconCount = totalIconCount();
 
   return (
     <main className="page page-convert">
@@ -36,11 +39,11 @@ export function ConvertPage() {
           </span>
           <span className="next-card-body">
             <span className="next-card-title">
-              Need Google Cloud icons? <ArrowRight size={15} aria-hidden="true" />
+              Need a whole icon set? <ArrowRight size={15} aria-hidden="true" />
             </span>
             <span className="next-card-text">
-              {STATS.iconCount} of them, batteries included. Browse, restyle and export a
-              ready-made Excalidraw library.
+              {iconCount} icons across {setCount} ready-made set{setCount === 1 ? '' : 's'}.
+              Browse, restyle the lot at once and export an Excalidraw library.
             </span>
           </span>
         </Link>

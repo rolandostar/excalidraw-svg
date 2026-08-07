@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Copy, Check, Code, Eye, AlertTriangle } from 'lucide-react';
-import { GCPIcon, ExcalidrawOptions } from '../types';
+import { IconAsset, ExcalidrawOptions } from '../types';
 import { buildExcalidrawClipboardData, parseSvgToExcalidrawElements } from '../utils/excalidrawGenerator';
 import { auditSceneFidelity } from '../utils/sceneAudit';
 import { collectUnsupportedFeatures } from '../utils/svgSupport';
@@ -13,7 +13,7 @@ import iconBaseline from '../../tests/baselines/icons.json';
 interface LivePreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  icons: GCPIcon[];
+  icons: IconAsset[];
   options: ExcalidrawOptions;
 }
 
@@ -64,8 +64,9 @@ export const LivePreviewModal: React.FC<LivePreviewModalProps> = ({
           ellipses: elements.filter(e => e.type === 'ellipse').length,
           issues: auditSceneFidelity(elements),
           warnings: collectUnsupportedFeatures(icon.rawSvg),
-          // `svg/` filenames are the baseline keys.
-          baseline: BASELINE[icon.name] as number | undefined,
+          // Baseline keys are `<set>__<filename>`, matching the ids the
+          // fidelity harness assigns when it walks `svg/<set>/`.
+          baseline: BASELINE[`${icon.setId}__${icon.name}`] as number | undefined,
         };
       }),
     [targetIcons, options.iconScale, options.roughness]

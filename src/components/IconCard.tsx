@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { GCPIcon, ExcalidrawOptions } from '../types';
+import { IconAsset, ExcalidrawOptions, ExcalidrawElement } from '../types';
 import {
   buildExcalidrawClipboardData,
   parseSvgToExcalidrawElements,
@@ -10,7 +10,7 @@ import { ExcalidrawPreview } from './ExcalidrawPreview';
 import confetti from 'canvas-confetti';
 
 interface IconCardProps {
-  icon: GCPIcon;
+  icon: IconAsset;
   isSelected: boolean;
   isSelectionMode: boolean;
   onToggleSelect: (id: string) => void;
@@ -28,7 +28,48 @@ interface IconCardProps {
  */
 const MAX_PREVIEW_PX = 112;
 
-export const IconCard: React.FC<IconCardProps> = ({
+/**
+ * Conversion results, keyed by everything that can change them.
+ *
+ * `parseSvgToExcalidrawElements` runs a DOMParser, flattens every Bezier and
+ * then does polygon booleans for clips and masks. Multiplied by 216 cards it
+ * is the single most expensive thing on the page, and the icon-scale slider
+ * invalidates all of them at once. A per-card `useMemo` cannot help there
+ * because dragging back to a previous value re-does the work from scratch.
+ *
+ * Bounded so a long drag across the whole slider range cannot grow without
+ * limit; the map is insertion-ordered, so the oldest key is the first one.
+ */
+const MAX_CACHED_SCENES = 900;
+const sceneCache = new Map<string, ExcalidrawElement[]>();
+
+function convertIcon(
+  icon: IconAsset,
+  exportPx: number,
+  roughness: number
+): ExcalidrawElement[] {
+  const key = `${icon.id}|${exportPx}|${roughness}`;
+  const hit = sceneCache.get(key);
+  if (hit) return hit;
+
+  const elements = parseSvgToExcalidrawElements(
+    icon.rawSvg,
+    0,
+    0,
+    exportPx,
+    exportPx,
+    `card_${icon.id}`,
+    roughness
+  );
+
+  if (sceneCache.size >= MAX_CACHED_SCENES) {
+    sceneCache.delete(sceneCache.keys().next().value as string);
+  }
+  sceneCache.set(key, elements);
+  return elements;
+}
+
+const IconCardImpl: React.FC<IconCardProps> = ({
   icon,
   isSelected,
   isSelectionMode,
@@ -46,17 +87,8 @@ export const IconCard: React.FC<IconCardProps> = ({
   // fidelity, and a CSS mock cannot represent roughness at all - a sketch-mode
   // export looked identical to a clean one.
   const elements = React.useMemo(
-    () =>
-      parseSvgToExcalidrawElements(
-        icon.rawSvg,
-        0,
-        0,
-        exportPx,
-        exportPx,
-        `card_${icon.id}`,
-        options.roughness
-      ),
-    [icon.rawSvg, icon.id, exportPx, options.roughness]
+    () => convertIcon(icon, exportPx, options.roughness),
+    [icon, exportPx, options.roughness]
   );
 
   const frame = React.useMemo(
@@ -171,3 +203,10 @@ export const IconCard: React.FC<IconCardProps> = ({
     </div>
   );
 };
+
+/**
+ * Memoised because the grid renders 216 of these and the sidebar sits above
+ * them: without this, toggling a single checkbox or moving one slider one step
+ * re-rendered every card in the set.
+ */
+export const IconCard = React.memo(IconCardImpl);

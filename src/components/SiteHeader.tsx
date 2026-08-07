@@ -5,9 +5,18 @@ import { ThemeToggle } from './ThemeToggle';
 
 const NAV: { to: RoutePath; label: string }[] = [
   { to: '/', label: 'Convert' },
-  { to: '/icons', label: 'GCP Icons' },
+  { to: '/icons', label: 'Icon sets' },
   { to: '/methodology', label: 'How we test' },
 ];
+
+/**
+ * `/icons/legacy-gcp` is still the icons section, so the tab has to stay lit
+ * while a single set is open, not just on the gallery itself.
+ */
+function isActive(path: RoutePath, item: RoutePath): boolean {
+  if (path === item) return true;
+  return item !== '/' && path.startsWith(`${item}/`);
+}
 
 export function SiteHeader() {
   const { path } = useRouter();
@@ -30,7 +39,7 @@ export function SiteHeader() {
           <Link
             key={item.to}
             to={item.to}
-            className={`site-nav-link${path === item.to ? ' is-active' : ''}`}
+            className={`site-nav-link${isActive(path, item.to) ? ' is-active' : ''}`}
             aria-current={path === item.to ? 'page' : undefined}
           >
             {item.label}

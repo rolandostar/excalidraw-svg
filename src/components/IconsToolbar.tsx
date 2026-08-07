@@ -1,7 +1,6 @@
 import React from 'react';
 import { Search, Copy, Download, CheckSquare, Square, Sparkles, X } from 'lucide-react';
-import { GCPIcon, ExcalidrawOptions } from '../types';
-import { CATEGORIES } from '../utils/categorizer';
+import { IconAsset, IconCategory, ExcalidrawOptions } from '../types';
 import {
   buildExcalidrawLibraryPackage,
   buildExcalidrawClipboardData,
@@ -15,14 +14,23 @@ interface IconsToolbarProps {
   setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
   isSelectionMode: boolean;
   setIsSelectionMode: React.Dispatch<React.SetStateAction<boolean>>;
-  filteredIcons: GCPIcon[];
-  allIcons: GCPIcon[];
+  filteredIcons: IconAsset[];
+  allIcons: IconAsset[];
   options: ExcalidrawOptions;
   onOpenPreview: () => void;
   activeCategory: string;
   setActiveCategory: (id: string) => void;
   categoryCounts: Record<string, number>;
+  /** Filter chips, declared by the set's own `set.json`. */
+  categories: IconCategory[];
+  /** Used for the export filename, so a download says which set it came from. */
+  setName: string;
   onToast: (message: string) => void;
+}
+
+/** Turns "Google Cloud (legacy)" into "Google-Cloud-legacy" for a filename. */
+function toFileSlug(value: string): string {
+  return value.replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '') || 'Icons';
 }
 
 const GCP_COLORS = ['#4285F4', '#34A853', '#FBBC05', '#EA4335'];
@@ -49,13 +57,17 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
   activeCategory,
   setActiveCategory,
   categoryCounts,
+  categories,
+  setName,
   onToast,
 }) => {
   const isAllSelected = filteredIcons.length > 0 && selectedIds.length === filteredIcons.length;
 
-  const targetIcons = selectedIds.length > 0
-    ? allIcons.filter(i => selectedIds.includes(i.id))
-    : filteredIcons;
+  const targetIcons = React.useMemo(() => {
+    if (selectedIds.length === 0) return filteredIcons;
+    const selected = new Set(selectedIds);
+    return allIcons.filter(i => selected.has(i.id));
+  }, [allIcons, filteredIcons, selectedIds]);
 
   const celebrate = (particleCount: number) =>
     confetti({ particleCount, spread: 65, origin: { y: 0.15 }, colors: GCP_COLORS });
@@ -82,10 +94,11 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
 
     const a = document.createElement('a');
     a.href = url;
+    const slug = toFileSlug(setName);
     a.download =
       targetIcons.length === allIcons.length
-        ? 'Google-Cloud-Platform-Excalidraw.excalidrawlib'
-        : `GCP-Custom-Library-${targetIcons.length}-items.excalidrawlib`;
+        ? `${slug}-Excalidraw.excalidrawlib`
+        : `${slug}-${targetIcons.length}-items.excalidrawlib`;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -93,14 +106,26 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
     onToast(`Downloaded a library of ${targetIcons.length} item${targetIcons.length === 1 ? '' : 's'}`);
   };
 
-  const chips = [
-    { id: 'all', name: 'All', count: allIcons.length },
-    ...Object.values(CATEGORIES).map(c => ({
-      id: c.id,
-      name: c.name,
-      count: categoryCounts[c.id] ?? 0,
-    })),
-  ];
+  /**
+   * Empty buckets are dropped, and a set left with one bucket shows no bar.
+   *
+   * A category is allowed to be a declared-but-unused fallback - `rules` is
+   * first-wins and needs somewhere for an unmatched file to land - so offering
+   * a filter that is guaranteed to empty the grid would be a control that only
+   * ever does damage. The currently selected chip survives regardless, or
+   * clearing a search would yank the bar out from under the user.
+   */
+  const chips = React.useMemo(() => {
+    const populated = categories.filter(
+      c => (categoryCounts[c.id] ?? 0) > 0 || c.id === activeCategory
+    );
+    if (populated.length < 2) return [];
+
+    return [
+      { id: 'all', name: 'All', count: allIcons.length },
+      ...populated.map(c => ({ id: c.id, name: c.name, count: categoryCounts[c.id] ?? 0 })),
+    ];
+  }, [categories, categoryCounts, activeCategory, allIcons.length]);
 
   return (
     <div className="icons-toolbar">
@@ -110,7 +135,7 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
           <input
             type="search"
             className="search-input"
-            placeholder={`Search ${allIcons.length} icons — Cloud Run, BigQuery, Pub/Sub…`}
+            placeholder={`Search ${allIcons.length} icons in ${setName || 'this set'}…`}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             aria-label="Search icons"
@@ -167,20 +192,22 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
         </div>
       </div>
 
-      <div className="category-bar" role="tablist" aria-label="Icon categories">
-        {chips.map(chip => (
-          <button
-            key={chip.id}
-            role="tab"
-            aria-selected={activeCategory === chip.id}
-            className={`category-chip ${activeCategory === chip.id ? 'active' : ''}`}
-            onClick={() => setActiveCategory(chip.id)}
-          >
-            {chip.name}
-            <span className="count-badge">{chip.count}</span>
-          </button>
-        ))}
-      </div>
+      {chips.length > 0 && (
+        <div className="category-bar" role="tablist" aria-label="Icon categories">
+          {chips.map(chip => (
+            <button
+              key={chip.id}
+              role="tab"
+              aria-selected={activeCategory === chip.id}
+              className={`category-chip ${activeCategory === chip.id ? 'active' : ''}`}
+              onClick={() => setActiveCategory(chip.id)}
+            >
+              {chip.name}
+              <span className="count-badge">{chip.count}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,0 +1,52 @@
+{
+  "name": "Google Cloud categories",
+  "description": "The 26 category marks from Google's 2026 icon refresh — one per product area, for labelling a region of a diagram rather than a single service.",
+  "source": "Google Cloud",
+  "sourceUrl": "https://cloud.google.com/icons",
+  "license": "Google Cloud Platform icons, redistributed under Google's terms of use",
+  "accent": "#34A853",
+  "order": 20,
+  "tags": ["gcp", "google cloud", "category"],
+
+  "_categories_note": "Deliberately none. Every icon in this set *is* a category, so a second layer of filter chips over 26 items would sort categories into categories. The chip bar hides itself when a set declares a single bucket.",
+
+  "_overrides_note": "Four names lost an ampersand on the way through the filesystem: '&' survives in a folder name but not in the flattened filename, and 'AI _ Machine Learning' had already substituted the '_' for a character a path cannot hold. These restore the intended titles.",
+
+  "overrides": {
+    "AI-Machine-Learning": { "title": "AI & Machine Learning" },
+    "Hybrid-Multicloud": { "title": "Hybrid & Multicloud" },
+    "Maps-Geospatial": { "title": "Maps & Geospatial" },
+    "Web-Mobile": { "title": "Web & Mobile" }
+  },
+
+  "_synonyms_note": "Bidirectional search aliases. These matter more here than in a product set: nobody searches for the literal string 'Security Identity', they search 'iam'.",
+
+  "synonyms": [
+    ["ai", "artificial intelligence", "ml", "machine learning"],
+    ["agents", "agentic", "assistant"],
+    ["bi", "business intelligence", "reporting", "dashboards"],
+    ["containers", "kubernetes", "k8s", "docker"],
+    ["compute", "vm", "virtual machine", "instances"],
+    ["databases", "database", "db", "sql"],
+    ["data analytics", "analytics", "etl", "pipelines"],
+    ["developer tools", "devtools", "sdk", "cli"],
+    ["devops", "cicd", "ci cd", "continuous delivery"],
+    ["hybrid multicloud", "hybrid", "multicloud", "on prem"],
+    ["integration services", "integration", "messaging", "eventing"],
+    ["management tools", "governance", "admin"],
+    ["maps geospatial", "maps", "geospatial", "gis", "location"],
+    ["marketplace", "partners", "solutions"],
+    ["media services", "media", "video", "streaming"],
+    ["migration", "migrate", "lift and shift"],
+    ["mixed reality", "ar", "vr", "xr", "immersive"],
+    ["networking", "network", "vpc", "load balancing", "dns"],
+    ["observability", "monitoring", "logging", "tracing", "telemetry"],
+    ["operations", "ops", "sre", "incident"],
+    ["security identity", "security", "identity", "iam", "access"],
+    ["serverless computing", "serverless", "functions", "faas"],
+    ["storage", "object storage", "buckets", "files"],
+    ["web mobile", "web", "mobile", "frontend", "apps"],
+    ["web3", "blockchain", "crypto", "ledger"],
+    ["collaboration", "workspace", "teams"]
+  ]
+}
