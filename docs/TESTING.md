@@ -17,6 +17,18 @@ pnpm test:update             # accept current numbers as the new baseline
 pnpm test:torture:update
 ```
 
+The run fans out across `min(8, cores - 1)` child processes. Each file is
+scored independently and owns a unique output filename, so the only ordering
+guarantee needed is on the merge, which re-sorts by id. Two knobs:
+
+```bash
+--jobs=1                     # serial, for profiling or a clean stack trace
+--jobs=4                     # cap the fan-out
+```
+
+Results are identical either way. If they are not, that is a bug worth
+reporting, not a flake to retry.
+
 Any folder of SVGs can be scored:
 
 ```bash
@@ -138,6 +150,18 @@ defect immediately — a uniform edge band means a scale or offset problem, red
 only at corners means joins, radial hairlines mean bridged sliver holes.
 
 `tests/results/` is gitignored in full. Only `tests/baselines/` is committed.
+
+### What the run does and does not write
+
+A comparison triptych is only written when the diff is non-empty. On the icon
+corpus 258 of 261 files are pixel-identical, so writing all of them meant
+encoding 261 PNGs to publish six. Suites whose every case is published - the
+torture gallery shows passing cases too - pass `--comparisons=all`, which the
+`test:torture` scripts already do. The run prints how many were written.
+
+Per-file `.excalidraw` dumps are off by default and enabled with `--snapshots`.
+Nothing reads them: `tests/results/` is gitignored, so they cannot serve as a
+regression reference. They exist to inspect one conversion by hand.
 
 ## Adding a torture test
 

@@ -29,6 +29,9 @@ pnpm test:torture        # score the edge-case SVGs
 against the source SVG, and **fails on any regression** versus the committed
 baseline. Run it before and after every change to conversion code.
 
+It fans out across `min(8, cores - 1)` processes — 261 icons in ~44 s. Pass
+`--jobs=1` for a serial run; the results are identical either way.
+
 ## Current fidelity
 
 | suite | files | mean shape error | worst | worst placement | failing |

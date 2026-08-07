@@ -28,8 +28,11 @@
  */
 import './setupDom';
 
+import { fork } from 'child_process';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 import { DEFAULT_EXCALIDRAW_OPTIONS } from '../src/utils/defaultOptions';
 import { optimizeSvgString } from '../src/utils/svgOptimizer';
@@ -100,10 +103,45 @@ const onlyFilter = (() => {
   return flag ? flag.slice('--only='.length).toLowerCase() : null;
 })();
 
+/**
+ * Triptych policy.
+ *
+ * `scored` writes a comparison image only when the diff is non-empty. On the
+ * icon corpus 258 of 261 files are pixel-identical, so the default wrote 261
+ * 960x320 PNGs to publish six. `all` is required by any suite whose every case
+ * is published - the torture gallery shows all of them, passing included.
+ */
+const COMPARISON_MODE = (flag('comparisons') ?? 'scored') as 'all' | 'scored';
+if (!['all', 'scored'].includes(COMPARISON_MODE)) {
+  throw new Error(`--comparisons must be "all" or "scored", got "${COMPARISON_MODE}"`);
+}
+
+/**
+ * Per-file `.excalidraw` dumps. Nothing reads them - `tests/results/` is
+ * gitignored, so they cannot be a regression reference - they are a debugging
+ * aid for inspecting one conversion by hand. Off by default; 261 pretty-printed
+ * element payloads is a lot of I/O for output nobody opened.
+ */
+const WRITE_SNAPSHOTS = process.argv.includes('--snapshots');
+
+/**
+ * Worker fan-out. Each file is scored independently, so the only shared state
+ * is the output directory, and every file owns a unique filename in it.
+ */
+const MAX_JOBS = 8;
+const JOBS = (() => {
+  const requested = Number(flag('jobs') ?? 0);
+  if (Number.isFinite(requested) && requested > 0) return Math.floor(requested);
+  return Math.max(1, Math.min(MAX_JOBS, os.cpus().length - 1));
+})();
+
+/** Set on forked children; the value is the path they write their result to. */
+const WORKER_OUT = flag('worker-out');
+
 function ensureDirs() {
-  for (const dir of [RESULTS_DIR, ELEMENTS_DIR, COMPARISONS_DIR, path.dirname(BASELINE_FILE)]) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  const dirs = [RESULTS_DIR, COMPARISONS_DIR, path.dirname(BASELINE_FILE)];
+  if (WRITE_SNAPSHOTS) dirs.push(ELEMENTS_DIR);
+  for (const dir of dirs) fs.mkdirSync(dir, { recursive: true });
 }
 
 /**
@@ -226,46 +264,43 @@ function describeIssues(prefix: string, issues: ReturnType<typeof auditSceneFide
   return issues.map(i => `${prefix}: [${i.kind}] element #${i.elementIndex} (${i.elementType}) - ${i.detail}`);
 }
 
-async function run() {
-  ensureDirs();
+/** What one worker hands back for one file. */
+interface ScoredFile {
+  record: IconMetrics;
+  icon: IconAsset | null;
+  /** True when a triptych was actually written, for the run summary. */
+  wroteComparison: boolean;
+}
 
-  let files = collectSvgFiles(INPUT_DIR);
-  if (onlyFilter) files = files.filter(f => f.id.toLowerCase().includes(onlyFilter));
+/**
+ * Scores a single SVG.
+ *
+ * Pure with respect to other files - it reads one path and writes only to
+ * filenames derived from that file's id - which is what makes the fan-out
+ * below safe.
+ */
+async function scoreFile(candidate: Candidate): Promise<ScoredFile> {
+  const name = candidate.id;
+  const rawSvg = fs.readFileSync(candidate.absPath, 'utf-8');
+  let wroteComparison = false;
 
-  const setIds = [...new Set(files.map(f => f.setId))];
-  console.log(
-    `Suite "${SUITE}": scoring ${files.length} SVG(s) from ${path.relative(process.cwd(), INPUT_DIR)}` +
-      (setIds.length > 1 ? ` across ${setIds.length} sets (${setIds.join(', ')})` : '')
-  );
+  const record: IconMetrics = {
+    id: name,
+    title: formatTitle(candidate.name),
+    category: '',
+    elementCount: 0,
+    shapeScore: null,
+    placementErrorPx: null,
+    auditIssues: [],
+    rawBytes: rawSvg.length,
+    optimizedBytes: 0,
+  };
 
-  const baseline: Record<string, number> | null = fs.existsSync(BASELINE_FILE)
-    ? JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf-8'))
-    : null;
+  let icon: IconAsset | null = null;
 
-  const icons: IconAsset[] = [];
-  const metrics: IconMetrics[] = [];
-  const startedAt = Date.now();
-
-  for (let i = 0; i < files.length; i++) {
-    const candidate = files[i];
-    const name = candidate.id;
-    const rawSvg = fs.readFileSync(candidate.absPath, 'utf-8');
-
-    const record: IconMetrics = {
-      id: name,
-      title: formatTitle(candidate.name),
-      category: '',
-      elementCount: 0,
-      shapeScore: null,
-      placementErrorPx: null,
-      auditIssues: [],
-      rawBytes: rawSvg.length,
-      optimizedBytes: 0,
-    };
-
+  {
     try {
-      const icon = buildIcon(candidate, rawSvg);
-      icons.push(icon);
+      icon = buildIcon(candidate, rawSvg);
       record.category = icon.category;
       record.title = icon.title;
       record.optimizedBytes = icon.optimizedSvg.length;
@@ -313,10 +348,17 @@ async function run() {
 
         if (shape) {
           record.shapeScore = shape.score;
-          fs.writeFileSync(
-            path.join(COMPARISONS_DIR, `${name}.png`),
-            composeTriptych([shape.source, shape.scene, shape.diff])
-          );
+
+          // A pixel-identical pair produces a blank diff panel that nothing
+          // publishes and nobody opens. Encoding and writing it for every
+          // passing file was the single largest source of I/O in the run.
+          if (COMPARISON_MODE === 'all' || shape.mismatchedPixels > 0) {
+            fs.writeFileSync(
+              path.join(COMPARISONS_DIR, `${name}.png`),
+              composeTriptych([shape.source, shape.scene, shape.diff])
+            );
+            wroteComparison = true;
+          }
         }
       } else {
         record.shapeScore = 1;
@@ -332,33 +374,153 @@ async function run() {
       }
 
       // --- deterministic snapshot -----------------------------------------
-      fs.writeFileSync(
-        path.join(ELEMENTS_DIR, `${name}.excalidraw`),
-        JSON.stringify(
-          {
-            type: 'excalidraw',
-            version: 2,
-            source: 'excalidraw-gcp-test-suite',
-            elements: stabiliseElements(elements, name),
-            appState: { gridSize: null, viewBackgroundColor: '#ffffff' },
-            files: {},
-          },
-          null,
-          2
-        ),
-        'utf-8'
-      );
+      if (WRITE_SNAPSHOTS) {
+        fs.writeFileSync(
+          path.join(ELEMENTS_DIR, `${name}.excalidraw`),
+          JSON.stringify(
+            {
+              type: 'excalidraw',
+              version: 2,
+              source: 'excalidraw-gcp-test-suite',
+              elements: stabiliseElements(elements, name),
+              appState: { gridSize: null, viewBackgroundColor: '#ffffff' },
+              files: {},
+            },
+            null,
+            2
+          ),
+          'utf-8'
+        );
+      }
     } catch (err: any) {
       record.error = err?.message || String(err);
       record.shapeScore = 1;
     }
-
-    metrics.push(record);
-
-    if ((i + 1) % 25 === 0 || i + 1 === files.length) {
-      console.log(`  ${i + 1}/${files.length}`);
-    }
   }
+
+  return { record, icon, wroteComparison };
+}
+
+/** Round-robin, so a slow run of large files cannot land entirely on one worker. */
+function shard<T>(items: T[], buckets: number): T[][] {
+  const out: T[][] = Array.from({ length: buckets }, () => []);
+  items.forEach((item, i) => out[i % buckets].push(item));
+  return out;
+}
+
+/** Child entry point: score a slice, write it to a file, exit. */
+async function runWorker(outFile: string) {
+  const candidates: Candidate[] = JSON.parse(fs.readFileSync(`${outFile}.in`, 'utf-8'));
+  const results: ScoredFile[] = [];
+
+  for (const candidate of candidates) {
+    results.push(await scoreFile(candidate));
+    if (process.send) process.send({ done: 1 });
+  }
+
+  fs.writeFileSync(outFile, JSON.stringify(results), 'utf-8');
+}
+
+/**
+ * Scores every file, fanned out across `JOBS` child processes.
+ *
+ * Forking rather than threading because the scoring stack is a jsdom document
+ * plus Excalidraw's renderer reading bare globals, and giving each of those a
+ * private realm is the whole reason this is safe to parallelise at all.
+ */
+async function scoreAll(files: Candidate[]): Promise<ScoredFile[]> {
+  if (JOBS <= 1 || files.length < JOBS * 2) {
+    const out: ScoredFile[] = [];
+    for (let i = 0; i < files.length; i++) {
+      out.push(await scoreFile(files[i]));
+      if ((i + 1) % 25 === 0 || i + 1 === files.length) console.log(`  ${i + 1}/${files.length}`);
+    }
+    return out;
+  }
+
+  const shards = shard(files, JOBS).filter(s => s.length > 0);
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fidelity-'));
+  const self = fileURLToPath(import.meta.url);
+
+  let completed = 0;
+  const tick = () => {
+    completed++;
+    if (completed % 25 === 0 || completed === files.length) {
+      console.log(`  ${completed}/${files.length}`);
+    }
+  };
+
+  const runs = shards.map(
+    (slice, i) =>
+      new Promise<ScoredFile[]>((resolve, reject) => {
+        const outFile = path.join(tmpDir, `shard-${i}.json`);
+        fs.writeFileSync(`${outFile}.in`, JSON.stringify(slice), 'utf-8');
+
+        // Every flag the child needs to reproduce this run's output policy.
+        const args = [
+          `--worker-out=${outFile}`,
+          `--input=${INPUT_DIR}`,
+          `--name=${SUITE}`,
+          `--comparisons=${COMPARISON_MODE}`,
+          ...(WRITE_SNAPSHOTS ? ['--snapshots'] : []),
+        ];
+
+        const child = fork(self, args, { stdio: ['ignore', 'inherit', 'inherit', 'ipc'] });
+        child.on('message', (m: any) => m?.done && tick());
+        child.on('error', reject);
+        child.on('exit', code => {
+          if (code !== 0) return reject(new Error(`worker ${i} exited with code ${code}`));
+          try {
+            resolve(JSON.parse(fs.readFileSync(outFile, 'utf-8')));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      })
+  );
+
+  let settled: ScoredFile[][];
+  try {
+    settled = await Promise.all(runs);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+
+  // Re-sorted by id so the report, the summary and the console are ordered
+  // identically no matter how the shards happened to finish.
+  return settled.flat().sort((a, b) => a.record.id.localeCompare(b.record.id));
+}
+
+async function run() {
+  ensureDirs();
+
+  // A worker is handed its slice explicitly and must not re-walk the corpus.
+  if (WORKER_OUT) {
+    await runWorker(WORKER_OUT);
+    return;
+  }
+
+  let files = collectSvgFiles(INPUT_DIR);
+  if (onlyFilter) files = files.filter(f => f.id.toLowerCase().includes(onlyFilter));
+
+  const setIds = [...new Set(files.map(f => f.setId))];
+  const jobs = JOBS <= 1 || files.length < JOBS * 2 ? 1 : Math.min(JOBS, files.length);
+  console.log(
+    `Suite "${SUITE}": scoring ${files.length} SVG(s) from ${path.relative(process.cwd(), INPUT_DIR)}` +
+      (setIds.length > 1 ? ` across ${setIds.length} sets (${setIds.join(', ')})` : '') +
+      (jobs > 1 ? ` on ${jobs} workers` : '')
+  );
+
+  const baseline: Record<string, number> | null = fs.existsSync(BASELINE_FILE)
+    ? JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf-8'))
+    : null;
+
+  const startedAt = Date.now();
+  const scored = await scoreAll(files);
+
+  const metrics: IconMetrics[] = scored.map(s => s.record);
+  const icons: IconAsset[] = scored.map(s => s.icon).filter((i): i is IconAsset => i !== null);
+  const comparisonsWritten = scored.filter(s => s.wroteComparison).length;
 
   // --- whole-package checks ------------------------------------------------
   const packageIssues: string[] = [];
@@ -398,7 +560,7 @@ async function run() {
   );
 
   // --- summary -------------------------------------------------------------
-  const scored = metrics.filter(m => m.shapeScore !== null).map(m => m.shapeScore as number);
+  const shapeScores = metrics.filter(m => m.shapeScore !== null).map(m => m.shapeScore as number);
   const placements = metrics.filter(m => m.placementErrorPx !== null).map(m => m.placementErrorPx as number);
   const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
 
@@ -413,8 +575,8 @@ async function run() {
   const summary: Summary = {
     generatedAt: new Date().toISOString(),
     totalProcessed: metrics.length,
-    meanShapeScore: mean(scored),
-    worstShapeScore: scored.length ? Math.max(...scored) : 0,
+    meanShapeScore: mean(shapeScores),
+    worstShapeScore: shapeScores.length ? Math.max(...shapeScores) : 0,
     meanPlacementErrorPx: mean(placements),
     worstPlacementErrorPx: placements.length ? Math.max(...placements) : 0,
     failingIcons: failing.length,
@@ -475,6 +637,12 @@ async function run() {
   console.log(`  worst placement err  ${summary.worstPlacementErrorPx.toFixed(3)}px`);
   console.log(`  audit issues         ${summary.auditIssueCount}`);
   console.log(`  failing files        ${summary.failingIcons}/${summary.totalProcessed}`);
+  console.log(
+    `  triptychs written    ${comparisonsWritten}/${metrics.length}` +
+      (COMPARISON_MODE === 'scored'
+        ? `  (identical pairs skipped; --comparisons=all to force)`
+        : '')
+  );
 
   const flagged = metrics.filter(m => m.featureWarnings);
   if (flagged.length) {

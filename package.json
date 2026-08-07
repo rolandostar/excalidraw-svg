@@ -9,8 +9,8 @@
     "preview": "vite preview",
     "test": "tsx scripts/run-fidelity.ts --input=svg --name=icons",
     "test:update": "tsx scripts/run-fidelity.ts --input=svg --name=icons --update-baseline",
-    "test:torture": "tsx scripts/run-fidelity.ts --input=tests/torture-svg --name=torture",
-    "test:torture:update": "tsx scripts/run-fidelity.ts --input=tests/torture-svg --name=torture --update-baseline",
+    "test:torture": "tsx scripts/run-fidelity.ts --input=tests/torture-svg --name=torture --comparisons=all",
+    "test:torture:update": "tsx scripts/run-fidelity.ts --input=tests/torture-svg --name=torture --comparisons=all --update-baseline",
     "evidence": "tsx scripts/build-evidence.ts",
     "shoot": "tsx scripts/shoot.ts",
     "verify:fonts": "tsx scripts/verify-font-strip.ts"
