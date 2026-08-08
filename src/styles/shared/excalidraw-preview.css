@@ -1,0 +1,36 @@
+/* --- Excalidraw preview -------------------------------------------------
+ *
+ * `ExcalidrawPreview` renders the same markup on the convert page and inside
+ * every icon card, so its box lives here rather than in either page's sheet.
+ * The wrapper centres whatever is showing; the host is the node the exporter's
+ * SVG is inserted into.
+ */
+
+.excalidraw-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.excalidraw-preview-host,
+.excalidraw-preview-host > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * The host carries the `hidden` attribute until the export resolves, and a
+ * bare `display: block` overrides the UA's `[hidden] { display: none }`. Without
+ * this it kept its full-size box while empty, so the "Rendering…" note was
+ * pushed out of the centre of the pane and an errored preview still reserved
+ * the space its SVG would have taken.
+ */
+.excalidraw-preview-host[hidden] {
+  display: none;
+}
+
+.icon-preview-art > .excalidraw-preview {
+  width: 100%;
+  height: 100%;
+}

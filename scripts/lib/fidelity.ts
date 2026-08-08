@@ -48,27 +48,7 @@ function isInked(data: Uint8Array, i: number): boolean {
 }
 
 /**
- * Diffs two documents inside explicitly supplied user-space windows.
- *
- * Preferred over `compareShape` whenever the two windows are known to
- * correspond exactly. Framing each side on its own ink box sounds neutral but
- * is not: Excalidraw hardcodes `stroke-linecap: round`, so a stroked icon's
- * ink box is half a stroke wider than the source's on every open end. Fitting
- * that larger box to the same canvas shrinks the whole drawing and lights up
- * every edge in the diff, burying the local differences that actually matter.
- */
-export function compareInFrame(
-  sourceSvg: string,
-  sourceWindow: Box,
-  sceneSvg: string,
-  sceneWindow: Box,
-  size = 384
-): ShapeReport | null {
-  return compareRasterInFrame(rasteriseSource(sourceSvg, sourceWindow, size), sceneSvg, sceneWindow, size);
-}
-
-/**
- * The source half of `compareInFrame`, split out so it can be cached.
+ * The source half of a comparison, split out so it can be cached.
  *
  * It is a function of the input file and the framing constants only, which
  * makes it identical on every run - see `sourceCache.ts`.
@@ -77,7 +57,17 @@ export function rasteriseSource(sourceSvg: string, sourceWindow: Box, size: numb
   return rasterise(setViewBox(sourceSvg, sourceWindow), size, 'white');
 }
 
-/** `compareInFrame` with the source panel already rendered. */
+/**
+ * Diffs a rendered source panel against a scene, inside explicitly supplied
+ * user-space windows.
+ *
+ * The two windows are known to correspond exactly, which matters: framing each
+ * side on its own ink box sounds neutral but is not, because Excalidraw
+ * hardcodes `stroke-linecap: round`, so a stroked icon's ink box is half a
+ * stroke wider than the source's on every open end. Fitting that larger box to
+ * the same canvas shrinks the whole drawing and lights up every edge in the
+ * diff, burying the local differences that actually matter.
+ */
 export function compareRasterInFrame(
   source: Raster,
   sceneSvg: string,

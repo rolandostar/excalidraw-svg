@@ -1,0 +1,66 @@
+/*
+ * Stylesheet barrel. Import order is the cascade order, so it goes from the
+ * most general to the most specific: tokens, then the reset, then layout,
+ * then components, then whole pages.
+ *
+ * Each file owns its selectors outright. If a rule needs a companion at a
+ * breakpoint, that media query lives in the same file - nothing here should
+ * depend on which sheet happens to load later.
+ */
+
+/* Design tokens for both themes. */
+@import './tokens.css';
+/* Reset, document defaults, focus ring, global helpers. */
+@import './base.css';
+/* App shell, studio columns, page frame. */
+@import './layout.css';
+
+/* Buttons. */
+@import './ui/button.css';
+/* Bare inputs and code blocks. */
+@import './ui/form.css';
+/* Inline error/warning panels. */
+@import './ui/notice.css';
+/* Bottom-centre confirmation toast. */
+@import './ui/toast.css';
+/* Number strips on the marketing and doc pages. */
+@import './ui/stat.css';
+
+/* Sticky site header, nav and theme toggle. */
+@import './chrome/header.css';
+/* Site footer. */
+@import './chrome/footer.css';
+
+/* Options panel shell, sections and fields. */
+@import './options/sidebar.css';
+/* Preset buttons. */
+@import './options/preset.css';
+/* Toggle switch. */
+@import './options/switch.css';
+/* Segmented control. */
+@import './options/segmented.css';
+/* Font picker, previewed in its own faces. */
+@import './options/font-picker.css';
+/* Colour swatches and the hex field. */
+@import './options/color-field.css';
+
+/* Icon library toolbar, search and category chips. */
+@import './icons/toolbar.css';
+/* Icon grid and cards. */
+@import './icons/grid.css';
+/* Per-card preview stage and captions. */
+@import './icons/preview.css';
+/* Breadcrumb on a single set page. */
+@import './icons/breadcrumb.css';
+
+/* Convert page: hero, dropzone, comparison, next steps. */
+@import './pages/convert.css';
+/* Prose pages. */
+@import './pages/doc.css';
+/* Methodology page: trap table and evidence cards. */
+@import './pages/methodology.css';
+/* Icon set gallery. */
+@import './pages/icon-sets.css';
+
+/* Shared by the convert page and the icon grid; last so either can size it. */
+@import './shared/excalidraw-preview.css';

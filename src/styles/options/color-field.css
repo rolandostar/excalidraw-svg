@@ -1,0 +1,106 @@
+/* --- Colour swatches ---------------------------------------------------- */
+
+.color-picker-grid {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.color-swatch {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  /* Outlined rather than bare: white and transparent swatches are otherwise
+     indistinguishable from the panel behind them in light mode. */
+  border: 1px solid var(--border-color);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  color: var(--on-accent);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.color-swatch[data-transparent] {
+  border-style: dashed;
+  border-color: var(--text-muted);
+}
+
+/*
+ * Light swatches need a dark tick, or the check disappears into the fill.
+ *
+ * Keyed off `data-tone`, which `Swatch` sets from the colour's luminance. The
+ * previous `[style*="#ffffff"]` selector list could never match: React
+ * serialises the inline background as `rgb(255, 255, 255)`, so every light
+ * swatch was drawing a white tick on a white fill.
+ */
+.color-swatch[data-tone='light'],
+.color-swatch[data-transparent] {
+  color: #0f172a;
+}
+
+.color-swatch:hover {
+  transform: scale(1.12);
+}
+
+.color-swatch.active {
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--gcp-blue);
+}
+
+/*
+ * The custom-colour swatch wraps a real `<input type="color">`.
+ *
+ * The input is scaled to fill the swatch and made transparent rather than
+ * hidden with `display: none` - a hidden input is not focusable, and the
+ * native colour picker cannot be opened from the keyboard at all once it is.
+ */
+.color-swatch-custom {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-style: dashed;
+}
+
+.color-swatch-custom:hover {
+  color: var(--text-primary);
+}
+
+.color-swatch-custom input[type="color"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.color-swatch-custom:focus-within {
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--gcp-blue);
+}
+
+.color-hex-input {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.45rem;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.color-hex-input:focus {
+  outline: none;
+  border-color: var(--gcp-blue);
+}
+
+/* Flagged while typing, not corrected: the value only commits on blur. */
+.color-hex-input[aria-invalid="true"] {
+  border-color: var(--gcp-red);
+}

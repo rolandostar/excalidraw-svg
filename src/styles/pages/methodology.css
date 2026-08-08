@@ -1,0 +1,137 @@
+/* --- Methodology: trap table and evidence gallery ----------------------- */
+
+.trap-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.trap-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 34%) 1fr;
+  gap: 1rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.83rem;
+  line-height: 1.55;
+  border-top: 1px solid var(--border-color);
+}
+
+.trap-row:first-child {
+  border-top: none;
+}
+
+.trap-mistake {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+code.trap-mistake {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.trap-consequence {
+  color: var(--text-secondary);
+}
+
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.case-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  margin: 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
+.case-card.is-failing {
+  border-color: var(--danger-border);
+}
+
+.case-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.case-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.case-score {
+  flex-shrink: 0;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: rgba(52, 168, 83, 0.15);
+  color: var(--gcp-green);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.case-score.is-failing {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+/* White regardless of theme: the strips are rasterised on white, and a dark
+   backing would hide exactly the light strokes most likely to be wrong. */
+.case-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+
+.case-trap {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.case-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.case-deliberate {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.case-deliberate svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 640px) {
+  .trap-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

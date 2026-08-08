@@ -16,6 +16,8 @@ export interface EvidenceCase {
   featureWarnings?: string;
   auditIssues: string[];
   failing: boolean;
+  /** Set when the case is meant to fail. The text says why. */
+  expectedFailureReason?: string;
   image?: string;
 }
 

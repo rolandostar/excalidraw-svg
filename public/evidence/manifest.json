@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-07T03:24:32.645Z",
+  "builtAt": "2026-08-08T06:49:10.635Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,7 +7,7 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-07T03:23:59.324Z",
+    "generatedAt": "2026-08-08T06:48:15.479Z",
     "total": 261,
     "meanShapeScore": 0.000004493184497008677,
     "worstShapeScore": 0.000989282769991756,
@@ -2372,7 +2372,7 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-07T03:24:18.444Z",
+    "generatedAt": "2026-08-08T06:47:46.161Z",
     "total": 29,
     "meanShapeScore": 0.031647372432723586,
     "worstShapeScore": 0.5800853249389056,
@@ -2544,6 +2544,7 @@
         "trap": "Non-zero, non-square, fractional viewBox origin. Hard-coding a 24x24 artboard or assuming origin 0,0 misplaces everything.",
         "auditIssues": [],
         "failing": true,
+        "expectedFailureReason": "The shape is exact. The placement number comes from measuring a 0.5-unit hairline against a pixel grid. It sits just over the gate, and the gate stays where it is for everything else.",
         "image": "torture/15-viewbox-offset.png"
       },
       {
@@ -2567,6 +2568,7 @@
         "featureWarnings": "approximated: gradient fill x2",
         "auditIssues": [],
         "failing": true,
+        "expectedFailureReason": "Excalidraw has no gradient paint. A gradient flattens to one averaged colour, and this number is how much colour the format cannot carry.",
         "image": "torture/17-gradients.png"
       },
       {
@@ -2601,6 +2603,7 @@
         "featureWarnings": "dropped: <text> x1; dropped: <pattern> x1; approximated: <filter> x1; approximated: stroke-dasharray x1; approximated: marker x2; approximated: skew transform x1",
         "auditIssues": [],
         "failing": true,
+        "expectedFailureReason": "One of everything the converter refuses to guess at. The requirement is that each feature is reported, not that it renders. A low score here would mean something was quietly approximated.",
         "image": "torture/20-unsupported-features.png"
       },
       {
@@ -2677,6 +2680,7 @@
         "trap": "The SVG initial value of `fill` is black, not `none`. Nothing in the top row declares a fill, so all four shapes must render solid black. The converter used to treat \"undeclared\" and \"explicitly none\" as the same thing, which discarded all of it. The rows below are the controls: an explicit `fill=\"none\"` really does mean no fill and must stay hollow, and `none` has to be recognised whatever its case. Opacity interactions are deliberately not exercised here; 16-opacity.svg owns that. This file scores a few percent of shape error against the browser even when perfectly correct: the ink is a handful of small shapes, so the one-pixel antialiasing ring around the circle is a large fraction of the total. What is being asserted is the fill decision, and the baseline gate is what holds it.",
         "auditIssues": [],
         "failing": true,
+        "expectedFailureReason": "The fill decision is correct. The ink is a few very small shapes, so the one-pixel antialiasing ring around the circle is a large share of the total area.",
         "image": "torture/27-implicit-default-fill.png"
       },
       {

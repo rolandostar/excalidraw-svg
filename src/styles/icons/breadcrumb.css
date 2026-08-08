@@ -1,0 +1,47 @@
+/* --- Breadcrumb on a single set page ------------------------------------ */
+
+.set-breadcrumb {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  min-width: 0;
+}
+
+.set-breadcrumb-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.set-breadcrumb-back:hover {
+  color: var(--gcp-blue);
+}
+
+.set-breadcrumb-current {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.set-breadcrumb-desc {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .set-breadcrumb-desc {
+    display: none;
+  }
+}

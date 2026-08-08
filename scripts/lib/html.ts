@@ -1,87 +1,4 @@
-import { PNG } from 'pngjs';
-import { Raster } from './raster';
-
-export interface IconMetrics {
-  id: string;
-  title: string;
-  category: string;
-  elementCount: number;
-  /** Mismatched pixels / union ink pixels, 0..1. */
-  shapeScore: number | null;
-  /** Largest edge or size error in output pixels. */
-  placementErrorPx: number | null;
-  auditIssues: string[];
-  /** Human-readable list of features that cannot be converted exactly. */
-  featureWarnings?: string;
-  rawBytes: number;
-  optimizedBytes: number;
-  error?: string;
-}
-
-export interface Summary {
-  generatedAt: string;
-  totalProcessed: number;
-  meanShapeScore: number;
-  worstShapeScore: number;
-  meanPlacementErrorPx: number;
-  worstPlacementErrorPx: number;
-  failingIcons: number;
-  auditIssueCount: number;
-  thresholds: Thresholds;
-  icons: IconMetrics[];
-}
-
-export interface Thresholds {
-  shapeScore: number;
-  placementErrorPx: number;
-  /** Extra shape-score slack allowed against the committed baseline. */
-  regressionSlack: number;
-}
-
-export const DEFAULT_THRESHOLDS: Thresholds = {
-  shapeScore: 0.02,
-  placementErrorPx: 0.5,
-  regressionSlack: 0.001,
-};
-
-/** Horizontal strip: source | excalidraw | diff, separated by grey gutters. */
-export function composeTriptych(panels: Raster[], gutter = 8): Buffer {
-  const height = Math.max(...panels.map(p => p.height));
-  const width = panels.reduce((sum, p) => sum + p.width, 0) + gutter * (panels.length - 1);
-  const out = new PNG({ width, height });
-
-  out.data.fill(0xff);
-  for (let i = 3; i < out.data.length; i += 4) out.data[i] = 0xff;
-
-  let offsetX = 0;
-  for (const panel of panels) {
-    for (let y = 0; y < panel.height; y++) {
-      for (let x = 0; x < panel.width; x++) {
-        const src = (y * panel.width + x) * 4;
-        const dst = (y * width + (x + offsetX)) * 4;
-        out.data[dst] = panel.data[src];
-        out.data[dst + 1] = panel.data[src + 1];
-        out.data[dst + 2] = panel.data[src + 2];
-        out.data[dst + 3] = 0xff;
-      }
-    }
-    offsetX += panel.width;
-    if (offsetX < width) {
-      for (let y = 0; y < height; y++) {
-        for (let x = offsetX; x < Math.min(offsetX + gutter, width); x++) {
-          const dst = (y * width + x) * 4;
-          out.data[dst] = 0xda;
-          out.data[dst + 1] = 0xdc;
-          out.data[dst + 2] = 0xe0;
-          out.data[dst + 3] = 0xff;
-        }
-      }
-      offsetX += gutter;
-    }
-  }
-
-  return PNG.sync.write(out);
-}
+import { Summary, isFailing } from './thresholds';
 
 const pct = (v: number | null) => (v === null ? 'n/a' : `${(v * 100).toFixed(2)}%`);
 const px = (v: number | null) => (v === null ? 'n/a' : `${v.toFixed(2)}px`);
@@ -91,11 +8,7 @@ export function buildHtmlReport(summary: Summary, baseline: Record<string, numbe
 
   const cards = rows
     .map(icon => {
-      const failing =
-        icon.error ||
-        icon.auditIssues.length > 0 ||
-        (icon.shapeScore ?? 1) > summary.thresholds.shapeScore ||
-        (icon.placementErrorPx ?? 99) > summary.thresholds.placementErrorPx;
+      const failing = isFailing(icon, summary.thresholds);
 
       const base = baseline?.[icon.id];
       const delta =

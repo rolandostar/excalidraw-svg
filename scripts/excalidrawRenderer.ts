@@ -33,7 +33,7 @@ export interface RenderedScene {
  * Calling `exportToSvg` means the comparison image is byte-for-byte the scene
  * Excalidraw itself would draw for the pasted clipboard payload.
  */
-export async function renderExcalidrawScene(
+async function renderExcalidrawScene(
   elements: ExcalidrawElement[],
   files: Record<string, ExcalidrawFile> = {},
   exportPadding = 0

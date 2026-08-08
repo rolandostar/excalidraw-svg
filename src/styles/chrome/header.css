@@ -1,0 +1,169 @@
+/* --- Global header ------------------------------------------------------ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.site-brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--on-accent);
+  background: linear-gradient(135deg, #4285f4, #1a73e8);
+  box-shadow: 0 0 14px var(--accent-glow);
+}
+
+.site-brand-text {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.site-brand-arrow {
+  color: var(--gcp-blue);
+  padding: 0 0.15rem;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-right: auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.site-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.site-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--transition-fast);
+}
+
+.site-nav-link:hover {
+  color: var(--text-primary);
+  background: var(--hover-tint);
+}
+
+.site-nav-link.is-active {
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--gcp-blue) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gcp-blue) 30%, transparent);
+}
+
+.site-nav-external {
+  flex-shrink: 0;
+}
+
+/* --- Theme toggle ------------------------------------------------------- */
+
+.site-header-end {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.theme-toggle-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+  color: var(--text-primary);
+  background: var(--hover-tint);
+}
+
+.theme-toggle-btn.is-active {
+  color: var(--gcp-blue);
+  background: var(--bg-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+/* --- Narrow viewports --------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .site-header {
+    gap: 0.5rem;
+    padding: 0 0.85rem;
+  }
+  .site-brand-text,
+  .site-nav-external-label {
+    display: none;
+  }
+  .site-nav-link {
+    padding: 0.4rem 0.55rem;
+  }
+
+  /* Keep the active state only; three targets plus nav does not fit. */
+  .theme-toggle-btn:not(.is-active) {
+    display: none;
+  }
+  .theme-toggle:hover .theme-toggle-btn,
+  .theme-toggle:focus-within .theme-toggle-btn {
+    display: grid;
+  }
+}
+
+@media (max-width: 430px) {
+  .site-nav-link {
+    padding: 0.35rem 0.4rem;
+    font-size: 0.8rem;
+  }
+  .site-header {
+    gap: 0.35rem;
+  }
+}

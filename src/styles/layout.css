@@ -1,0 +1,72 @@
+/* Page frames: app shell, the two-column studio layout and content wrappers. */
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.app-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Sidebar plus grid. Becomes a single column below 1024px - see the media
+   block at the foot of this file. */
+.main-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  flex: 1;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Centred prose/marketing column used by every non-studio page. */
+.page {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.content-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  /* Icons before options: the grid is why anyone opened the page. */
+  .main-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content-area {
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 0 1rem;
+  }
+}

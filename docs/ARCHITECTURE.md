@@ -3,9 +3,9 @@
 How an SVG becomes Excalidraw elements, and why the non-obvious parts are the
 way they are.
 
-If you are an agent picking this up: read the **Invariants** section before
-changing anything in `src/utils/`. Most of them look like they could be
-simplified. They cannot — each one has a measured failure behind it.
+Read the **Invariants** section before you change anything in `src/utils/`.
+Most of them look like they could be simplified. They cannot — each one is
+there because of a real failure.
 
 ---
 

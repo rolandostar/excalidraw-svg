@@ -1,0 +1,314 @@
+/* --- Convert page: hero ------------------------------------------------- */
+
+.hero {
+  padding: clamp(3rem, 9vw, 6rem) 0 0;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+.hero-accent {
+  background: linear-gradient(120deg, var(--accent-soft), var(--gcp-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  margin: 1rem auto 0;
+  max-width: 46ch;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--text-secondary);
+  text-wrap: balance;
+}
+
+/* Inline rather than flex so the icon stays attached to the first word when
+   the sentence wraps on narrow viewports. */
+.hero-privacy {
+  margin: 0.9rem auto 0;
+  max-width: 40ch;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.hero-privacy svg {
+  vertical-align: -2px;
+  margin-right: 0.35rem;
+}
+
+/* --- Dropzone ----------------------------------------------------------- */
+
+.dropzone-wrap {
+  margin-top: 2rem;
+}
+
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: clamp(2rem, 6vw, 3.25rem) 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1.5px dashed var(--dropzone-border);
+  background: var(--dropzone-bg);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.dropzone:hover {
+  border-color: color-mix(in srgb, var(--gcp-blue) 60%, transparent);
+  background: color-mix(in srgb, var(--gcp-blue) 6%, transparent);
+}
+
+.dropzone.is-dragging {
+  border-color: var(--gcp-blue);
+  border-style: solid;
+  background: color-mix(in srgb, var(--gcp-blue) 12%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--gcp-blue) 12%, transparent);
+}
+
+.dropzone-wrap.is-compact .dropzone {
+  flex-direction: row;
+  padding: 0.85rem 1.25rem;
+  gap: 0.55rem;
+}
+
+.dropzone-icon {
+  color: var(--gcp-blue);
+}
+
+.dropzone-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dropzone-wrap.is-compact .dropzone-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.dropzone-hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.dropzone-error {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-text);
+  font-size: 0.83rem;
+  text-align: left;
+}
+
+/* --- Conversion result -------------------------------------------------- */
+
+.result {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  text-align: left;
+}
+
+.result-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.compare-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* White, because that is the canvas the output is destined for. Judging a
+   conversion against a dark background hides exactly the thin light strokes
+   most likely to be wrong, so this pane does NOT follow the site theme. */
+.compare-canvas {
+  display: flex;
+  align-items: stretch;
+  height: clamp(200px, 34vh, 320px);
+  padding: 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: #fff;
+  background-image: linear-gradient(45deg, #f1f3f4 25%, transparent 25%),
+    linear-gradient(-45deg, #f1f3f4 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f1f3f4 75%),
+    linear-gradient(-45deg, transparent 75%, #f1f3f4 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  overflow: hidden;
+}
+
+/*
+  Flex, not absolute positioning or percentage heights. Both alternatives were
+  tried and both fail on replaced elements:
+
+  - `position: absolute; inset: 18px; width: auto` makes an <img> fall back to
+    its *intrinsic* size, so a 24x24 source rendered 24px wide in the corner
+    instead of filling the pane.
+  - `height: 100%` needs a definite containing block, which a centred grid item
+    does not provide, so the SVG resolved to an oversized square and got
+    cropped.
+
+  A stretched flex item gets a definite box in both axes, after which
+  object-fit and preserveAspectRatio can each centre their own content. The
+  padding is identical on both panes, so the two artboards stay aligned.
+*/
+.compare-canvas > img,
+.compare-canvas > .excalidraw-preview {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.compare-canvas > img {
+  object-fit: contain;
+}
+
+.compare-pane figcaption {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Sits on the white canvas above, so it is not themed either. */
+.preview-note {
+  font-size: 0.8rem;
+  color: #5f6368;
+}
+.preview-note-error {
+  color: #c5221f;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+/* --- Actions and the honesty prompt ------------------------------------- */
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.verdict {
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.verdict-bad {
+  border-color: color-mix(in srgb, var(--gcp-blue) 35%, transparent);
+  background: color-mix(in srgb, var(--gcp-blue) 7%, transparent);
+}
+
+.verdict-question {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.verdict-text {
+  font-size: 0.83rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  max-width: 68ch;
+}
+
+.verdict-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* --- Next-step cards ---------------------------------------------------- */
+
+.next-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 1rem;
+  margin-top: clamp(3rem, 8vw, 4.5rem);
+}
+
+.next-card {
+  display: flex;
+  gap: 0.9rem;
+  padding: 1.15rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.next-card:hover {
+  border-color: var(--border-color-hover);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.next-card-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: var(--gcp-blue);
+  background: color-mix(in srgb, var(--gcp-blue) 12%, transparent);
+}
+
+.next-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.next-card-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.next-card:hover .next-card-title {
+  color: var(--accent-soft);
+}
+
+.next-card-text {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 640px) {
+  .result-compare {
+    grid-template-columns: 1fr;
+  }
+}

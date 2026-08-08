@@ -1,0 +1,38 @@
+/* --- Segmented control -------------------------------------------------- */
+
+.segmented-control {
+  display: flex;
+  background: var(--bg-secondary);
+  padding: 0.2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  gap: 0.15rem;
+}
+
+.segment-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.3rem;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.segment-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: var(--hover-tint);
+}
+
+.segment-btn.active {
+  background: var(--gcp-blue);
+  color: var(--on-accent);
+  font-weight: 600;
+}

@@ -3,8 +3,8 @@
  *
  * A bare "open an issue" link produces reports with no reproduction case. The
  * useful part of a report is the file plus what the converter already knew was
- * risky about it, so all of that is filled in and the human only has to attach
- * the SVG and say what looks wrong.
+ * risky about it, so all of that is filled in and you only have to attach the
+ * SVG and say what looks wrong.
  *
  * The source is deliberately NOT embedded. GitHub truncates long URLs, an SVG
  * pasted into a URL is unreadable in the issue body, and attaching the actual

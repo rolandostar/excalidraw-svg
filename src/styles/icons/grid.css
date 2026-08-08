@@ -1,0 +1,144 @@
+/* --- Icon grid and cards ------------------------------------------------- */
+
+/*
+ * Wrapper around the grid so a restyle in flight can be shown without
+ * remounting anything. The grid lags the sidebar on purpose (useDeferredValue)
+ * and silently stale cards would read as a broken control.
+ */
+.grid-region {
+  min-width: 0;
+  width: 100%;
+}
+
+.grid-region.is-restyling {
+  opacity: 0.55;
+  transition: opacity 120ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-region.is-restyling {
+    transition: none;
+  }
+}
+
+/*
+ * Columns and gap are set inline by `IconGrid`; the values here are only the
+ * pre-measurement fallback for the first paint.
+ *
+ * The track is no longer a constant because the right one depends on the
+ * layout being previewed: a bottom-label card is under 132px wide at every
+ * icon scale, while a side-label card can be 400 units across. `trackWidthFor`
+ * in `gridMetrics.ts` picks it, and `IconGrid` converts it into an explicit
+ * column count so each card can be told the exact width it has to scale into.
+ * `auto-fill` with `1fr` cannot do that - it stretches leftover space into
+ * every column, so the track is not the column width.
+ *
+ * The same inline sizing is why there is no narrow-viewport override here: an
+ * inline style wins over a media query. `columnCountFor` returns however many
+ * tracks actually fit, which is two at 390px.
+ */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/*
+ * Single icon card.
+ *
+ * Deliberately frameless. This tile used to carry its own background and
+ * border, which meant every icon looked framed whether or not "Show card
+ * frame" was on - so the option appeared to do nothing, and the grid could not
+ * be trusted to show what the export would contain. The only frame drawn now
+ * is the one the export will actually carry.
+ *
+ * Hover and selection still need to be visible, so they are the one case where
+ * the tile paints itself.
+ */
+.icon-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 0.5rem 0.7rem;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.icon-card:hover {
+  background: var(--bg-card);
+  border-color: var(--border-color-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.icon-card.selected {
+  border-color: var(--gcp-blue);
+  background: color-mix(in srgb, var(--gcp-blue) 8%, transparent);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.checkbox-container {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 10;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+  background: var(--bg-primary);
+}
+
+.icon-card.selected .checkbox-custom {
+  background: var(--gcp-blue);
+  border-color: var(--gcp-blue);
+}
+
+/* Toast feedback badge on single-click copy */
+.copy-toast {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(34, 197, 94, 0.95);
+  color: var(--on-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+  z-index: 20;
+  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  from { transform: translate(-50%, -6px) scale(0.85); opacity: 0; }
+  to { transform: translate(-50%, 0) scale(1); opacity: 1; }
+}
+
+.icon-card.copied-flash {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.4) !important;
+}

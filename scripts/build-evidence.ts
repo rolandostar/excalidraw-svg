@@ -28,7 +28,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { Summary } from './lib/report';
+import { isFailing } from './lib/thresholds';
+import type { Summary } from './lib/thresholds';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RESULTS = path.join(ROOT, 'tests', 'results');
@@ -52,6 +53,12 @@ export interface EvidenceCase {
   auditIssues: string[];
   /** True when this case is over one of the published thresholds. */
   failing: boolean;
+  /**
+   * Set when the case is meant to fail. The text is the reason, copied from
+   * `tests/baselines/<suite>.expected-failures.json` - the same file the gate
+   * reads, so the page and the gate cannot disagree.
+   */
+  expectedFailureReason?: string;
   /** Present only when a triptych was published for this case. */
   image?: string;
 }
@@ -118,13 +125,17 @@ function readTrap(id: string): string | undefined {
 
 const stripOrderPrefix = (title: string) => title.replace(/^\d+[-\s]+/, '');
 
-function isFailing(icon: Summary['icons'][number], thresholds: Summary['thresholds']): boolean {
-  return Boolean(
-    icon.error ||
-      icon.auditIssues.length > 0 ||
-      (icon.shapeScore ?? 1) > thresholds.shapeScore ||
-      (icon.placementErrorPx ?? 99) > thresholds.placementErrorPx
-  );
+/**
+ * The reasons a case is allowed to fail, straight from the file the gate reads.
+ *
+ * The website used to keep its own copy of this list. Two copies of the same
+ * four explanations drift, and the one on the page is the one nobody runs.
+ */
+function readExpectedFailures(suite: string): Record<string, string> {
+  const file = path.resolve(process.cwd(), 'tests/baselines', `${suite}.expected-failures.json`);
+  return fs.existsSync(file)
+    ? (JSON.parse(fs.readFileSync(file, 'utf-8')) as Record<string, string>)
+    : {};
 }
 
 function publish(
@@ -133,6 +144,7 @@ function publish(
   selectIds: Set<string>,
   withTraps: boolean
 ): EvidenceSuite {
+  const expectedFailures = readExpectedFailures(suite);
   const imageDir = path.join(OUT, suite);
   fs.mkdirSync(imageDir, { recursive: true });
 
@@ -157,6 +169,7 @@ function publish(
       featureWarnings: icon.featureWarnings,
       auditIssues: icon.auditIssues,
       failing: isFailing(icon, summary.thresholds),
+      expectedFailureReason: expectedFailures[icon.id],
       image,
     };
   });

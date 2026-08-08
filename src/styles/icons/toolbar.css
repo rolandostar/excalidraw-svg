@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Icon library — one toolbar, no second header
+   ========================================================================== */
+
+.icons-toolbar {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0 0.75rem;
+  margin-bottom: 0.25rem;
+  background: linear-gradient(
+    to bottom,
+    var(--bg-primary) 70%,
+    var(--scrim)
+  );
+}
+
+.icons-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.icons-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+/* --- Search ------------------------------------------------------------- */
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 260px;
+  min-width: 0;
+  max-width: 420px;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  transition: var(--transition-fast);
+}
+
+.search-bar:focus-within {
+  border-color: var(--gcp-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gcp-blue) 15%, transparent);
+}
+
+.search-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-family: inherit;
+}
+
+.search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-clear {
+  display: grid;
+  place-items: center;
+  padding: 0.15rem;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.search-clear:hover {
+  color: var(--text-primary);
+  background: var(--hover-tint);
+}
+
+/* --- Category chips ----------------------------------------------------- */
+
+/* Six categories fit one row at desktop widths, so the bar wraps rather than
+   scrolling horizontally with content clipped at the edge. */
+.category-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-bottom: 0.5rem;
+}
+
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.category-chip:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-color-hover);
+}
+
+.category-chip.active {
+  background: var(--gcp-blue);
+  border-color: var(--gcp-blue);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.category-chip.active .count-badge {
+  background: rgba(255, 255, 255, 0.22);
+  color: var(--on-accent);
+}
+
+.count-badge {
+  background: var(--bg-secondary);
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  .icons-toolbar-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/*
+ * The chip bar is the single biggest consumer of vertical space above the
+ * grid on a phone: seven chips at desktop sizing wrap to three rows and push
+ * the icons - the reason anyone opened the page - off the screen. Shrinking
+ * the chips gets it to two rows; dropping the counts gets it to one.
+ */
+@media (max-width: 640px) {
+  .category-bar {
+    gap: 0.3rem;
+  }
+
+  .category-chip {
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.72rem;
+  }
+
+  .count-badge {
+    display: none;
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "20-unsupported-features": "One of everything the converter refuses to guess at. The requirement is that each feature is reported, not that it renders. A low score here would mean something was quietly approximated.",
+  "17-gradients": "Excalidraw has no gradient paint. A gradient flattens to one averaged colour, and this number is how much colour the format cannot carry.",
+  "15-viewbox-offset": "The shape is exact. The placement number comes from measuring a 0.5-unit hairline against a pixel grid. It sits just over the gate, and the gate stays where it is for everything else.",
+  "27-implicit-default-fill": "The fill decision is correct. The ink is a few very small shapes, so the one-pixel antialiasing ring around the circle is a large share of the total area."
+}

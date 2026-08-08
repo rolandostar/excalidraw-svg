@@ -124,6 +124,28 @@ function sameOptions(a: ExcalidrawOptions, b: ExcalidrawOptions): boolean {
   return (Object.keys(a) as (keyof ExcalidrawOptions)[]).every(k => a[k] === b[k]);
 }
 
+/**
+ * Whether a swatch fill is light enough to need a dark tick drawn on it.
+ *
+ * The stylesheet cannot work this out for itself: it used to try, with
+ * `.color-swatch[style*="#ffffff"]`, but React serialises the inline
+ * background as `rgb(255, 255, 255)` so those selectors never matched and
+ * every pale swatch drew a white check on a white fill. Anything that is not
+ * a plain hex - `transparent`, an `rgba()` - is not light; `transparent` has
+ * its own attribute.
+ */
+function isLightColor(color: string): boolean {
+  const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color)?.[1];
+  if (!hex) return false;
+
+  const full = hex.length === 3 ? hex.replace(/./g, c => c + c) : hex;
+  const r = parseInt(full.slice(0, 2), 16) / 255;
+  const g = parseInt(full.slice(2, 4), 16) / 255;
+  const b = parseInt(full.slice(4, 6), 16) / 255;
+
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.7;
+}
+
 /** A labelled swatch. A `div` with an `onClick` could not be reached by keyboard. */
 function Swatch({
   color,
@@ -140,6 +162,7 @@ function Swatch({
       className={`color-swatch${active ? ' active' : ''}`}
       style={{ backgroundColor: color }}
       data-transparent={color === 'transparent' || undefined}
+      data-tone={isLightColor(color) ? 'light' : undefined}
       aria-label={COLOR_NAMES[color] ?? color}
       aria-pressed={active}
       onClick={onSelect}

@@ -3,7 +3,7 @@
  * render time.
  *
  * Catches "looks right in the source SVG, disappears in Excalidraw"
- * regressions without needing a human to eyeball 216 images.
+ * regressions without a manual review of 216 images.
  *
  * This lives in `src/` rather than `scripts/` because it is pure and both
  * callers need it: the harness asserts on it across 216 icons and four export

@@ -1,0 +1,58 @@
+/* --- Font picker --------------------------------------------------------
+ *
+ * Each option is rendered in the font it selects. A list of names in the UI
+ * font makes you apply one, look at the grid, and come back - the whole point
+ * of the control is the shape of the letters.
+ */
+
+.font-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+}
+
+.font-btn {
+  padding: 0.4rem 0.45rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * Keyed by Excalidraw's real FONT_FAMILY ids, and kept in sync with
+ * FONT_STACKS in src/utils/textMetrics.ts.
+ *
+ * Only Lilita One and Nunito are the genuine article. Liberation Sans is
+ * metric-compatible with Arial, so that substitution is exact in width.
+ * Excalifont and Comic Shanns have no web equivalent, so they preview in a
+ * similar-feeling face and only look right once pasted - the measured label
+ * widths come from the real font files either way.
+ */
+.font-btn[data-font="5"] { font-family: 'Excalifont', 'Kalam', cursive; }
+.font-btn[data-font="6"] { font-family: 'Nunito', sans-serif; }
+.font-btn[data-font="7"] { font-family: 'Lilita One', cursive; }
+.font-btn[data-font="8"] { font-family: 'Comic Shanns', 'JetBrains Mono', monospace; }
+.font-btn[data-font="9"] { font-family: 'Liberation Sans', Arial, Helvetica, sans-serif; }
+
+/* The last row holds a single button; let it span so the grid stays even. */
+.font-btn:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.font-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-color-hover);
+}
+
+.font-btn.is-active {
+  color: var(--on-accent);
+  background: var(--gcp-blue);
+  border-color: var(--gcp-blue);
+}

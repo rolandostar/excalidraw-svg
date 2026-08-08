@@ -1,0 +1,32 @@
+/* --- Presets ------------------------------------------------------------ */
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.preset-btn {
+  padding: 0.5rem 0.4rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.preset-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-color-hover);
+}
+
+.preset-btn.is-active {
+  color: var(--on-accent);
+  font-weight: 600;
+  background: var(--gcp-blue);
+  border-color: var(--gcp-blue);
+}

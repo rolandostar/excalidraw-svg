@@ -1,0 +1,120 @@
+/* --- Icon preview --------------------------------------------------------
+ *
+ * Two boxes with distinct jobs.
+ *
+ * `.icon-preview-stage` is a fixed cell, sized in CSS pixels by the grid. It
+ * exists so every row is level regardless of what its cards contain. Its
+ * height is `STAGE_HEIGHT_PX` in `gridMetrics.ts` rather than a CSS constant,
+ * so a card's scale factor and the box it scales into cannot disagree.
+ *
+ * `.icon-preview-card` is the export itself, sized in *Excalidraw units* by
+ * `measureExcalidrawItem` and then scaled to fit the stage. Laying the parts
+ * out in CSS pixels instead - a flex row or column picked from `labelPosition`
+ * - is what this replaced, and it could not represent a card whose true shape
+ * is 400 x 144: the artwork collapsed to a sliver and the label broke
+ * mid-word. Everything inside the card is therefore positioned absolutely, in
+ * export units, from the layout the exporter itself computed.
+ */
+.icon-preview-stage {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+}
+
+/*
+ * A card too wide to fit even at the minimum scale runs past the stage.
+ *
+ * Faded rather than hard-cut, so the overflow reads as "this label is longer
+ * than the cell" instead of as a clipping bug. Only applied when it happens -
+ * an unconditional mask would soften every card's edges for nothing.
+ */
+.icon-preview-stage.is-clipped {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+}
+
+/*
+ * Centred by absolute positioning, not by the stage's alignment.
+ *
+ * The stage used to be `display: grid; place-items: center`, which centres
+ * correctly right up until the item is wider than its track - at which point
+ * Chrome falls back to start alignment to avoid pushing content off the
+ * scrollable edge. A card scaled to exactly the stage width is a rounding
+ * error away from that, so cards intermittently sat flush left and had their
+ * right-hand label clipped.
+ *
+ * `left/top: 50%` plus a `translate(-50%, -50%)` in the inline transform has
+ * no such special case: percentage translation resolves against the element's
+ * own border box, so it centres identically whether or not it overflows.
+ */
+.icon-preview-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  box-sizing: border-box;
+  transform-origin: center center;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.icon-preview-art {
+  position: absolute;
+  /* Below the label, matching the export's paint order: the card rectangle is
+     `a0`, artwork `a1`, label `a2`. */
+  z-index: 0;
+}
+
+/*
+ * One line, never wrapped.
+ *
+ * This used to wrap freely, on the reasoning that Excalidraw "renders the whole
+ * label and grows the card to fit". The first half is right and the second half
+ * is the point: Excalidraw grows the card *sideways* and keeps the label on a
+ * single line. It only ever wraps text bound to a container or marked
+ * `autoResize: false`, and an exported label is neither - `restoreElement`
+ * defaults `autoResize` to true and the paste path never re-measures.
+ *
+ * So wrapping was the lie. A 400-unit-wide side-label card was being folded
+ * into a square cell, and `overflow-wrap: break-word` did exactly what it says
+ * once the column dropped below one word's width: "Collaboratio / n".
+ *
+ * Positioned absolutely in export units by `measureExcalidrawItem`. Overflow
+ * is deliberately visible: the browser substitutes Kalam for Excalifont, so the
+ * rendered run will not exactly fill the width measured from the real font, and
+ * a visible hair of overhang is more honest than a clip.
+ */
+.icon-title-text {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  white-space: nowrap;
+  overflow: visible;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Subtle web-UI caption, shown when the Excalidraw label is toggled OFF. */
+.icon-ui-caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  width: 100%;
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
+.subtle-caption-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  opacity: 0.85;
+}
