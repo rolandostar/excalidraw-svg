@@ -3,6 +3,7 @@ import { ArrowRight, ExternalLink, FolderPlus } from 'lucide-react';
 import { Link, iconSetPath } from '../router';
 import { WIKI_URL } from '../site';
 import { listIconSets, totalIconCount } from '../utils/iconSets';
+import { plural } from '../utils/plural';
 
 /**
  * Gallery of every icon set found on disk.
@@ -24,10 +25,9 @@ export function IconSetsPage() {
         <p className="doc-lede">
           {sets.length === 0
             ? 'No icon sets found. Drop a folder of SVGs into svg/ to create one.'
-            : `${total.toLocaleString()} icons across ${sets.length} set${
-                sets.length === 1 ? '' : 's'
-              }. Browse a set, restyle the whole thing at once, then copy it straight onto your
-                canvas as real editable shapes.`}
+            : `${total.toLocaleString()} icons across ${plural(sets.length, 'set')}. Browse a
+                set, restyle the whole thing at once, then copy it straight onto your canvas
+                as real editable shapes.`}
         </p>
       </header>
 

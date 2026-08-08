@@ -1,4 +1,4 @@
-import { useEffect, useState, type RefObject } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 
 /**
  * Whether an element has ever come near the viewport.
@@ -15,8 +15,19 @@ import { useEffect, useState, type RefObject } from 'react';
 export function useHasBeenVisible(ref: RefObject<Element | null>, rootMargin = '600px'): boolean {
   const [seen, setSeen] = useState(() => typeof IntersectionObserver === 'undefined');
 
+  /*
+   * The guard is a ref, not the state value.
+   *
+   * `seen` used to be listed as a dependency of the effect that sets it, so
+   * becoming visible tore down the observer and immediately re-ran the whole
+   * effect - constructing a second `IntersectionObserver` purely to hit the
+   * early return. Once-only is a fact about this effect, not a value it should
+   * be re-subscribed on.
+   */
+  const done = useRef(seen);
+
   useEffect(() => {
-    if (seen) return;
+    if (done.current) return;
 
     const node = ref.current;
     if (!node) return;
@@ -24,6 +35,7 @@ export function useHasBeenVisible(ref: RefObject<Element | null>, rootMargin = '
     const observer = new IntersectionObserver(
       entries => {
         if (entries.some(e => e.isIntersecting)) {
+          done.current = true;
           setSeen(true);
           observer.disconnect();
         }
@@ -35,7 +47,7 @@ export function useHasBeenVisible(ref: RefObject<Element | null>, rootMargin = '
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [ref, rootMargin, seen]);
+  }, [ref, rootMargin]);
 
   return seen;
 }

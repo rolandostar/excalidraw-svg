@@ -1,10 +1,18 @@
 # Testing
 
-Every icon is rendered twice — once from the source SVG, once through
-Excalidraw's own exporter — and the two are diffed pixel by pixel. The run
-fails if any icon gets worse than the committed baseline.
+There are two suites, and they do different jobs.
 
-That is the whole idea. The rest of this page is how to run it, how to read a
+**`pnpm test`** is unit tests over the pure functions — matrix maths, fill
+rules, the option validator, the scene audit. It takes about three seconds, so
+run it constantly.
+
+**`pnpm test:fidelity`** is the picture check. Every icon is rendered twice —
+once from the source SVG, once through Excalidraw's own exporter — and the two
+are diffed pixel by pixel. It takes about 20 seconds warm and fails if any icon
+gets worse than the committed baseline. Run it before you commit anything that
+touches conversion code.
+
+The rest of this page is about the second one: how to run it, how to read a
 failure, and how to add a case.
 
 ---
@@ -12,12 +20,25 @@ failure, and how to add a case.
 ## Running
 
 ```bash
+pnpm test                    # unit tests, ~3s
+pnpm test:watch              # the same, re-running as you edit
+
 pnpm test:fidelity           # every icon in svg/, all sets
 pnpm test:torture            # the edge-case SVGs
 
 pnpm test:fidelity:update    # accept current numbers as the new baseline
 pnpm test:torture:update
 ```
+
+### Unit tests
+
+Vitest, configured in `vitest.config.ts`. Tests sit next to the code they
+cover as `*.test.ts`, and the default environment is `node` — the two files
+that need a DOM opt in with `// @vitest-environment jsdom` on the first line.
+
+Keep them small. The point is that a broken helper fails in three seconds
+instead of showing up 40 seconds later as a shifted pixel that takes an hour to
+trace back.
 
 The run fans out across `min(8, cores - 1)` child processes. Each file is
 scored independently and owns a unique output filename, so the only ordering
@@ -313,9 +334,9 @@ it.
 
 ## Workflow for changing conversion code
 
-1. `pnpm test:fidelity` and `pnpm test:torture` — confirm green before you
-   start.
-2. Make the change.
+1. `pnpm test`, `pnpm test:fidelity` and `pnpm test:torture` — confirm green
+   before you start.
+2. Make the change, with `pnpm test:watch` running.
 3. Re-run both. Read the **regression list**, not just the mean; a change can
    improve the average while destroying one icon.
 4. If a regression is real, fix it. If the *baseline* was wrong, say so

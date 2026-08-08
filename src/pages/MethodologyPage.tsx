@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
 import { NEW_ISSUE_URL, WIKI_URL, STATS, formatPct, formatPx } from '../site';
 import { listSupportRules } from '../utils/svgSupport';
+import { plural } from '../utils/plural';
+import { TrapTable, type TrapRow } from '../components/TrapTable';
 import { evidenceImageUrl, loadEvidence, type EvidenceCase, type EvidenceManifest } from '../utils/evidence';
 
 /**
@@ -45,6 +47,17 @@ const TRAPS: { mistake: string; consequence: string }[] = [
   },
 ];
 
+const TRAP_ROWS: TrapRow[] = TRAPS.map(t => ({
+  key: t.mistake,
+  term: t.mistake,
+  detail: t.consequence,
+}));
+
+/** A support rule is already term-and-detail; only the key has to be named. */
+function supportRows(rules: { feature: string; detail: string }[]): TrapRow[] {
+  return rules.map(r => ({ key: r.feature, term: r.feature, detail: r.detail }));
+}
+
 function CaseCard({ item }: { item: EvidenceCase }) {
   return (
     <figure className={`case-card${item.failing ? ' is-failing' : ''}`}>
@@ -68,7 +81,7 @@ function CaseCard({ item }: { item: EvidenceCase }) {
 
       <p className="case-meta">
         placement {item.placementErrorPx === null ? 'n/a' : formatPx(item.placementErrorPx)} ·{' '}
-        {item.elementCount} element{item.elementCount === 1 ? '' : 's'}
+        {plural(item.elementCount, 'element')}
       </p>
 
       {/*
@@ -131,9 +144,7 @@ export function MethodologyPage() {
             height={320}
             loading="eager"
           />
-          <figcaption>
-            source · Excalidraw · difference. A blank third panel means the two match.
-          </figcaption>
+          <figcaption>source · Excalidraw · difference — a blank third panel is a match</figcaption>
         </figure>
       </header>
 
@@ -203,14 +214,7 @@ export function MethodologyPage() {
           Each of these looked correct in review. None of them were spotted by looking at the
           output.
         </p>
-        <div className="trap-table">
-          {TRAPS.map(trap => (
-            <div className="trap-row" key={trap.mistake}>
-              <span className="trap-mistake">{trap.mistake}</span>
-              <span className="trap-consequence">{trap.consequence}</span>
-            </div>
-          ))}
-        </div>
+        <TrapTable rows={TRAP_ROWS} />
       </section>
 
       <section className="doc-section">
@@ -268,24 +272,10 @@ export function MethodologyPage() {
         </p>
 
         <h3 className="doc-subhead">Not converted</h3>
-        <div className="trap-table">
-          {unsupported.map(rule => (
-            <div className="trap-row" key={rule.feature}>
-              <code className="trap-mistake">{rule.feature}</code>
-              <span className="trap-consequence">{rule.detail}</span>
-            </div>
-          ))}
-        </div>
+        <TrapTable rows={supportRows(unsupported)} mono />
 
         <h3 className="doc-subhead">Approximated</h3>
-        <div className="trap-table">
-          {approximated.map(rule => (
-            <div className="trap-row" key={rule.feature}>
-              <code className="trap-mistake">{rule.feature}</code>
-              <span className="trap-consequence">{rule.detail}</span>
-            </div>
-          ))}
-        </div>
+        <TrapTable rows={supportRows(approximated)} mono />
       </section>
 
       <section className="doc-cta glass-panel">

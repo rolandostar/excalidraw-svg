@@ -5,6 +5,7 @@ import { SvgDropzone, type SvgInput } from '../components/SvgDropzone';
 import { Link } from '../router';
 import { STATS, formatPct } from '../site';
 import { listIconSets, totalIconCount } from '../utils/iconSets';
+import { plural } from '../utils/plural';
 
 export function ConvertPage() {
   const [input, setInput] = useState<SvgInput | null>(null);
@@ -42,8 +43,8 @@ export function ConvertPage() {
               Need a whole icon set? <ArrowRight size={15} aria-hidden="true" />
             </span>
             <span className="next-card-text">
-              {iconCount} icons across {setCount} ready-made set{setCount === 1 ? '' : 's'}.
-              Browse, restyle the lot at once and export an Excalidraw library.
+              {iconCount} icons across {plural(setCount, 'ready-made set')}. Browse, restyle
+              the lot at once and export an Excalidraw library.
             </span>
           </span>
         </Link>

@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Check, Copy, Download, ExternalLink, Info } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Check, Copy, Download, ExternalLink } from 'lucide-react';
 import { ExcalidrawPreview } from './ExcalidrawPreview';
+import { Notice, WarningList } from './Notice';
 import { convertSvg, SvgConversionError } from '../utils/convertSvg';
 import { DROP_REASON_LABELS, type ConversionDiagnostics } from '../utils/excalidrawGenerator';
 import { buildIssueUrl } from '../utils/issueReport';
+import { downloadJson } from '../utils/download';
+import { plural } from '../utils/plural';
+import { useClipboardCopy } from '../hooks/useClipboardCopy';
 import type { SvgInput } from './SvgDropzone';
 
 /**
@@ -37,9 +41,17 @@ interface ConversionResultProps {
 type Verdict = 'unasked' | 'good' | 'bad';
 
 export function ConversionResultPanel({ input }: ConversionResultProps) {
-  const [copied, setCopied] = useState(false);
   const [verdict, setVerdict] = useState<Verdict>('unasked');
 
+  // A fresh copy re-opens the question, even if it was already answered for
+  // this same file.
+  const onCopied = useCallback(() => setVerdict('unasked'), []);
+  const { copied, copy } = useClipboardCopy({ resetMs: 2500, onSuccess: onCopied });
+
+  // REQUIRED, not an optimisation. `outcome.result.elements` is what reaches
+  // `ExcalidrawPreview`, which compares it by identity and re-runs the
+  // exporter whenever it changes. Re-converting per render would also mean
+  // re-parsing the SVG on every keystroke elsewhere on the page.
   const outcome = useMemo(() => {
     try {
       return { ok: true as const, result: convertSvg(input.source) };
@@ -56,6 +68,8 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
   }, [input.source]);
 
   // Identity-stable so ExcalidrawPreview does not re-export on every render.
+  // REQUIRED, not an optimisation: `frame` is one of that component's memo
+  // props and one of its effect dependencies.
   const frame = useMemo(
     () =>
       outcome.ok
@@ -65,22 +79,15 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
   );
 
   // A new file is a new question; do not carry the previous answer over.
-  useEffect(() => {
-    setVerdict('unasked');
-    setCopied(false);
-  }, [input.source]);
+  useEffect(() => setVerdict('unasked'), [input.source]);
 
   if (!outcome.ok) {
     return (
       <section className="result" aria-live="polite">
-        <div className="notice notice-error">
-          <AlertTriangle size={16} aria-hidden="true" />
-          <div>
-            <p className="notice-title">{input.name}.svg could not be converted</p>
-            <p className="notice-text">{outcome.message}</p>
-            {outcome.diagnostics && <DropBreakdown diagnostics={outcome.diagnostics} />}
-          </div>
-        </div>
+        <Notice severity="error" title={`${input.name}.svg could not be converted`}>
+          <p className="notice-text">{outcome.message}</p>
+          {outcome.diagnostics && <DropBreakdown diagnostics={outcome.diagnostics} />}
+        </Notice>
       </section>
     );
   }
@@ -89,26 +96,8 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
   const unsupported = result.warnings.filter(w => w.severity === 'unsupported');
   const approximated = result.warnings.filter(w => w.severity === 'approximated');
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(result.clipboardJson);
-      setCopied(true);
-      setVerdict('unasked');
-      window.setTimeout(() => setCopied(false), 2500);
-    } catch {
-      setCopied(false);
-    }
-  };
-
-  const handleDownload = () => {
-    const blob = new Blob([result.sceneJson], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${input.name}.excalidraw`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const handleCopy = () => void copy(result.clipboardJson);
+  const handleDownload = () => downloadJson(`${input.name}.excalidraw`, result.sceneJson);
 
   return (
     <section className="result" aria-live="polite">
@@ -142,74 +131,48 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
             />
           </div>
           <figcaption>
-            Excalidraw output &middot; {result.counts.total} element
-            {result.counts.total === 1 ? '' : 's'}
+            Excalidraw output &middot; {plural(result.counts.total, 'element')}
           </figcaption>
         </figure>
       </div>
 
       {unsupported.length > 0 && (
-        <div className="notice notice-error">
-          <AlertTriangle size={16} aria-hidden="true" />
-          <div>
-            <p className="notice-title">Parts of this file cannot be converted</p>
-            <ul className="notice-list">
-              {unsupported.map(w => (
-                <li key={w.feature}>
-                  <code>{w.feature}</code> &times;{w.count} — {w.detail}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <Notice severity="error" title="Parts of this file cannot be converted">
+          <WarningList warnings={unsupported} />
+        </Notice>
       )}
 
       {approximated.length > 0 && (
-        <div className="notice notice-warn">
-          <Info size={16} aria-hidden="true" />
-          <div>
-            <p className="notice-title">Approximated</p>
-            <ul className="notice-list">
-              {approximated.map(w => (
-                <li key={w.feature}>
-                  <code>{w.feature}</code> &times;{w.count} — {w.detail}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <Notice severity="warn" title="Approximated">
+          <WarningList warnings={approximated} />
+        </Notice>
       )}
 
       {result.auditIssues.length > 0 && (
-        <div className="notice notice-warn">
-          <AlertTriangle size={16} aria-hidden="true" />
-          <div>
-            <p className="notice-title">
-              {result.auditIssues.length} shape{result.auditIssues.length === 1 ? '' : 's'} will
-              not draw as intended
-            </p>
-            <ul className="notice-list">
-              {result.auditIssues.slice(0, 5).map((issue, i) => (
-                <li key={i}>
-                  <code>{issue.kind}</code> — {issue.detail}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <Notice
+          severity="warn"
+          title={`${plural(result.auditIssues.length, 'shape')} will not draw as intended`}
+        >
+          <ul className="notice-list">
+            {result.auditIssues.slice(0, 5).map((issue, i) => (
+              <li key={i}>
+                <code>{issue.kind}</code> — {issue.detail}
+              </li>
+            ))}
+          </ul>
+        </Notice>
       )}
 
       {result.diagnostics.skippedTotal > 0 && (
-        <div className="notice notice-warn">
-          <Info size={16} aria-hidden="true" />
-          <div>
-            <p className="notice-title">
-              {result.diagnostics.skippedTotal} shape
-              {result.diagnostics.skippedTotal === 1 ? '' : 's'} in the source produced no output
-            </p>
-            <DropBreakdown diagnostics={result.diagnostics} />
-          </div>
-        </div>
+        <Notice
+          severity="warn"
+          title={`${plural(
+            result.diagnostics.skippedTotal,
+            'shape'
+          )} in the source produced no output`}
+        >
+          <DropBreakdown diagnostics={result.diagnostics} />
+        </Notice>
       )}
 
       <div className="result-actions">

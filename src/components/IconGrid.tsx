@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconAsset, ExcalidrawOptions } from '../types';
 import { IconCard } from './IconCard';
+import type { IconSelection } from './IconsToolbar';
 import { SearchX } from 'lucide-react';
 import {
   CARD_PADDING_X,
@@ -12,11 +13,9 @@ import {
 
 interface IconGridProps {
   icons: IconAsset[];
-  selectedIds: string[];
-  setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
-  isSelectionMode: boolean;
+  /** Shared with the toolbar, which owns the controls that change it. */
+  selection: IconSelection;
   options: ExcalidrawOptions;
-  onToast: (message: string) => void;
   /** Narrowest a column may be, chosen for the current layout by `IconsPage`. */
   trackPx: number;
 }
@@ -57,15 +56,9 @@ function useMeasuredWidth(ref: React.RefObject<Element | null>): number {
   return width;
 }
 
-export const IconGrid: React.FC<IconGridProps> = ({
-  icons,
-  selectedIds,
-  setSelectedIds,
-  isSelectionMode,
-  options,
-  onToast,
-  trackPx,
-}) => {
+export const IconGrid: React.FC<IconGridProps> = ({ icons, selection, options, trackPx }) => {
+  const { selectedIds, setSelectedIds, isSelectionMode } = selection;
+
   // Identity-stable, or `React.memo` on IconCard would never hold.
   const handleToggleSelect = React.useCallback(
     (id: string) => {
@@ -144,7 +137,6 @@ export const IconGrid: React.FC<IconGridProps> = ({
           isSelectionMode={isSelectionMode}
           onToggleSelect={handleToggleSelect}
           options={options}
-          onToast={onToast}
           stageWidth={stageWidth}
         />
       ))}

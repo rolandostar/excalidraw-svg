@@ -33,6 +33,10 @@ jobs:
       # `pnpm build` is `tsc && vite build`, so this is the typecheck too.
       - run: pnpm build
 
+      # Fast first. Unit tests over the pure functions, about three seconds,
+      # so a broken helper fails here rather than 40 seconds into a raster run.
+      - run: pnpm test
+
       # Both suites exit 1 on a scoring error, on anything over the published
       # thresholds that is not a listed expected failure, or on a regression
       # against tests/baselines/.

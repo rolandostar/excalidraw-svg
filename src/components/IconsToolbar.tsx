@@ -5,34 +5,55 @@ import {
   buildExcalidrawLibraryPackage,
   buildExcalidrawClipboardData,
 } from '../utils/excalidrawGenerator';
-import confetti from 'canvas-confetti';
+import { celebrate } from '../utils/celebrate';
+import { downloadJson } from '../utils/download';
+import { plural } from '../utils/plural';
+import { useClipboardCopy } from '../hooks/useClipboardCopy';
+import { useToast } from './Toast';
 
-interface IconsToolbarProps {
+/**
+ * What the user is narrowing the grid by. Produced whole by `useIconFilters`,
+ * which owns the persistence, so the toolbar neither knows nor cares that any
+ * of it survives a reload.
+ */
+export interface IconFilters {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
+  activeCategory: string;
+  setActiveCategory: React.Dispatch<React.SetStateAction<string>>;
+  /** How many icons each category would show under the current search. */
+  categoryCounts: Record<string, number>;
+  /** Filter chips, declared by the set's own `set.json`. */
+  categories: IconCategory[];
+}
+
+/** What the user has picked out, and whether picking is switched on at all. */
+export interface IconSelection {
   selectedIds: string[];
   setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
   isSelectionMode: boolean;
   setIsSelectionMode: React.Dispatch<React.SetStateAction<boolean>>;
-  filteredIcons: IconAsset[];
-  allIcons: IconAsset[];
+}
+
+/** The set being browsed, and the look it would be exported with. */
+export interface IconLibrary {
+  all: IconAsset[];
+  filtered: IconAsset[];
   options: ExcalidrawOptions;
-  activeCategory: string;
-  setActiveCategory: (id: string) => void;
-  categoryCounts: Record<string, number>;
-  /** Filter chips, declared by the set's own `set.json`. */
-  categories: IconCategory[];
   /** Used for the export filename, so a download says which set it came from. */
   setName: string;
-  onToast: (message: string) => void;
+}
+
+interface IconsToolbarProps {
+  filters: IconFilters;
+  selection: IconSelection;
+  library: IconLibrary;
 }
 
 /** Turns "Google Cloud (legacy)" into "Google-Cloud-legacy" for a filename. */
 function toFileSlug(value: string): string {
   return value.replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '') || 'Icons';
 }
-
-const GCP_COLORS = ['#4285F4', '#34A853', '#FBBC05', '#EA4335'];
 
 /**
  * The single control bar for the icon library.
@@ -41,24 +62,18 @@ const GCP_COLORS = ['#4285F4', '#34A853', '#FBBC05', '#EA4335'];
  * product name stacked directly beneath the site header - two brand lockups,
  * two blurred sticky bars, and roughly 130px of chrome before any content.
  * There is one header on this site; this is a toolbar.
+ *
+ * It used to take fifteen props, nine of them raw setters or derived values
+ * read once. They are grouped now: what is being filtered, what is selected,
+ * and what would be exported.
  */
-export const IconsToolbar: React.FC<IconsToolbarProps> = ({
-  searchQuery,
-  setSearchQuery,
-  selectedIds,
-  setSelectedIds,
-  isSelectionMode,
-  setIsSelectionMode,
-  filteredIcons,
-  allIcons,
-  options,
-  activeCategory,
-  setActiveCategory,
-  categoryCounts,
-  categories,
-  setName,
-  onToast,
-}) => {
+export const IconsToolbar: React.FC<IconsToolbarProps> = ({ filters, selection, library }) => {
+  const { searchQuery, setSearchQuery, activeCategory, setActiveCategory } = filters;
+  const { selectedIds, setSelectedIds, isSelectionMode, setIsSelectionMode } = selection;
+  const { all: allIcons, filtered: filteredIcons, options, setName } = library;
+
+  const onToast = useToast();
+
   const isAllSelected = filteredIcons.length > 0 && selectedIds.length === filteredIcons.length;
 
   const targetIcons = React.useMemo(() => {
@@ -67,41 +82,33 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
     return allIcons.filter(i => selected.has(i.id));
   }, [allIcons, filteredIcons, selectedIds]);
 
-  const celebrate = (particleCount: number) =>
-    confetti({ particleCount, spread: 65, origin: { y: 0.15 }, colors: GCP_COLORS });
-
-  const handleCopy = async () => {
-    if (targetIcons.length === 0) return;
-    const { jsonText } = buildExcalidrawClipboardData(targetIcons, options);
-    try {
-      await navigator.clipboard.writeText(jsonText);
+  const { copy } = useClipboardCopy({
+    onSuccess: () => {
       celebrate(60);
-      onToast(
-        `${targetIcons.length} item${targetIcons.length === 1 ? '' : 's'} copied — paste into Excalidraw with Ctrl+V`
-      );
-    } catch {
-      onToast('Could not access the clipboard.');
-    }
+      onToast(`${plural(targetIcons.length, 'item')} copied — paste into Excalidraw with Ctrl+V`);
+    },
+    onError: onToast,
+  });
+
+  const handleCopy = () => {
+    if (targetIcons.length === 0) return;
+    void copy(() => buildExcalidrawClipboardData(targetIcons, options).jsonText);
   };
 
   const handleDownload = () => {
     if (targetIcons.length === 0) return;
-    const pkg = buildExcalidrawLibraryPackage(targetIcons, options);
-    const blob = new Blob([JSON.stringify(pkg, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
+    const pkg = buildExcalidrawLibraryPackage(targetIcons, options);
     const slug = toFileSlug(setName);
-    a.download =
+    const filename =
       targetIcons.length === allIcons.length
         ? `${slug}-Excalidraw.excalidrawlib`
         : `${slug}-${targetIcons.length}-items.excalidrawlib`;
-    a.click();
-    URL.revokeObjectURL(url);
+
+    downloadJson(filename, JSON.stringify(pkg, null, 2));
 
     celebrate(80);
-    onToast(`Downloaded a library of ${targetIcons.length} item${targetIcons.length === 1 ? '' : 's'}`);
+    onToast(`Downloaded a library of ${plural(targetIcons.length, 'item')}`);
   };
 
   /**
@@ -114,6 +121,7 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
    * clearing a search would yank the bar out from under the user.
    */
   const chips = React.useMemo(() => {
+    const { categories, categoryCounts } = filters;
     const populated = categories.filter(
       c => (categoryCounts[c.id] ?? 0) > 0 || c.id === activeCategory
     );
@@ -123,7 +131,7 @@ export const IconsToolbar: React.FC<IconsToolbarProps> = ({
       { id: 'all', name: 'All', count: allIcons.length },
       ...populated.map(c => ({ id: c.id, name: c.name, count: categoryCounts[c.id] ?? 0 })),
     ];
-  }, [categories, categoryCounts, activeCategory, allIcons.length]);
+  }, [filters, activeCategory, allIcons.length]);
 
   return (
     <div className="icons-toolbar">

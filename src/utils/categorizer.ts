@@ -119,12 +119,23 @@ const ACRONYMS: Record<string, string> = {
   dialogflow: 'Dialogflow',
 };
 
+/**
+ * A run of two or more dashes means a literal dash in the title.
+ *
+ * It is held aside while single dashes become spaces, because doing the two
+ * replacements in sequence destroys the result: ` - ` contains a dash, so the
+ * next pass turns it straight back into a space. That was the behaviour until
+ * a unit test caught it, and it silently dropped the dash from
+ * "Cloud Optimization AI - Fleet Routing API".
+ */
+const DASH_MARK = '\u0000';
+
 export function formatTitle(filename: string): string {
   const cleanStr = filename
-    .replace(/---/g, ' - ')
-    .replace(/--/g, ' - ')
+    .replace(/-{2,}/g, DASH_MARK)
     .replace(/_/g, ' ')
-    .replace(/-/g, ' ');
+    .replace(/-/g, ' ')
+    .replace(new RegExp(DASH_MARK, 'g'), ' - ');
 
   return cleanStr
     .split(' ')

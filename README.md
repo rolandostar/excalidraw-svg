@@ -21,6 +21,7 @@ pnpm install
 pnpm dev                 # web UI on :3000
 pnpm build               # typecheck + production bundle
 
+pnpm test                # unit tests over the pure functions, ~3s
 pnpm test:fidelity       # score every icon in svg/ against a real renderer
 pnpm test:torture        # score the edge-case SVGs
 ```
