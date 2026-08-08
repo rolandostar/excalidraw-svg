@@ -1,19 +1,19 @@
 /**
  * Site-wide constants.
  *
- * Anything here that looks like a claim must be traceable to a committed
- * artifact. The numbers come from `src/generated/evidence-headline.json`, which
- * `scripts/build-evidence.ts` freezes from the same harness output the
- * regression gate reads - so the copy on the page cannot drift away from what
- * the suite actually measures.
+ * Every number the pages quote comes from
+ * `src/generated/evidence-headline.json`, which `scripts/build-evidence.ts`
+ * writes from the same test output the build gate reads. Hard-coding a figure
+ * in a component means the copy and the suite can disagree.
  *
  * Do not compute these from `tests/baselines/*.json`. Baselines record shape
- * error only, but the gate also fails a case on placement error, so a count
- * derived from them under-reports failures.
+ * error only, but a case can also fail on placement error, so a count derived
+ * from them under-reports failures.
  */
 import headline from './generated/evidence-headline.json';
 
 export const REPO_URL = 'https://github.com/rolandostar/excalidraw-svg';
+export const WIKI_URL = `${REPO_URL}/wiki`;
 export const NEW_ISSUE_URL = `${REPO_URL}/issues/new`;
 
 export const STATS = {

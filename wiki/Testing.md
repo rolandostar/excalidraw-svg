@@ -289,7 +289,7 @@ Drop an SVG into `tests/torture-svg/` and run `pnpm test:torture:update`. See
 [Submit an edge case](Submit-an-edge-case) if you are reporting one rather than
 writing one.
 
-They are **self-verifying** — resvg is the oracle, so no expected output is
+They are **self-verifying**: resvg decides what correct looks like, so no expected output is
 written by hand. That is the point: you do not need to know what the correct
 answer looks like, only to construct a file that exercises the feature.
 

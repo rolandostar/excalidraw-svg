@@ -1,28 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
-import { NEW_ISSUE_URL, REPO_URL, STATS, formatPct, formatPx } from '../site';
+import { NEW_ISSUE_URL, WIKI_URL, STATS, formatPct, formatPx } from '../site';
 import { listSupportRules } from '../utils/svgSupport';
 import { evidenceImageUrl, loadEvidence, type EvidenceCase, type EvidenceManifest } from '../utils/evidence';
 
 /**
- * Failures that exist on purpose.
+ * The strip shown next to the introduction.
  *
- * Kept in sync with the table in docs/TESTING.md. These pin documented limits
- * in place; a suite reporting zero failures would mean the thresholds had been
- * loosened or the cases deleted.
+ * A torture case with visible strokes reads well at half width and shows the
+ * three panels the rest of the page is about. It is a committed artifact of a
+ * real run, so it cannot fall out of date on its own.
  */
-const DELIBERATE: Record<string, string> = {
-  '20-unsupported-features':
-    'Contains one of everything the converter refuses to guess at. The requirement is that each is reported, not that it renders — a low error here would mean something was silently approximated.',
-  '17-gradients':
-    'Excalidraw has no gradient paint server, so a gradient flattens to one averaged colour. The number measures how much colour the format cannot carry.',
-  '15-viewbox-offset':
-    'Shape is exact. The placement number is an artefact of measuring a 0.5-unit hairline against a pixel grid, and sits just over the gate rather than loosening the threshold for everything else.',
-  '27-implicit-default-fill':
-    'The fill decision is correct. The ink is a handful of very small shapes, so the one-pixel antialiasing ring around the circle is a large fraction of the total area — the number measures the measurement, not the conversion. The baseline gate is what actually holds this case.',
-};
+const HERO_CASE = 'torture/07-stroke-caps-joins.png';
 
-/** From the "traps that were already fallen into" table in docs/ARCHITECTURE.md. */
+/** From the table of the same name in the Architecture wiki page. */
 const TRAPS: { mistake: string; consequence: string }[] = [
   {
     mistake: 'Inferring holes from winding direction',
@@ -55,8 +46,6 @@ const TRAPS: { mistake: string; consequence: string }[] = [
 ];
 
 function CaseCard({ item }: { item: EvidenceCase }) {
-  const deliberate = DELIBERATE[item.id];
-
   return (
     <figure className={`case-card${item.failing ? ' is-failing' : ''}`}>
       <figcaption className="case-head">
@@ -67,7 +56,12 @@ function CaseCard({ item }: { item: EvidenceCase }) {
       </figcaption>
 
       {item.image && (
-        <img className="case-image" src={evidenceImageUrl(item.image)} alt={`${item.label} comparison`} loading="eager" />
+        <img
+          className="case-image"
+          src={evidenceImageUrl(item.image)}
+          alt={`${item.label}: source, converted and pixel difference`}
+          loading="lazy"
+        />
       )}
 
       {item.trap && <p className="case-trap">{item.trap}</p>}
@@ -77,9 +71,15 @@ function CaseCard({ item }: { item: EvidenceCase }) {
         {item.elementCount} element{item.elementCount === 1 ? '' : 's'}
       </p>
 
-      {deliberate && (
+      {/*
+        The reason comes from tests/baselines/<suite>.expected-failures.json,
+        the same file the test gate reads. The page used to keep its own copy
+        of these four explanations.
+      */}
+      {item.expectedFailureReason && (
         <p className="case-deliberate">
-          <AlertTriangle size={13} aria-hidden="true" /> Fails on purpose. {deliberate}
+          <AlertTriangle size={13} aria-hidden="true" /> Fails on purpose.{' '}
+          {item.expectedFailureReason}
         </p>
       )}
     </figure>
@@ -112,13 +112,29 @@ export function MethodologyPage() {
 
   return (
     <main className="page page-doc">
-      <header className="doc-header">
-        <p className="doc-eyebrow">Methodology</p>
-        <h1 className="doc-title">The harness is the oracle, not your eyes</h1>
-        <p className="doc-lede">
-          Every conversion is rasterised and pixel-diffed against a real SVG renderer. Nothing
-          on this site is a claim we have not measured — including the parts that fail.
-        </p>
+      <header className="doc-header doc-header-split">
+        <div className="doc-header-text">
+          <p className="doc-eyebrow">How it is tested</p>
+          <h1 className="doc-title">Every conversion is checked against a real renderer</h1>
+          <p className="doc-lede">
+            The same SVG is drawn twice — once by a standard SVG renderer, once by Excalidraw
+            after conversion — and the two pictures are compared pixel by pixel. The results
+            are on this page, including the cases that fail.
+          </p>
+        </div>
+
+        <figure className="doc-header-figure">
+          <img
+            src={evidenceImageUrl(HERO_CASE)}
+            alt="Three panels side by side: the source SVG, the converted Excalidraw shapes, and the difference between them, which is blank."
+            width={976}
+            height={320}
+            loading="eager"
+          />
+          <figcaption>
+            source · Excalidraw · difference. A blank third panel means the two match.
+          </figcaption>
+        </figure>
       </header>
 
       <div className="doc-stats">
@@ -132,58 +148,60 @@ export function MethodologyPage() {
         </div>
         <div className="stat">
           <span className="stat-value">{STATS.tortureCount}</span>
-          <span className="stat-label">adversarial cases</span>
+          <span className="stat-label">edge cases built to break it</span>
         </div>
         <div className="stat">
           <span className="stat-value">{STATS.tortureFailures}</span>
-          <span className="stat-label">deliberate failures</span>
+          <span className="stat-label">that fail on purpose</span>
         </div>
       </div>
 
       <section className="doc-section">
         <h2>How a conversion is scored</h2>
         <p className="doc-body">
-          Each SVG is rendered twice: once by <strong>resvg</strong> from the source, and once
-          by <strong>Excalidraw's own exporter</strong> from the converted elements. The two
-          rasters are diffed with pixelmatch, and the score is mismatched pixels over{' '}
-          <em>inked</em> pixels — not canvas area, so a small glyph is not flattered by the
-          empty space around it.
+          Each SVG is rendered by <strong>resvg</strong> from the source, and again by{' '}
+          <strong>Excalidraw's own exporter</strong> from the converted elements. The two
+          images go through pixelmatch, and the score is mismatched pixels divided by{' '}
+          <em>inked</em> pixels — not canvas area, so a small glyph does not get flattered by
+          the empty space around it.
         </p>
         <p className="doc-body">
-          Both sides are framed on the same window. Cropping each to its own ink box sounds
-          reasonable and is the single worst mistake we made: it hides translation error
-          completely and inflated every real number tenfold. A transparent sentinel spanning
-          the artboard forces the shared frame, and the harness throws if any content escapes
-          it rather than silently shifting.
+          Both sides are framed on the same window. Cropping each one to its own ink box
+          sounds reasonable and was the worst mistake in this project: it hides translation
+          error completely, and it made every real number look ten times better than it was.
+          A transparent marker spanning the artboard forces the shared frame, and the run
+          stops if any content escapes it.
         </p>
         <p className="doc-body">
-          A second, purely structural pass catches what pixels cannot: shapes Excalidraw will
-          refuse to draw as intended — an unclosed path carrying a fill, a zero-sized ellipse,
-          an image referencing a missing file. That runs across every export path, and it is
-          the same code that warns you on the convert page.
+          A second pass catches what pixels cannot: shapes Excalidraw will refuse to draw as
+          intended — an unclosed path carrying a fill, a zero-sized ellipse, an image pointing
+          at a missing file. It runs on every export path, and it is the same code that warns
+          you on the convert page.
         </p>
       </section>
 
       <section className="doc-section">
-        <h2>The gate</h2>
+        <h2>What stops a bad change from shipping</h2>
         <p className="doc-body">
-          Scores are committed as baselines. Any icon exceeding its baseline by more than{' '}
-          {formatPct(manifest?.thresholds.regressionSlack ?? 0.001, 1)} fails the build, as does
-          any shape error above {formatPct(STATS.shapeThreshold, 0)} or placement error above{' '}
-          {formatPx(STATS.placementThresholdPx)}.
+          Every score is committed to a baseline file. An icon that gets worse than its
+          baseline by more than{' '}
+          {formatPct(manifest?.thresholds.regressionSlack ?? 0.001, 1)} fails the build, as
+          does any shape error above {formatPct(STATS.shapeThreshold, 0)} or placement error
+          above {formatPx(STATS.placementThresholdPx)}.
         </p>
         <p className="doc-body">
-          The gate is verified to actually fail: doctoring one baseline entry produces{' '}
-          <code>Kuberun: 0.00% -&gt; 91.89%</code> and a non-zero exit. A gate that cannot fail
-          is worse than no gate, so that check is re-run whenever the harness changes.
+          The check is verified to actually fail. Editing one baseline entry by hand produces{' '}
+          <code>Kuberun: 0.00% -&gt; 91.89%</code> and a non-zero exit code. A check that
+          cannot fail is worse than none, so that test is repeated whenever the harness
+          changes.
         </p>
       </section>
 
       <section className="doc-section">
         <h2>Mistakes this caught</h2>
         <p className="doc-body">
-          Every one of these looked correct in review and was found by measurement, not by
-          looking at the output.
+          Each of these looked correct in review. None of them were spotted by looking at the
+          output.
         </p>
         <div className="trap-table">
           {TRAPS.map(trap => (
@@ -196,20 +214,20 @@ export function MethodologyPage() {
       </section>
 
       <section className="doc-section">
-        <h2>The torture suite</h2>
+        <h2>The edge-case suite</h2>
         <p className="doc-body">
-          {STATS.tortureCount} SVGs built to break the converter, each isolating one feature.
-          They are self-verifying — resvg is the oracle, so no expected output is written by
-          hand. Every strip below is <strong>source · Excalidraw · pixel diff</strong>, sorted
-          worst first.
+          {STATS.tortureCount} SVGs built to break the converter, each one isolating a single
+          feature. There is no expected output written by hand — resvg decides what correct
+          looks like. Every strip below is{' '}
+          <strong>source · Excalidraw · difference</strong>, worst first.
         </p>
 
         {error && (
           <p className="doc-body">
-            Could not load the evidence manifest ({error}). Run <code>pnpm evidence</code>.
+            Could not load the results ({error}). Run <code>pnpm evidence</code>.
           </p>
         )}
-        {!manifest && !error && <p className="doc-body">Loading measured results…</p>}
+        {!manifest && !error && <p className="doc-body">Loading results…</p>}
 
         <div className="case-grid">
           {visible.map(item => (
@@ -228,9 +246,9 @@ export function MethodologyPage() {
         <section className="doc-section">
           <h2>Every icon that is not perfect</h2>
           <p className="doc-body">
-            {STATS.iconCount - worstIcons.length} of {STATS.iconCount} production icons score{' '}
-            <em>exactly</em> zero. This is the complete list of the ones that do not — so the
-            headline {formatPct(STATS.iconMeanError)} is backed by the actual worst cases
+            {STATS.iconCount - worstIcons.length} of {STATS.iconCount} icons score{' '}
+            <em>exactly</em> zero. Here is the complete list of the ones that do not, so the
+            headline {formatPct(STATS.iconMeanError)} comes with its worst cases attached
             rather than a sample.
           </p>
           <div className="case-grid">
@@ -244,9 +262,9 @@ export function MethodologyPage() {
       <section className="doc-section">
         <h2>What is and isn't supported</h2>
         <p className="doc-body">
-          Generated from the converter's own detection rules, so this table and the code
-          cannot disagree. Anything here is <strong>reported</strong> when you convert a file —
-          nothing is dropped silently.
+          This table is generated from the converter's own detection rules, so it cannot
+          disagree with the code. Anything listed here is <strong>reported</strong> when you
+          convert a file — nothing is dropped silently.
         </p>
 
         <h3 className="doc-subhead">Not converted</h3>
@@ -273,9 +291,9 @@ export function MethodologyPage() {
       <section className="doc-cta glass-panel">
         <h2>Got a weird SVG?</h2>
         <p className="doc-body">
-          Edge cases are the whole point. Writing the first twenty of these immediately
-          surfaced five real bugs. If something converts badly, send it in — accepted reports
-          become permanent fixtures, so the same failure cannot come back unnoticed.
+          Edge cases are the whole point. Writing the first twenty of these turned up five
+          real bugs. If something converts badly, send it in — accepted reports become
+          permanent fixtures, so the same failure cannot come back unnoticed.
         </p>
         <div className="doc-cta-actions">
           <a className="btn btn-primary" href={NEW_ISSUE_URL} target="_blank" rel="noreferrer noopener">
@@ -284,11 +302,11 @@ export function MethodologyPage() {
           </a>
           <a
             className="btn btn-secondary"
-            href={`${REPO_URL}/blob/main/docs/TESTING.md`}
+            href={`${WIKI_URL}/Testing`}
             target="_blank"
             rel="noreferrer noopener"
           >
-            Read TESTING.md
+            How the tests work
           </a>
         </div>
       </section>

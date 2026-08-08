@@ -29,6 +29,47 @@
   color: var(--text-secondary);
 }
 
+/* --- Header with a figure beside it -------------------------------------
+   Single column until there is genuinely room for two. The evidence strip is
+   976x320, so below ~900px a side-by-side layout shrinks it to the point
+   where the three panels are no longer readable. */
+.doc-header-split {
+  display: grid;
+  gap: 1.75rem;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .doc-header-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: 2.5rem;
+  }
+}
+
+.doc-header-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.doc-header-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  /* The panels are rendered on transparency; a light plate keeps the diff
+     legible in both themes without inverting the artwork. */
+  background: #fff;
+}
+
+.doc-header-figure figcaption {
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
 .doc-section {
   margin-top: 3rem;
 }

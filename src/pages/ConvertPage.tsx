@@ -57,26 +57,26 @@ export function ConvertPage() {
               Wondering if it's accurate? <ArrowRight size={15} aria-hidden="true" />
             </span>
             <span className="next-card-text">
-              {STATS.tortureCount} torture cases, pixel-diffed against a real renderer.
-              Results published in full — including the {STATS.tortureFailures} we
-              intentionally fail.
+              {STATS.tortureCount} edge cases built to break it, each one compared pixel by
+              pixel against a real renderer. All the results are here, including the{' '}
+              {STATS.tortureFailures} that fail on purpose.
             </span>
           </span>
         </Link>
       </section>
 
-      <section className="stat-strip" aria-label="Measured conversion fidelity">
+      <section className="stat-strip" aria-label="Conversion accuracy">
         <div className="stat">
           <span className="stat-value">{formatPct(STATS.iconMeanError)}</span>
           <span className="stat-label">mean shape error across {STATS.iconCount} icons</span>
         </div>
         <div className="stat">
           <span className="stat-value">{STATS.tortureCount}</span>
-          <span className="stat-label">adversarial SVGs in the regression gate</span>
+          <span className="stat-label">edge cases in the test suite</span>
         </div>
         <div className="stat">
           <span className="stat-value">{STATS.tortureFailures}</span>
-          <span className="stat-label">deliberate failures, pinned so the limit cannot drift</span>
+          <span className="stat-label">that fail on purpose, to hold a known limit in place</span>
         </div>
       </section>
     </main>

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { ArrowRight, FolderPlus } from 'lucide-react';
+import { ArrowRight, ExternalLink, FolderPlus } from 'lucide-react';
 import { Link, iconSetPath } from '../router';
+import { WIKI_URL } from '../site';
 import { listIconSets, totalIconCount } from '../utils/iconSets';
 
 /**
@@ -91,49 +92,33 @@ export function IconSetsPage() {
         </ul>
       )}
 
-      <section className="doc-section">
-        <h2>
-          <FolderPlus size={16} aria-hidden="true" /> Adding your own set
-        </h2>
-        <p className="doc-body">
-          Drop a folder of SVGs into <code>svg/</code>. The folder name becomes the URL — a folder
-          called <code>26-gcp</code> is served at <code>/icons/26-gcp</code> — and every file in it
-          becomes an icon, titled from its filename. Nothing has to be registered.
-        </p>
-        <p className="doc-body">
-          To name and categorise it, add <code>svg/&lt;folder&gt;/set.json</code>. Every field is
-          optional:
-        </p>
-        <pre className="code-block">{SET_JSON_EXAMPLE}</pre>
-        <p className="doc-body">
-          <code>rules</code> is ordered and first-wins, matched as substrings against the filename;
-          anything unmatched falls through to the last category, so list the catch-all bucket last.{' '}
-          <code>synonyms</code> groups are bidirectional — with the group above, the Virtual Private
-          Cloud icon is found by searching either <code>vpc</code> or its full name.{' '}
-          <code>svg/legacy-gcp/set.json</code> is a complete worked example.
-        </p>
-      </section>
+      {/*
+        The set.json schema is NOT repeated here.
+
+        It used to exist three times - on this page, in the README and in the
+        types - and the three had already started to drift. The wiki page is
+        the one copy, and it is the one a contributor can edit.
+      */}
+      <a
+        className="next-card"
+        href={`${WIKI_URL}/Submit-an-icon-set`}
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        <span className="next-card-icon">
+          <FolderPlus size={18} aria-hidden="true" />
+        </span>
+        <span className="next-card-body">
+          <span className="next-card-title">
+            Add your own set <ExternalLink size={14} aria-hidden="true" />
+          </span>
+          <span className="next-card-text">
+            Drop a folder of SVGs into <code>svg/</code> and it appears here. The folder name
+            becomes the URL. Naming, categories and search aliases are optional — the guide
+            covers all of it.
+          </span>
+        </span>
+      </a>
     </main>
   );
 }
-
-const SET_JSON_EXAMPLE = `{
-  "name": "Google Cloud 2026",
-  "description": "The refreshed product marks.",
-  "accent": "#4285F4",
-  "order": 20,
-  "tags": ["gcp", "google cloud"],
-  "categories": [
-    { "id": "compute", "name": "Compute", "color": "#81C995" },
-    { "id": "general", "name": "General" }
-  ],
-  "rules": [
-    { "category": "compute", "match": ["run", "gke", "engine"] }
-  ],
-  "synonyms": [
-    ["vpc", "virtual private cloud"]
-  ],
-  "overrides": {
-    "weird-file-name": { "title": "Cloud Run", "category": "compute" }
-  }
-}`;

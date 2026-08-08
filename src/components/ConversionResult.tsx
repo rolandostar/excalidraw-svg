@@ -239,7 +239,7 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
 
       {verdict === 'good' && (
         <div className="verdict">
-          <p className="verdict-question">Good. That is the expected outcome, not a lucky one.</p>
+          <p className="verdict-question">Good — that's what it's meant to do.</p>
         </div>
       )}
 
@@ -247,9 +247,9 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
         <div className="verdict verdict-bad">
           <p className="verdict-question">Then it's a bug, and we want the file.</p>
           <p className="verdict-text">
-            Accepted reports become permanent fixtures in the torture suite, so the same
-            failure cannot come back unnoticed. The issue is prefilled with what the
-            converter already detected — just attach the SVG and say what looks wrong.
+            Accepted reports get added to the test suite, so the same failure cannot come
+            back unnoticed. The issue is already filled in with what the converter detected
+            — just attach the SVG and say what looks wrong.
           </p>
           <a
             className="btn btn-primary"

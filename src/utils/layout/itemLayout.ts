@@ -43,7 +43,7 @@ export interface Bounds {
  *
  * Every element this converter emits carries an exact `x`/`y`/`width`/`height`
  * derived from its own absolute point extents, and `strokeColor` is always
- * transparent (see ARCHITECTURE.md §3), so a plain union of those rectangles
+ * transparent (see the Architecture wiki page), so a plain union of those rectangles
  * *is* the ink box - there is no stroke extent to add back.
  *
  * Returns `null` for an empty scene so callers can tell "no artwork" apart

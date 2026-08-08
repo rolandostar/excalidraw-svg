@@ -84,7 +84,7 @@ ${describeDrops(result)}
 ${describeAudit(result)}
 
 ---
-<sub>Reported from the web converter. Testing methodology: ${REPO_URL}/blob/main/docs/TESTING.md</sub>
+<sub>Reported from the web converter. How this is tested: ${REPO_URL}/wiki/Testing</sub>
 `;
 
   const url = new URL(`${REPO_URL}/issues/new`);
