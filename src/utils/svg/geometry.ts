@@ -239,10 +239,10 @@ export function ellipseRing(ellipse: EllipseAttrs, tolerance: number): Point[] {
 /**
  * Flattens any SVG shape element into closed rings in its own user space.
  *
- * NOTE: `<line>` is *not* handled. `localBoundingBox` in `clipping.ts` does
- * select `line`, so a `<line>` currently contributes nothing to an
- * `objectBoundingBox` computation. That is a real bug, left alone here because
- * fixing it changes output.
+ * Areas only. `<line>` is deliberately absent: a line encloses nothing, so a
+ * `<line>` inside a `<clipPath>` contributes no clip area, which is what the
+ * spec says. For the *bounding box* of a line, which is a different question
+ * with a different answer, see `shapeBoundsPoints`.
  */
 export function shapeToRings(el: Element, tolerance: number): Point[][] {
   const tag = el.tagName.toLowerCase();
@@ -273,4 +273,35 @@ export function shapeToRings(el: Element, tolerance: number): Point[][] {
   }
 
   return [];
+}
+
+/**
+ * Points that define a shape's geometry bounding box, in its own user space.
+ *
+ * Almost the same as `shapeToRings`, and different in exactly one way: a
+ * `<line>` has a bounding box even though it has no area. Its box is the box
+ * of its two endpoints, per the SVG geometry-box rules, and a horizontal line
+ * legitimately gives a box of zero height.
+ *
+ * Keeping this separate from `shapeToRings` is the point. A `<line>` inside a
+ * `<clipPath>` must still clip nothing away, and folding the two together
+ * would have given it area.
+ *
+ * Only the *upload* path can reach this with a real `<line>`, which is why
+ * there is no torture fixture for it - the harness runs SVGO first, and
+ * SVGO's `convertShapeToPath` rewrites every `<line>` as a `<path>` before the
+ * converter sees it. `geometry.test.ts` and `objectBounds.test.ts` cover it
+ * directly instead.
+ */
+export function shapeBoundsPoints(el: Element, tolerance: number): Point[][] {
+  if (el.tagName.toLowerCase() === 'line') {
+    const at = (name: string) => parseFloat(el.getAttribute(name) || '0');
+    const ends: Point[] = [
+      [at('x1'), at('y1')],
+      [at('x2'), at('y2')],
+    ];
+    return ends.every(pt => pt.every(Number.isFinite)) ? [ends] : [];
+  }
+
+  return shapeToRings(el, tolerance);
 }

@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-08T06:49:10.635Z",
+  "builtAt": "2026-08-08T08:44:37.249Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,7 +7,7 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-08T06:48:15.479Z",
+    "generatedAt": "2026-08-08T08:43:29.224Z",
     "total": 261,
     "meanShapeScore": 0.000004493184497008677,
     "worstShapeScore": 0.000989282769991756,
@@ -928,7 +928,7 @@
       },
       {
         "id": "legacy-gcp__Cloud-Optimization-AI---Fleet-Routing-API",
-        "label": "Cloud Optimization AI Fleet Routing API",
+        "label": "Cloud Optimization AI - Fleet Routing API",
         "shapeScore": 0,
         "placementErrorPx": 0.045000000000001705,
         "elementCount": 9,
@@ -2372,11 +2372,11 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-08T06:47:46.161Z",
-    "total": 29,
-    "meanShapeScore": 0.031647372432723586,
+    "generatedAt": "2026-08-08T08:44:35.633Z",
+    "total": 30,
+    "meanShapeScore": 0.030592460018299468,
     "worstShapeScore": 0.5800853249389056,
-    "meanPlacementErrorPx": 0.23142241379310344,
+    "meanPlacementErrorPx": 0.22683333333333333,
     "worstPlacementErrorPx": 4.03125,
     "failing": 4,
     "auditIssueCount": 0,
@@ -2703,6 +2703,17 @@
         "auditIssues": [],
         "failing": false,
         "image": "torture/29-artboard-spanning-artwork.png"
+      },
+      {
+        "id": "30-clipped-circle",
+        "label": "Clipped Circle",
+        "shapeScore": 0,
+        "placementErrorPx": 0.09375,
+        "elementCount": 2,
+        "trap": "A circle and an ellipse, each cut in half by a clip path. Excalidraw's ellipse element is parametric - a box, not a point list - so there is nothing for a clip to intersect, and a converter that emits one anyway renders both shapes whole. The correct output is two half-discs with straight cut edges. The same shape written as a <path> is cropped correctly, so a whole-vs-half difference here is the ellipse route specifically.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/30-clipped-circle.png"
       }
     ]
   }

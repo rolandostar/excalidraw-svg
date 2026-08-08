@@ -85,7 +85,7 @@ Future readers need the intent, not the geometry — they can read the geometry.
 ## Writing one yourself
 
 If you want to send the fixture rather than the bug report, the guidelines that
-made the existing 29 useful:
+made the existing set useful:
 
 - **One feature per file.** A file that exercises three things tells you
   nothing when it fails.

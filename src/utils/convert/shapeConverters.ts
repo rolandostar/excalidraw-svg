@@ -15,6 +15,7 @@ import {
   bridgeHoles,
   regionToBridgedRings,
   resolveFilledRegions,
+  signedArea,
 } from '../pathRegions';
 import { strokeToRegion } from '../strokeOutline';
 import {
@@ -23,13 +24,36 @@ import {
   getCombinedTransformMatrixUntil,
   matrixScale,
 } from '../svg/matrix';
-import { ellipseRing, readEllipseAttrs, readPointsAttr, readRectAttrs, rectangleRing } from '../svg/geometry';
+import {
+  EllipseAttrs,
+  ellipseRing,
+  readEllipseAttrs,
+  readPointsAttr,
+  readRectAttrs,
+  rectangleRing,
+} from '../svg/geometry';
 import { getPointsOnPath } from '../svg/pathFlatten';
 import { ShapeStyle, getShapeStyle } from '../svg/paint';
 import type { StyleMap } from '../svg/stylesheet';
 import { applyClip, getVisibilityRegion, resolveVisibility } from '../svg/clipping';
 import type { DropReason } from './diagnostics';
 import type { RawShape } from './rawShape';
+
+/**
+ * Did clipping take anything away?
+ *
+ * Compared by area rather than by identity or vertex count, because the
+ * boolean engine may return a geometrically identical ring with its vertices
+ * renumbered. The tolerance is relative: a clip that removes less than a
+ * thousandth of the shape is a rounding artefact of the intersection, not an
+ * intent to cut.
+ */
+function coversSameArea(ring: Point[], pieces: Point[][]): boolean {
+  const before = Math.abs(signedArea(ring));
+  if (!(before > 0)) return true;
+  const after = pieces.reduce((total, piece) => total + Math.abs(signedArea(piece)), 0);
+  return Math.abs(before - after) / before < 1e-3;
+}
 
 /**
  * Collects raw shapes, applying the clip region and the hole-area floor that
@@ -70,8 +94,52 @@ export class RawShapeSink {
     }
   }
 
-  pushEllipse(cx: number, cy: number, rx: number, ry: number, fill: string, opacity: number): void {
-    this.shapes.push({ type: 'ellipse', cx, cy, rx, ry, fill, opacity });
+  /**
+   * Emits an ellipse, clipped.
+   *
+   * An Excalidraw `ellipse` is parametric: it has a box, not a point list, so
+   * there is nothing for a clip region to intersect. That is why a clipped
+   * `<circle>` used to render whole.
+   *
+   * So when a clip actually cuts the ellipse, this emits the flattened outline
+   * instead, which does have points and can be intersected. When the clip
+   * leaves the ellipse alone - the common case, since most clips exist to trim
+   * something else in the same group - the real ellipse is kept, because a
+   * parametric ellipse stays smooth at every zoom level and a polygon does not.
+   *
+   * `ellipse` is in the element's own space; `matrix` maps it to root user
+   * space. The flattening happens before the transform so that a rotation is
+   * carried properly, which the axis-aligned rx/ry form cannot express.
+   */
+  pushEllipse(
+    ellipse: EllipseAttrs,
+    matrix: Matrix2D,
+    fill: string,
+    opacity: number,
+    clipRegion: MultiPolygon | null
+  ): void {
+    const [cx, cy] = applyMatrix(matrix, [ellipse.cx, ellipse.cy]);
+    const rx = ellipse.rx * Math.hypot(matrix[0], matrix[1]);
+    const ry = ellipse.ry * Math.hypot(matrix[2], matrix[3]);
+    const asEllipse = () => this.shapes.push({ type: 'ellipse', cx, cy, rx, ry, fill, opacity });
+
+    if (!clipRegion) {
+      asEllipse();
+      return;
+    }
+
+    const ring = ellipseRing(ellipse, this.tolerance).map(pt => applyMatrix(matrix, pt));
+    const clipped = applyClip(ring, clipRegion, this.minHoleArea);
+
+    if (coversSameArea(ring, clipped)) {
+      asEllipse();
+      return;
+    }
+
+    for (const piece of clipped) {
+      if (piece.length < 3) continue;
+      this.shapes.push({ type: 'line', absPoints: piece as [number, number][], fill, opacity });
+    }
   }
 
   /** Emits a resolved region as clipped, fill-only shapes. */
@@ -226,14 +294,12 @@ const convertRect: ShapeConverter = (el, ctx, clipRegion) => {
   // rx=1`) into a full ellipse, losing its flat sides.
   const isEllipse = rx >= w / 2 - 1e-6 && ry >= h / 2 - 1e-6;
   if (isEllipse && !style.isFillNone) {
-    const center = applyMatrix(matrix, [x + w / 2, y + h / 2]);
     ctx.sink.pushEllipse(
-      center[0],
-      center[1],
-      (w / 2) * Math.hypot(matrix[0], matrix[1]),
-      (h / 2) * Math.hypot(matrix[2], matrix[3]),
+      { cx: x + w / 2, cy: y + h / 2, rx: w / 2, ry: h / 2 },
+      matrix,
       style.fill,
-      style.opacity
+      style.opacity,
+      clipRegion
     );
   }
 
@@ -261,20 +327,9 @@ const convertEllipse: ShapeConverter = (el, ctx, clipRegion) => {
   const matrix = getCombinedTransformMatrixUntil(el);
 
   if (!style.isFillNone) {
-    // NOTE: `clipRegion` is deliberately unused here - an Excalidraw ellipse
-    // has no point list to intersect. A clipped `<circle>` therefore renders
-    // unclipped. Known bug, left alone because fixing it changes output.
-    const center = applyMatrix(matrix, [ellipse.cx, ellipse.cy]);
-    ctx.sink.pushEllipse(
-      center[0],
-      center[1],
-      ellipse.rx * Math.hypot(matrix[0], matrix[1]),
-      ellipse.ry * Math.hypot(matrix[2], matrix[3]),
-      style.fill,
-      // The stroke is emitted separately as an annulus so that it scales with
-      // the element; an Excalidraw stroke would not.
-      style.opacity
-    );
+    // The stroke is emitted separately below, as an annulus, so that it scales
+    // with the element; an Excalidraw stroke would not.
+    ctx.sink.pushEllipse(ellipse, matrix, style.fill, style.opacity, clipRegion);
   }
 
   if (!style.isStrokeNone) {

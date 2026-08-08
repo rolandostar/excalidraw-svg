@@ -10,7 +10,7 @@
  */
 import { MultiPolygon, Point, rectRegion } from '../pathRegions';
 import { applyMatrix, getCombinedTransformMatrixUntil } from './matrix';
-import { boundsOfRings, shapeToRings } from './geometry';
+import { boundsOfRings, shapeBoundsPoints } from './geometry';
 
 export interface BoundingBox {
   x: number;
@@ -44,14 +44,14 @@ export function localBoundingBox(node: Element, tolerance: number): BoundingBox 
     if (container && container !== node && node.contains(container)) return;
 
     const matrix = getCombinedTransformMatrixUntil(shape, node);
-    for (const ring of shapeToRings(shape, tolerance)) {
+    for (const ring of shapeBoundsPoints(shape, tolerance)) {
       rings.push(ring.map(pt => applyMatrix(matrix, pt)));
     }
   };
 
-  // NOTE: this selector includes `line`, which `shapeToRings` does not handle,
-  // so a `<line>` contributes nothing here. Known bug, left alone because
-  // fixing it changes output.
+  // `shapeBoundsPoints`, not `shapeToRings`: a `<line>` belongs in a bounding
+  // box even though it encloses no area, and this selector has always
+  // included it.
   const selector = 'path, polygon, polyline, line, rect, circle, ellipse';
   if (node.matches?.(selector)) consider(node);
   node.querySelectorAll(selector).forEach(consider);

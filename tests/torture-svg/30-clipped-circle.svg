@@ -1,0 +1,21 @@
+<!-- A circle and an ellipse, each cut in half by a clip path. Excalidraw's
+     ellipse element is parametric - a box, not a point list - so there is
+     nothing for a clip to intersect, and a converter that emits one anyway
+     renders both shapes whole. The correct output is two half-discs with
+     straight cut edges. The same shape written as a <path> is cropped
+     correctly, so a whole-vs-half difference here is the ellipse route
+     specifically. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <defs>
+    <clipPath id="left-half" clipPathUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="12" height="24"/>
+    </clipPath>
+    <clipPath id="top-half" clipPathUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="24" height="17"/>
+    </clipPath>
+  </defs>
+
+  <circle cx="7" cy="7" r="6" fill="#4285f4" clip-path="url(#left-half)"/>
+
+  <ellipse cx="15" cy="17" rx="7" ry="5" fill="#34a853" clip-path="url(#top-half)"/>
+</svg>

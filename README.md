@@ -46,7 +46,7 @@ results are identical either way. `--help` lists every flag.
 | suite | files | mean shape error | worst | worst placement | failing |
 |---|---|---|---|---|---|
 | icons | 261 | **0.000 %** | 0.10 % | 0.200 px | **0** |
-| torture | 29 | 3.16 % | 58 % | — | 4 (deliberate) |
+| torture | 30 | 3.06 % | 58 % | — | 4 (expected) |
 
 That is all three sets: 216 legacy-gcp, 26 category-icons, 19 unique-icons.
 258 of the 261 are at *exactly* 0.00 %.
