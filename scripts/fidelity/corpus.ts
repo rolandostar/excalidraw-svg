@@ -121,7 +121,6 @@ export function buildIcon(candidate: Candidate, rawSvg: string): IconAsset {
       override.category || categorizeByRules(candidate.name, manifest.rules ?? [], categories),
     tags: [],
     rawSvg: optimizedSvg,
-    optimizedSvg,
     dataUrl: `data:image/svg+xml,${encoded}`,
     width: viewBox.width,
     height: viewBox.height,

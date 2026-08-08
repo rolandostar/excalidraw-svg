@@ -1,0 +1,93 @@
+/**
+ * Owns the wire format: the shape of the JSON that goes onto the clipboard or
+ * into an `.excalidrawlib` file.
+ *
+ * Separate because this is not our design - it is Excalidraw's, and it changes
+ * when Excalidraw changes. Nothing here should acquire fields we invented, and
+ * nothing here should import from the other two type modules.
+ */
+
+/**
+ * TODO: `ExcalidrawElement` should be a discriminated union on `type`.
+ * `points` only exists on lines, `fileId`/`scale`/`status` only on images, and
+ * the seven text fields only on text - all of them are optional here, so the
+ * compiler cannot stop the emitter reading `element.points` off an image, and
+ * `sceneAudit` has to re-check at runtime what a union would have made
+ * unrepresentable.
+ *
+ * Not done yet because it is not a type-only change. Every construction site
+ * in `convert/emit.ts` and `layout/` currently spreads a shared base object
+ * and adds the type-specific fields afterwards, which a union rejects, and
+ * `sceneAudit`/`sceneFrame` iterate mixed arrays and would each need
+ * narrowing. That is a real refactor with real fallout, and it wants its own
+ * change with the fidelity harness green on either side of it.
+ */
+export interface ExcalidrawElement {
+  id: string;
+  type: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  angle: number;
+  strokeColor: string;
+  backgroundColor: string;
+  fillStyle: string;
+  strokeWidth: number;
+  strokeStyle: string;
+  roughness: number;
+  opacity: number;
+  groupIds: string[];
+  /** Id of the containing frame element. Always `null` here - we emit no frames. */
+  frameId: string | null;
+  index: string;
+  roundness: { type: number } | null;
+  seed: number;
+  version: number;
+  versionNonce: number;
+  isDeleted: boolean;
+  /** Arrows and labels bound to this element. Always `null` here - we bind nothing. */
+  boundElements: Array<{ id: string; type: 'arrow' | 'text' }> | null;
+  updated: number;
+  /** Hyperlink attached to the element. Always `null` here. */
+  link: string | null;
+  locked: boolean;
+  // Specific for line/polygon
+  points?: [number, number][];
+  // Specific for image
+  fileId?: string;
+  scale?: [number, number];
+  status?: string;
+  // Specific for text
+  text?: string;
+  fontSize?: number;
+  fontFamily?: number;
+  textAlign?: string;
+  verticalAlign?: string;
+  containerId?: string | null;
+  originalText?: string;
+  lineHeight?: number;
+}
+
+export interface ExcalidrawFile {
+  mimeType: string;
+  id: string;
+  dataURL: string;
+  created: number;
+}
+
+export interface ExcalidrawLibraryItem {
+  id: string;
+  status: 'published' | 'unpublished';
+  created: number;
+  name?: string;
+  elements: ExcalidrawElement[];
+  files?: Record<string, ExcalidrawFile>;
+}
+
+export interface ExcalidrawLibraryPackage {
+  type: 'excalidrawlib';
+  version: 2;
+  libraryItems: ExcalidrawLibraryItem[];
+  files?: Record<string, ExcalidrawFile>;
+}

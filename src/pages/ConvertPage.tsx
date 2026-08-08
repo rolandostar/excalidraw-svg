@@ -69,7 +69,9 @@ export function ConvertPage() {
       <section className="stat-strip" aria-label="Conversion accuracy">
         <div className="stat">
           <span className="stat-value">{formatPct(STATS.iconMeanError)}</span>
-          <span className="stat-label">mean shape error across {STATS.iconCount} icons</span>
+          <span className="stat-label">
+            mean shape error across every icon in every set
+          </span>
         </div>
         <div className="stat">
           <span className="stat-value">{STATS.tortureCount}</span>

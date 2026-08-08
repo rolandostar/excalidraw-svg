@@ -134,7 +134,8 @@ undo it.
 ## Getting your set gated by the test suite
 
 Fidelity baselines are keyed `<set>__<filename>`, so a new set starts with no
-baseline entries. The harness will **not** invent them:
+baseline entries. The harness will **not** invent them, and it fails until you
+accept them:
 
 ```bash
 pnpm test:fidelity
@@ -143,8 +144,8 @@ pnpm test:fidelity
 ```
 NOT GATED - 45 file(s) have no baseline entry:
   my-set  45 file(s)
-  Review the scores above, then run with --update-baseline to accept them.
-  Until then these files can regress without failing anything.
+  Nothing is checking these, so the run fails. Read the scores above,
+  then re-run with --update-baseline to accept them.
 ```
 
 The run scores your files and prints the worst by shape error. Read those
@@ -172,8 +173,11 @@ See [Testing](Testing) for what the numbers mean.
    the optimiser over your files, so a malformed SVG shows up here.
 4. `pnpm test:fidelity`, read the `NOT GATED` scores, then
    `pnpm test:fidelity:update`.
-5. Commit `tests/baselines/icons.json` in the same PR, and put the set's mean
-   and worst shape error in the PR description.
+5. `pnpm evidence` — the website quotes a total icon count, and `pnpm test`
+   fails until it matches what is in `svg/`.
+6. Commit `tests/baselines/icons.json` and `src/generated/evidence-headline.json`
+   in the same PR, and put the set's mean and worst shape error in the
+   description.
 
 If one of your icons converts badly and you think it is a converter bug rather
 than an unsupported feature, open it separately as an

@@ -111,20 +111,25 @@ a baselined icon the moment a second set landed — dropping it from the gate
 without failing anything.
 
 A new set therefore starts with no baseline entries, and the harness will
-**not** invent them — a baseline written by the same run that produced it gates
-nothing. Instead the run scores those files, lists them under `NOT GATED`, and
-carries on:
+**not** invent them — a baseline written by the same run that produced it
+checks nothing. It scores the files, lists them, and **fails**:
 
 ```
 NOT GATED - 45 file(s) have no baseline entry:
   category-icons  26 file(s)
   unique-icons  19 file(s)
-  Review the scores above, then run with --update-baseline to accept them.
-  Until then these files can regress without failing anything.
+  Nothing is checking these, so the run fails. Read the scores above,
+  then re-run with --update-baseline to accept them.
 ```
 
-Read those numbers before accepting them with `pnpm test:fidelity:update`. The
-gate can only hold a limit somebody agreed to.
+Failing is the point. An unbaselined file has nothing to compare against, so
+carrying on green would let a whole set ship with silent exemption from the
+suite. Read the scores, then accept them with `pnpm test:fidelity:update`.
+
+`pnpm test` catches the same thing in three seconds without rendering
+anything — `scripts/fidelity/corpus.test.ts` asserts that every SVG in `svg/`
+has a baseline entry, that no entry points at a file that is gone, and that the
+totals quoted on the website match the corpus on disk.
 
 A `--only` run reads and writes **no** baseline — it sees a subset, so letting
 it touch the reference would corrupt it.

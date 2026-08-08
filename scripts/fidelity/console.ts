@@ -124,8 +124,8 @@ export function printGate(gate: GateResult): void {
     console.log(`\nNOT GATED - ${gate.unbaselined.length} file(s) have no baseline entry:`);
     [...bySet].forEach(([set, n]) => console.log(`  ${set}  ${n} file(s)`));
     console.log(
-      '  Review the scores above, then run with --update-baseline to accept them.\n' +
-        '  Until then these files can regress without failing anything.'
+      '  Nothing is checking these, so the run fails. Read the scores above,\n' +
+        '  then re-run with --update-baseline to accept them.'
     );
   }
 

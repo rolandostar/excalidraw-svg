@@ -26,9 +26,15 @@ pnpm test:fidelity       # score every icon in svg/ against a real renderer
 pnpm test:torture        # score the edge-case SVGs
 ```
 
-`pnpm test:fidelity` is not a smoke test. It rasterises every icon, pixel-diffs
-it against the source SVG, and **fails on any regression** versus the committed
-baseline. Run it before and after every change to conversion code.
+`pnpm test:fidelity` covers **every** SVG in `svg/`, not one set — it walks the
+directory, so all three sets are scored and all three are baselined. It
+rasterises each icon, pixel-diffs it against the source, and fails on any
+regression versus the committed baseline. Run it before and after every change
+to conversion code.
+
+A file with no baseline entry fails the run too. Adding a set has to be a
+deliberate act of accepting its numbers, or a whole set could ship with nothing
+checking it.
 
 It fans out across `min(8, cores - 1)` processes and caches the half of each
 comparison that cannot change — 261 icons in ~22 s warm, ~44 s cold. Pass
@@ -42,7 +48,11 @@ results are identical either way. `--help` lists every flag.
 | icons | 261 | **0.000 %** | 0.10 % | 0.200 px | **0** |
 | torture | 29 | 3.16 % | 58 % | — | 4 (deliberate) |
 
-258 of 261 icons are at *exactly* 0.00 %.
+That is all three sets: 216 legacy-gcp, 26 category-icons, 19 unique-icons.
+258 of the 261 are at *exactly* 0.00 %.
+
+`pnpm test` keeps these figures honest — it fails if the corpus on disk, the
+baseline and the totals quoted on the website ever disagree.
 
 The four failing torture files fail **by construction** and are meant to stay
 that way — they pin documented limits in place so those limits cannot drift

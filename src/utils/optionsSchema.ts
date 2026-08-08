@@ -1,12 +1,12 @@
-import type {
-  CardCorners,
-  CardFillStyle,
-  CardStrokeWidth,
-  ExcalidrawOptions,
-  LabelFontFamily,
-  LabelPosition,
-  Roughness,
-} from '../types';
+import {
+  CARD_CORNERS,
+  CARD_FILL_STYLES,
+  CARD_STROKE_WIDTHS,
+  FONT_FAMILIES,
+  LABEL_POSITIONS,
+  ROUGHNESS,
+  type ExcalidrawOptions,
+} from '../types/options';
 
 /**
  * Validation for option patches that come from `set.json`.
@@ -17,16 +17,13 @@ import type {
  * ignored field looks like the styling system is broken, and a silently
  * *accepted* one puts the UI into a state none of its controls can represent
  * or undo.
+ *
+ * The six allow-lists this validates against used to be declared here as a
+ * second copy of the unions in `types/options.ts`, with nothing linking the
+ * two. They are now imported: the array is the source of truth and the union
+ * is derived from it, so a new value cannot be added to one and missed in the
+ * other. The prose explaining each one lives with the array.
  */
-
-const CARD_CORNERS: CardCorners[] = ['rounded', 'square'];
-const CARD_FILL_STYLES: CardFillStyle[] = ['solid', 'hachure', 'cross-hatch'];
-/** Excalidraw's `STROKE_WIDTH`: thin, bold, extraBold. */
-const CARD_STROKE_WIDTHS: CardStrokeWidth[] = [1, 2, 4];
-const LABEL_POSITIONS: LabelPosition[] = ['bottom', 'right', 'top'];
-/** Excalidraw's real font ids; see the note on `LabelFontFamily`. */
-const FONT_FAMILIES: LabelFontFamily[] = [5, 6, 7, 8, 9];
-const ROUGHNESS: Roughness[] = [0, 1, 2];
 
 /** Bounds match the sidebar sliders, so every accepted value is reachable in the UI. */
 const FONT_SIZE = { min: 10, max: 28 };

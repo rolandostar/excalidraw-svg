@@ -23,10 +23,12 @@ export interface GateResult {
   /**
    * Ids the baseline has never seen.
    *
-   * These are NOT gated - there is nothing to compare against - so they have
-   * to be reported. Adding a set otherwise buys it silent exemption from the
-   * regression suite, which is the failure mode this whole harness exists to
-   * prevent.
+   * There is nothing to compare these against, so they cannot be checked for a
+   * regression - and that is exactly why they fail the run. Reporting them and
+   * carrying on would let a whole new icon set land with silent exemption from
+   * the suite, which is the one failure this harness exists to prevent.
+   *
+   * The fix is to look at the scores and run with `--update-baseline`.
    */
   unbaselined: string[];
   baselineWritten: 'created' | 'updated' | null;
@@ -172,6 +174,12 @@ export function applyGate(
         `(shape > ${(summary.thresholds.shapeScore * 100).toFixed(0)}%, ` +
         `placement > ${summary.thresholds.placementErrorPx}px, or any audit issue): ` +
         unexpectedFailures.join(', ')
+    );
+  }
+  if (unbaselined.length) {
+    reasons.push(
+      `${unbaselined.length} file(s) have no baseline entry, so nothing is checking them. ` +
+        `Review the scores above, then re-run with --update-baseline`
     );
   }
   if (regressions.length) {

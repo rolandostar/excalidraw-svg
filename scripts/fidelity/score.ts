@@ -111,7 +111,7 @@ export async function scoreFile(candidate: Candidate, config: Config): Promise<S
     icon = buildIcon(candidate, rawSvg);
     record.category = icon.category;
     record.title = icon.title;
-    record.optimizedBytes = icon.optimizedSvg.length;
+    record.optimizedBytes = icon.rawSvg.length;
 
     // Reported, never fatal: an approximation is a documented trade-off and
     // an unsupported feature is information the user needs, not a crash.
