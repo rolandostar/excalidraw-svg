@@ -64,10 +64,33 @@ function nearestVertexPair(outer: Ring, hole: Ring): { outerIndex: number; holeI
 }
 
 /**
+ * Reverses a hole that winds the same way as its outer ring.
+ *
+ * Under `evenodd` the direction does not matter - a corridor traversed twice
+ * cancels either way. Under `nonzero` it decides everything: a hole wound with
+ * its outer contributes +1 instead of 0 and fills solid.
+ *
+ * Excalidraw uses `evenodd` today, at every layer we checked, so this changes
+ * nothing we render. It is here so that the rule is a property of the geometry
+ * rather than an assumption about the renderer, which is also what Excalidraw's
+ * own `spliceHoleIntoRing` does for the same stated reason.
+ */
+function orientedAsHole(hole: Ring, outer: Ring): Ring {
+  return Math.sign(signedArea(hole)) === Math.sign(signedArea(outer))
+    ? [...hole].reverse()
+    : hole;
+}
+
+/**
  * Collapses an outer ring plus holes into one self-touching ring, joined by
  * zero-width corridors. Excalidraw's `line` element has a single point list,
- * so this is the only way to express a hole; Rough.js fills `polygon` shapes
- * with `fill-rule: evenodd`, which is what makes the corridors invisible.
+ * so this is the only way to express a hole.
+ *
+ * The result is correct under both fill rules: the corridors cancel under
+ * `evenodd`, and each hole is wound against its outer so the winding numbers
+ * also cancel under `nonzero`. Excalidraw's renderer, its SVG export and
+ * Rough.js all use `evenodd` for polygon fills, so that is the path actually
+ * taken - the winding is insurance for anything else that reads the output.
  *
  * Every corridor anchors on a vertex of the **original** outer ring. The old
  * implementation stitched holes into an accumulating ring, so the second hole
@@ -80,8 +103,12 @@ export function bridgeHoles(polygon: PolygonWithHoles): Ring {
 
   const attachments = new Map<number, Array<{ hole: Ring; holeIndex: number }>>();
 
-  for (const hole of holes) {
-    if (hole.length < 3) continue;
+  for (const raw of holes) {
+    if (raw.length < 3) continue;
+    // Orient first: `nearestVertexPair` returns an index into the ring that
+    // gets spliced, and reversing afterwards would point it at the wrong
+    // vertex.
+    const hole = orientedAsHole(raw, outer);
     const { outerIndex, holeIndex } = nearestVertexPair(outer, hole);
     const bucket = attachments.get(outerIndex);
     if (bucket) bucket.push({ hole, holeIndex });
