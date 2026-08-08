@@ -376,7 +376,7 @@ async function scoreFile(candidate: Candidate, layout: PackageLayout | null): Pr
           TARGET.width,
           TARGET.height,
           `group_${name.replace(/[^a-zA-Z0-9]/g, '_')}`,
-          DEFAULT_EXCALIDRAW_OPTIONS.roughness
+          DEFAULT_EXCALIDRAW_OPTIONS.iconRoughness
         )
       );
       record.elementCount = elements.length;
@@ -674,11 +674,19 @@ async function run() {
   /**
    * Grid pitch, computed before anything is converted.
    *
-   * `measureExcalidrawItem` reads only `icon.title` and the options, so the
-   * packaged layout is knowable from filenames alone. That is what lets each
-   * worker audit its own slice at the offsets it will really occupy, instead
-   * of the master rebuilding both packages - 2 conversions per icon - on one
-   * core once the parallel phase had already finished.
+   * `measureExcalidrawItem` reads only `icon.title` and the options, so a
+   * plausible packaged layout is knowable from filenames alone. That is what
+   * lets each worker audit its own slice at a realistic offset, instead of the
+   * master rebuilding both packages - 2 conversions per icon - on one core
+   * once the parallel phase had already finished.
+   *
+   * These are no longer the exact offsets the packers use: `packGrid` derives
+   * its pitch from the items it has actually built, because neither `fitFrame`
+   * nor artwork drawn outside its own viewBox is visible to a pre-conversion
+   * measurement. That does not weaken the audit - every rule in
+   * `auditSceneFidelity` is translation-invariant - it just means these
+   * offsets exercise the same code paths rather than reproducing byte-exact
+   * coordinates.
    */
   const titleStubs = files.map(f => {
     const manifest = manifestFor(path.dirname(f.absPath));

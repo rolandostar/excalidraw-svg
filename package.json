@@ -13,7 +13,8 @@
     "test:torture:update": "tsx scripts/run-fidelity.ts --input=tests/torture-svg --name=torture --comparisons=all --update-baseline",
     "evidence": "tsx scripts/build-evidence.ts",
     "shoot": "tsx scripts/shoot.ts",
-    "verify:fonts": "tsx scripts/verify-font-strip.ts"
+    "verify:fonts": "tsx scripts/verify-font-strip.ts",
+    "gen:font-metrics": "tsx scripts/gen-font-metrics.ts"
   },
   "dependencies": {
     "@excalidraw/utils": "0.1.3-test32",

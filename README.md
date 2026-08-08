@@ -129,8 +129,11 @@ optional:
   // How the set opens. A patch over the app defaults - state only what
   // differs. Every field of the styling sidebar is available.
   "defaults": {
-    "labelFontFamily": 1,        // 1 Excalifont, 2 Helvetica, 3 Comic Shanns,
-    "labelFontSize": 18,         //   4 Lilita One, 5 Nunito
+    // Excalidraw's own font ids: 5 Excalifont, 6 Nunito, 7 Lilita One,
+    // 8 Comic Shanns, 9 Liberation Sans. These are not 1-5; ids 1/2/3 are
+    // the deprecated Virgil/Helvetica/Cascadia and 4 is permanently unused.
+    "labelFontFamily": 5,
+    "labelFontSize": 18,
     "labelColor": "#4285f4",
     "iconScale": 1
   },
@@ -140,12 +143,27 @@ optional:
   // "Default" button equal to `defaults` is always added.
   "presets": [
     { "id": "sketch", "label": "Sketch", "hint": "Hand-drawn frame",
-      "options": { "showCard": true, "cardStyle": "sketch-box", "roughness": 2 } },
+      "options": {
+        "showCard": true,
+        "cardCorners": "square",      // rounded | square
+        "cardStrokeWidth": 1,         // 1 thin | 2 bold | 4 extra
+        "cardFillStyle": "hachure",   // solid | hachure | cross-hatch
+        "cardBgColor": "#4285f4",     // hatching is drawn in this colour,
+        "cardRoughness": 2,           //   so it must not be transparent
+        "iconRoughness": 1            // separate from the frame's
+      } },
     { "id": "bare", "label": "Bare", "hint": "Just the mark",
       "options": { "showLabel": false, "showCard": false } }
   ]
 }
 ```
+
+The frame is described by the properties Excalidraw actually has rather than
+by named styles. A previous schema had a single `cardStyle`
+(`soft-card`/`sketch-box`/`outline`) that bundled corner radius, stroke weight
+and fill together; it made combinations like a rounded hatched card
+unreachable, and `outline` silently ignored `cardBgColor` entirely. `cardStyle`
+and `roughness` are both rejected with a message naming what replaced them.
 
 Unrecognised keys and out-of-range values in `defaults` and `presets` are
 dropped with a console warning rather than merged — a value none of the

@@ -3,9 +3,13 @@ import { Check } from 'lucide-react';
 import { IconAsset, ExcalidrawOptions, ExcalidrawElement } from '../types';
 import {
   buildExcalidrawClipboardData,
+  inkBoxFor,
+  measureExcalidrawItem,
   parseSvgToExcalidrawElements,
 } from '../utils/excalidrawGenerator';
 import { ICON_BASE_SIZE } from '../utils/defaultOptions';
+import { STAGE_HEIGHT_PX, cardScaleFor } from './gridMetrics';
+import { fontFamilyCss, lineHeightFor } from '../utils/textMetrics';
 import { ExcalidrawPreview } from './ExcalidrawPreview';
 import { useHasBeenVisible } from '../hooks/useHasBeenVisible';
 import confetti from 'canvas-confetti';
@@ -17,17 +21,15 @@ interface IconCardProps {
   onToggleSelect: (id: string) => void;
   options: ExcalidrawOptions;
   onToast: (message: string) => void;
+  /**
+   * Exact width available to the card, measured from the real grid column.
+   *
+   * Passed down rather than measured here: the scale factor needs a width, and
+   * 216 `ResizeObserver`s would cost more than the layout they are watching.
+   * `IconGrid` runs one for the whole grid.
+   */
+  stageWidth: number;
 }
-
-/**
- * Largest icon the grid will draw at true size.
- *
- * At `iconScale: 2` an icon is 192 canvas units, which would force ~230px grid
- * cells and drop the grid to three columns. The card shows it scaled to fit
- * and states the real export size in the caption, so the number is never
- * implied by the picture alone.
- */
-const MAX_PREVIEW_PX = 112;
 
 /**
  * Conversion results, keyed by everything that can change them.
@@ -70,6 +72,24 @@ function convertIcon(
   return elements;
 }
 
+/**
+ * CSS stand-in for a Rough.js hachure or cross-hatch fill.
+ *
+ * Rough.js hatches by stroking parallel lines *in the background colour* at
+ * roughly 45 degrees. Excalidraw asks it for a gap of `strokeWidth * 4`, so
+ * the 5px period below is about right for a default hairline frame, and the
+ * card is drawn in export units so it scales with everything else.
+ *
+ * The point is only to make the three fill styles distinguishable at a glance
+ * in the grid. The strokes are perfectly straight where Rough.js's wander, and
+ * roughness is not represented at all.
+ */
+function hatchGradient(color: string, crossed: boolean): string {
+  const band = `${color} 0 1px, transparent 1px 5px`;
+  const forward = `repeating-linear-gradient(45deg, ${band})`;
+  return crossed ? `${forward}, repeating-linear-gradient(-45deg, ${band})` : forward;
+}
+
 const IconCardImpl: React.FC<IconCardProps> = ({
   icon,
   isSelected,
@@ -77,6 +97,7 @@ const IconCardImpl: React.FC<IconCardProps> = ({
   onToggleSelect,
   options,
   onToast,
+  stageWidth,
 }) => {
   const [copied, setCopied] = React.useState(false);
 
@@ -88,56 +109,106 @@ const IconCardImpl: React.FC<IconCardProps> = ({
    * A set is 216 cards and a viewport holds about twenty. Doing the work for
    * all of them on mount cost one SVG conversion and one Excalidraw export per
    * card, on the main thread, before anything could be interacted with. The
-   * card's own box is sized from `previewPx` rather than from its contents, so
+   * stage is a fixed box sized from the grid rather than from its contents, so
    * deferring the artwork does not move the layout and cannot make the
    * observer oscillate.
    */
   const isVisible = useHasBeenVisible(cardRef);
 
   const exportPx = Math.round(ICON_BASE_SIZE * options.iconScale);
-  const previewPx = Math.min(exportPx, MAX_PREVIEW_PX);
 
   // The card previews the *converted* scene, not the source file. Showing the
   // input was a credibility gap on a product whose entire claim is conversion
   // fidelity, and a CSS mock cannot represent roughness at all - a sketch-mode
   // export looked identical to a clean one.
   const elements = React.useMemo(
-    () => (isVisible ? convertIcon(icon, exportPx, options.roughness) : null),
-    [isVisible, icon, exportPx, options.roughness]
+    () => (isVisible ? convertIcon(icon, exportPx, options.iconRoughness) : null),
+    [isVisible, icon, exportPx, options.iconRoughness]
   );
 
+  /*
+   * The exporter's own layout, not a lookalike.
+   *
+   * This used to be a flexbox arrangement that guessed `flex-direction` from
+   * `labelPosition` and shared no code with `measureExcalidrawItem`. It could
+   * not be correct, and for `labelPosition: 'right'` it was visibly wrong: the
+   * artwork was a flex item wrapping an SVG, so its min-content width was zero
+   * and it collapsed to a sliver, while the label - squeezed below one word's
+   * width - broke mid-word into "Collaboratio / n".
+   *
+   * Driving the preview from the same function the exporter calls makes the
+   * two agree by construction instead of by maintenance.
+   */
+  const ink = React.useMemo(
+    () => (elements ? inkBoxFor(elements, options) : null),
+    [elements, options]
+  );
+
+  const layout = React.useMemo(
+    () => measureExcalidrawItem(icon, options, ink ?? undefined),
+    [icon, options, ink]
+  );
+
+  // Scales the whole card, preserving the export's real proportions. See
+  // `cardScaleFor` for why an extremely wide card overflows rather than
+  // shrinking to fit.
+  const { scale, isClipped } = cardScaleFor(layout.cardWidth, layout.cardHeight, stageWidth);
+
+  /*
+   * Frame the export on the artwork slot the layout just assigned.
+   *
+   * Under `fitFrame` that is the ink box, so the artwork fills its slot exactly
+   * instead of being letterboxed inside the nominal square it no longer
+   * occupies.
+   */
   const frame = React.useMemo(
-    () => ({ x: 0, y: 0, width: exportPx, height: exportPx }),
-    [exportPx]
+    () =>
+      ink
+        ? { x: ink.x, y: ink.y, width: ink.width, height: ink.height }
+        : { x: 0, y: 0, width: exportPx, height: exportPx },
+    [ink, exportPx]
   );
 
   /**
    * CSS approximation of the exported frame rectangle.
    *
-   * Honest about its limits: CSS cannot draw Excalidraw's roughness or its
-   * hachure fill, so `sketch-box` is shown as a dashed border and the sketchy
-   * edge only appears once pasted. Everything CSS *can* represent - stroke
-   * width, corner radius, whether the panel is filled at all - now tracks the
-   * export, because the previous mock rendered `badge` and `soft-card`
-   * identically and drew a fill under `outline` that the export does not have.
+   * One thing CSS still cannot do is Excalidraw's roughness, so a sketchy
+   * frame only looks sketchy once pasted. Everything else now tracks the
+   * export: the rectangle is positioned and sized by `measureExcalidrawItem`,
+   * including under `fitFrame`, and hachure and cross-hatch are approximated
+   * with repeating gradients over the fill. The previous mock drew those as a
+   * dashed *border*, which described the wrong edge of the shape entirely.
    */
   const frameStyle = React.useMemo((): React.CSSProperties => {
-    if (!options.showCard || options.cardStyle === 'none') {
+    if (!options.showCard) {
       return { backgroundColor: 'transparent', borderWidth: 0, borderStyle: 'solid' };
     }
 
-    const outlined = options.cardStyle === 'outline';
+    const hatch =
+      options.cardFillStyle !== 'solid' && options.cardBgColor !== 'transparent'
+        ? hatchGradient(options.cardBgColor, options.cardFillStyle === 'cross-hatch')
+        : undefined;
 
     return {
-      backgroundColor: outlined ? 'transparent' : options.cardBgColor,
-      borderWidth: outlined ? '2px' : '1px',
-      borderStyle: options.cardStyle === 'sketch-box' ? 'dashed' : 'solid',
+      // Applied unconditionally, matching the export. The old `outline` style
+      // forced this to transparent, so the background swatch did nothing.
+      backgroundColor: hatch ? 'transparent' : options.cardBgColor,
+      backgroundImage: hatch,
+      borderWidth: `${options.cardStrokeWidth}px`,
+      borderStyle: 'solid',
       borderColor: options.cardStrokeColor,
       // Excalidraw uses shorterSide * 0.25 below 128 units; 12px is the
       // closest fixed value for a default-sized card.
-      borderRadius: options.cardStyle === 'soft-card' ? '12px' : '0px',
+      borderRadius: options.cardCorners === 'rounded' ? '12px' : '0px',
     };
-  }, [options.showCard, options.cardStyle, options.cardBgColor, options.cardStrokeColor]);
+  }, [
+    options.showCard,
+    options.cardCorners,
+    options.cardStrokeWidth,
+    options.cardFillStyle,
+    options.cardBgColor,
+    options.cardStrokeColor,
+  ]);
 
   const handleCopySingle = async () => {
     const { jsonText } = buildExcalidrawClipboardData([icon], options);
@@ -156,17 +227,6 @@ const IconCardImpl: React.FC<IconCardProps> = ({
     if (isSelectionMode) onToggleSelect(icon.id);
     else void handleCopySingle();
   };
-
-  const fontFamilyCss =
-    options.labelFontFamily === 1
-      ? "'Excalifont', 'Kalam', cursive"
-      : options.labelFontFamily === 3
-      ? "'Comic Shanns', 'JetBrains Mono', monospace"
-      : options.labelFontFamily === 4
-      ? "'Lilita One', cursive"
-      : options.labelFontFamily === 5
-      ? "'Nunito', sans-serif"
-      : "'Helvetica', 'Inter', sans-serif";
 
   return (
     <div
@@ -201,35 +261,56 @@ const IconCardImpl: React.FC<IconCardProps> = ({
         </div>
       )}
 
+      {/*
+        The stage is a fixed box; the card inside it carries the export's real
+        unit dimensions and is scaled to fit. Sizing in export units and then
+        scaling - rather than laying the parts out in CSS pixels - is what
+        keeps the proportions honest for a 400 x 144 side-label card.
+      */}
       <div
-        className="icon-preview-box"
-        style={{
-          ...frameStyle,
-          padding: options.showCard ? `${options.padding}px` : '0px',
-          flexDirection:
-            options.labelPosition === 'right'
-              ? 'row'
-              : options.labelPosition === 'top'
-              ? 'column-reverse'
-              : 'column',
-        }}
+        className={`icon-preview-stage${isClipped ? ' is-clipped' : ''}`}
+        style={{ height: `${STAGE_HEIGHT_PX}px` }}
       >
-        <div style={{ width: `${previewPx}px`, height: `${previewPx}px` }}>
-          {elements && <ExcalidrawPreview elements={elements} label={icon.title} frame={frame} />}
-        </div>
-
-        {options.showLabel && (
-          <span
-            className="icon-title-text"
+        <div
+          className="icon-preview-card"
+          style={{
+            ...frameStyle,
+            width: `${layout.cardWidth}px`,
+            height: `${layout.cardHeight}px`,
+            // Centred here rather than by the stage; see `.icon-preview-card`.
+            transform: `translate(-50%, -50%) scale(${scale})`,
+          }}
+        >
+          <div
+            className="icon-preview-art"
             style={{
-              fontSize: `${options.labelFontSize}px`,
-              color: options.labelColor,
-              fontFamily: fontFamilyCss,
+              left: `${layout.iconDx}px`,
+              top: `${layout.iconDy}px`,
+              width: `${layout.iconWidth}px`,
+              height: `${layout.iconHeight}px`,
             }}
           >
-            {icon.title}
-          </span>
-        )}
+            {elements && <ExcalidrawPreview elements={elements} label={icon.title} frame={frame} />}
+          </div>
+
+          {options.showLabel && (
+            <span
+              className="icon-title-text"
+              style={{
+                left: `${layout.labelDx}px`,
+                top: `${layout.labelDy}px`,
+                width: `${layout.labelWidth}px`,
+                height: `${layout.labelHeight}px`,
+                fontSize: `${options.labelFontSize}px`,
+                lineHeight: lineHeightFor(options.labelFontFamily),
+                color: options.labelColor,
+                fontFamily: fontFamilyCss(options.labelFontFamily),
+              }}
+            >
+              {icon.title}
+            </span>
+          )}
+        </div>
       </div>
 
       {!options.showLabel && (

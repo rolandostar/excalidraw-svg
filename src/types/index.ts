@@ -129,29 +129,105 @@ export interface IconSet extends IconSetSummary {
 }
 
 /**
- * `badge` was removed. Excalidraw's `getCornerRadius` returns
- * `shorterSide * 0.25` for both PROPORTIONAL_RADIUS and ADAPTIVE_RADIUS while
- * the shorter side is <= 128, and a default card is ~120 units - so `badge`
- * and `soft-card` emitted byte-identical rectangles at every realistic size.
- * A stored `'badge'` is normalised to `'soft-card'` on load.
+ * The frame is described by the properties Excalidraw actually has, not by
+ * named looks.
+ *
+ * There used to be a `CardStyle` union - `soft-card` / `sketch-box` /
+ * `outline` - and it conflated three independent things: corner radius,
+ * stroke weight and fill style. That made some combinations unreachable (a
+ * rounded hachure card, an outline with a background) and one combination a
+ * lie: `outline` hardcoded `backgroundColor: 'transparent'`, so the background
+ * swatch silently did nothing whenever it was selected.
+ *
+ * Splitting them also removed a whole class of dead style: `badge` was dropped
+ * earlier because Excalidraw's `getCornerRadius` returns `shorterSide * 0.25`
+ * for both PROPORTIONAL_RADIUS and ADAPTIVE_RADIUS below 128 units, making it
+ * byte-identical to `soft-card`.
  */
-export type CardStyle = 'none' | 'soft-card' | 'sketch-box' | 'outline';
-export type LabelPosition = 'bottom' | 'right' | 'top' | 'inside';
-export type LabelFontFamily = 1 | 2 | 3 | 4 | 5; // 1: Excalifont, 2: Helvetica, 3: Comic Shanns, 4: Lilita One, 5: Nunito
+export type CardCorners = 'rounded' | 'square';
+
+/**
+ * Excalidraw's `FillStyle`, minus `zigzag`.
+ *
+ * `zigzag` exists in the renderer but is not in Excalidraw's own fill picker -
+ * it is reachable only by double-clicking hachure - so offering it here would
+ * produce cards no one can reproduce by hand in the editor.
+ *
+ * A hachure or cross-hatch fill draws nothing over a transparent background.
+ * `normaliseOptions` and `auditSceneFidelity` both guard against that pairing.
+ */
+export type CardFillStyle = 'solid' | 'hachure' | 'cross-hatch';
+
+/** Excalidraw's `STROKE_WIDTH`: thin, bold, extraBold. */
+export type CardStrokeWidth = 1 | 2 | 4;
+
+/** Excalidraw's `ROUGHNESS`: architect, artist, cartoonist. */
+export type Roughness = 0 | 1 | 2;
+
+/**
+ * `inside` was removed. It claimed to place the label over the artwork but
+ * only changed the icon-to-label gap from 8 units to 4, so it was
+ * indistinguishable from `bottom` in every export. A stored `'inside'`
+ * migrates to `'bottom'`.
+ */
+export type LabelPosition = 'bottom' | 'right' | 'top';
+
+/**
+ * Excalidraw's real `FONT_FAMILY` ids, from `@excalidraw/common`:
+ *
+ *   Virgil 1, Helvetica 2, Cascadia 3, (4 unused),
+ *   Excalifont 5, Nunito 6, Lilita One 7, Comic Shanns 8, Liberation Sans 9
+ *
+ * This used to be `1 | 2 | 3 | 4 | 5` with its own private meanings, which is
+ * why "Lilita One" never worked: id 4 is permanently unused - Excalidraw's
+ * comment says it was Assistant and before that a custom Obsidian font - so
+ * `getFontFamilyString` found no match and returned the Windows emoji
+ * fallback. Id 5 meant Nunito here and Excalifont there, so that one rendered
+ * as the wrong font rather than no font.
+ *
+ * Only the five non-deprecated faces are offered. Virgil, Helvetica and
+ * Cascadia are all flagged `deprecated: true` in Excalidraw's `FONT_METADATA`,
+ * and Helvetica is additionally `local: true`, so it renders differently on
+ * every machine.
+ */
+export type LabelFontFamily = 5 | 6 | 7 | 8 | 9;
 
 export interface ExcalidrawOptions {
+  // --- frame ---
   showCard: boolean;
-  cardStyle: CardStyle;
-  roughness: number; // 0, 1, 2
-  cardBgColor: string; // hex or css color
+  cardCorners: CardCorners;
+  cardStrokeWidth: CardStrokeWidth;
+  cardFillStyle: CardFillStyle;
+  cardBgColor: string; // any CSS colour, or 'transparent'
   cardStrokeColor: string;
+  cardRoughness: Roughness;
+  padding: number; // card inner padding
+  /**
+   * Size the frame to the artwork's real ink box instead of the nominal
+   * `ICON_BASE_SIZE * iconScale` square.
+   *
+   * Off by default because it makes cards different sizes across a grid: the
+   * nominal box is the source viewBox, and how much of it a given icon
+   * actually inks varies. On, the frame matches what is really pasted.
+   */
+  fitFrame: boolean;
+
+  // --- artwork ---
+  /**
+   * Separate from `cardRoughness`. One shared value used to drive both, while
+   * the only control for it was nested inside the frame section - so the
+   * artwork's roughness could not be changed without a frame, and could not be
+   * left clean when the frame was sketchy.
+   */
+  iconRoughness: Roughness;
+  iconScale: number; // multiplier on ICON_BASE_SIZE: 1.0 = 96px, 2.0 = 192px
+
+  // --- label ---
   showLabel: boolean;
   labelPosition: LabelPosition;
   labelFontFamily: LabelFontFamily;
   labelFontSize: number;
   labelColor: string;
-  iconScale: number; // multiplier on ICON_BASE_SIZE: 1.0 = 96px, 2.0 = 192px
-  padding: number; // card inner padding
 }
 
 export interface ExcalidrawElement {
@@ -193,7 +269,6 @@ export interface ExcalidrawElement {
   fontFamily?: number;
   textAlign?: string;
   verticalAlign?: string;
-  baseline?: number;
   containerId?: string | null;
   originalText?: string;
   lineHeight?: number;

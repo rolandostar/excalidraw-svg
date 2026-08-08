@@ -275,6 +275,25 @@ measurement.
   follows array order — preserve it.
 - `.excalidrawlib` carries `files` both per-item and top-level; the v2 schema
   is not explicit about where they belong.
+- **`fontFamily` is a raw Excalidraw id**, not a local enum: Virgil 1,
+  Helvetica 2, Cascadia 3, **4 permanently unused**, Excalifont 5, Nunito 6,
+  Lilita One 7, Comic Shanns 8, Liberation Sans 9. `getFontFamilyString`
+  returns the Windows emoji fallback for anything it cannot match, which is a
+  silent wrong-font rather than an error. An earlier local enum numbered these
+  1–5, so "Lilita One" (its 4) rendered as emoji fallback and "Nunito" (its 5)
+  rendered as Excalifont.
+- **`lineHeight` must be the font's own.** Absent, `restoreElement` back-solves
+  one from the supplied height via `detectLineHeight`, which disagrees with the
+  real font for everything but Excalifont. Values live in
+  `fontMetrics.generated.ts`, copied from Excalidraw's `FONT_METADATA`.
+- **A hatched `fillStyle` paints in `backgroundColor`.** `hachure`,
+  `cross-hatch` and `zigzag` over a transparent background render nothing at
+  all. `normaliseOptions` repairs the pairing and `auditSceneFidelity` reports
+  it as `invisible-fill`.
+- **Excalidraw does not re-measure pasted text.** `restoreElements` only calls
+  `refreshTextDimensions` when `refreshDimensions` is passed, and the paste
+  path does not. The `width`/`height` written onto a text element are final,
+  which is why `textMetrics.ts` exists.
 
 ## Known gaps
 
@@ -285,8 +304,15 @@ Beyond the reported-unsupported list in the README:
 - **Group opacity is applied per shape.** Compositing a group as a unit differs
   where its members overlap each other; per-shape is the closest Excalidraw can
   express.
-- **Grid pitch ignores label width.** `buildExcalidrawClipboardData` uses 160 px
-  and `buildExcalidrawLibraryPackage` 180 px, while `cardWidth` grows with the
-  title, so long-named icons overlap in multi-icon exports.
-- **Text metrics are estimated** (`length * fontSize * 0.55`); Excalidraw does
-  not re-measure pasted text, so labels are slightly mis-centred.
+- **Label kerning is not modelled.** `textMetrics.measureLabel` sums per-glyph
+  `hmtx` advances, so a kerned pair measures a fraction of a unit wide. Harmless
+  where it lands: labels are emitted `textAlign: 'center'`, so Excalidraw
+  centres the glyph run inside whatever width is declared — the error mis-sizes
+  the card, never the text's position on it.
+- **`gridPitch` measures the nominal artwork box even under `fitFrame`.**
+  Deliberate, and an upper bound rather than an approximation: the converter
+  fits a viewBox with `Math.min` of the two axis ratios and centres it, so ink
+  can never exceed the nominal box. Keeping it conversion-free is what lets
+  `run-fidelity.ts` compute the packed layout from filenames alone and shard
+  the corpus across workers. Cost is slightly wider gutters around icons that
+  do not fill their viewBox.

@@ -12,8 +12,8 @@
   ],
   "_styling_note": "How this set opens, and the preset buttons in the styling sidebar. Both are patches over the app-wide defaults, so only the fields that differ need stating. Flat two-tone product marks read best with the hand-drawn label font they will sit next to on a canvas, in the blue that dominates the artwork.",
   "defaults": {
-    "showLabel": true,
-    "labelFontFamily": 1,
+    "showLabel": false,
+    "labelFontFamily": 5,
     "labelFontSize": 18,
     "labelColor": "#4285f4",
     "iconScale": 1
@@ -22,18 +22,32 @@
     {
       "id": "default",
       "label": "Default",
-      "hint": "Excalifont 18px in Google blue, no frame"
+      "hint": "Just the marks - no label, no frame"
+    },
+    {
+      "id": "labelled",
+      "label": "Labelled",
+      "hint": "Each mark with its product name underneath",
+      "options": {
+        "showLabel": true,
+        "showCard": false
+      }
     },
     {
       "id": "sketch",
       "label": "Sketch",
-      "hint": "Hand-drawn frame, matches a sketched diagram",
+      "hint": "Hand-drawn hatched frame, matches a sketched diagram",
+      "_note": "cardBgColor is a tint rather than transparent: hachure is stroked in the background colour, so this preset drew no hatch at all while it was transparent - and drew an unreadable slab when it was the full accent. Excalidraw's own palette pairs a saturated stroke with a pale fill for exactly this reason. iconRoughness is deliberately lower than cardRoughness: a frame can be scribbled without the artwork inside it losing its shape.",
       "options": {
         "showCard": true,
-        "cardStyle": "sketch-box",
-        "roughness": 2,
-        "cardBgColor": "transparent",
+        "showLabel": true,
+        "cardCorners": "square",
+        "cardStrokeWidth": 1,
+        "cardFillStyle": "hachure",
+        "cardBgColor": "#e8f0fe",
         "cardStrokeColor": "#4285f4",
+        "cardRoughness": 2,
+        "iconRoughness": 1,
         "padding": 12
       }
     },
@@ -43,10 +57,13 @@
       "hint": "Soft dark panel for dark canvases",
       "options": {
         "showCard": true,
-        "cardStyle": "soft-card",
-        "roughness": 0,
+        "showLabel": true,
+        "cardCorners": "rounded",
+        "cardStrokeWidth": 1,
+        "cardFillStyle": "solid",
         "cardBgColor": "rgba(30, 41, 59, 0.8)",
         "cardStrokeColor": "#4285f4",
+        "cardRoughness": 0,
         "labelColor": "#f8fafc",
         "padding": 12
       }
@@ -57,21 +74,48 @@
       "hint": "Clean white panel for printed diagrams",
       "options": {
         "showCard": true,
-        "cardStyle": "soft-card",
-        "roughness": 0,
+        "showLabel": true,
+        "cardCorners": "rounded",
+        "cardStrokeWidth": 1,
+        "cardFillStyle": "solid",
         "cardBgColor": "#ffffff",
         "cardStrokeColor": "#cbd5e1",
+        "cardRoughness": 0,
         "labelColor": "#1e293b",
         "padding": 12
       }
     },
     {
-      "id": "bare",
-      "label": "Bare",
-      "hint": "Just the mark, no label or frame",
+      "id": "outline",
+      "label": "Outline",
+      "hint": "Unfilled frame, keeps the canvas showing through",
       "options": {
-        "showLabel": false,
-        "showCard": false
+        "showCard": true,
+        "showLabel": true,
+        "cardCorners": "square",
+        "cardStrokeWidth": 2,
+        "cardFillStyle": "solid",
+        "cardBgColor": "transparent",
+        "cardStrokeColor": "#4285f4",
+        "cardRoughness": 0,
+        "padding": 12
+      }
+    },
+    {
+      "id": "tight",
+      "label": "Tight",
+      "hint": "Frame fitted to the artwork rather than its viewBox",
+      "options": {
+        "showCard": true,
+        "showLabel": true,
+        "cardCorners": "rounded",
+        "cardStrokeWidth": 1,
+        "cardFillStyle": "solid",
+        "cardBgColor": "transparent",
+        "cardStrokeColor": "#4285f4",
+        "cardRoughness": 0,
+        "fitFrame": true,
+        "padding": 10
       }
     },
     {
@@ -80,6 +124,7 @@
       "hint": "Double size for a title or a legend",
       "options": {
         "iconScale": 2,
+        "showLabel": true,
         "labelFontSize": 24
       }
     }

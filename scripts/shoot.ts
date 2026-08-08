@@ -120,6 +120,28 @@ const SHOTS: Shot[] = [
       await page.waitForTimeout(1200);
     },
   },
+  /*
+   * A side label, which is a different card *shape* rather than a restyle.
+   *
+   * Worth its own shot because it is the layout that regressed unnoticed: the
+   * grid used to lay cards out with its own flexbox guess, and a card whose
+   * true export is 400 x 144 got folded into a square cell - artwork collapsed
+   * to a sliver, label broken mid-word into "Collaboratio / n". Every existing
+   * shot used a bottom label, which is the one arrangement that happened to
+   * survive that.
+   */
+  {
+    name: 'icons-side-label',
+    route: '/icons/category-icons',
+    theme: 'light',
+    width: 1440,
+    height: 800,
+    prepare: async page => {
+      await waitForGrid(page);
+      await page.locator('.preset-btn', { hasText: 'Side label' }).click();
+      await page.waitForTimeout(1200);
+    },
+  },
   { name: 'methodology-dark', route: '/methodology', theme: 'dark', width: 1440, height: 950 },
   {
     name: 'methodology-full',

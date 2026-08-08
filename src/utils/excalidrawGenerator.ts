@@ -24,6 +24,7 @@ import {
 } from './pathRegions';
 import { LineCap, LineJoin, strokeToRegion } from './strokeOutline';
 import { ICON_BASE_SIZE } from './defaultOptions';
+import { lineHeightFor, measureLabel } from './textMetrics';
 
 function getPointsOnPath(path: string, tolerance?: number, distance?: number): [number, number][][] {
   const mod: any = pointsOnPathModule;
@@ -1601,6 +1602,48 @@ export interface ItemLayout {
   labelDy: number;
 }
 
+/** Gap between the artwork and the label, in canvas units. */
+const LABEL_GAP_STACKED = 8;
+const LABEL_GAP_BESIDE = 12;
+
+/** Axis-aligned bounding box of a set of elements, in absolute scene units. */
+export interface Bounds {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Ink box of converted artwork.
+ *
+ * Every element this converter emits carries an exact `x`/`y`/`width`/`height`
+ * derived from its own absolute point extents, and `strokeColor` is always
+ * transparent (see ARCHITECTURE.md §3), so a plain union of those rectangles
+ * *is* the ink box - there is no stroke extent to add back.
+ *
+ * Returns `null` for an empty scene so callers can tell "no artwork" apart
+ * from "artwork of zero size" and fall back to the nominal box.
+ */
+export function elementsBounds(elements: ExcalidrawElement[]): Bounds | null {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  for (const el of elements) {
+    if (el.isDeleted) continue;
+    minX = Math.min(minX, el.x);
+    minY = Math.min(minY, el.y);
+    maxX = Math.max(maxX, el.x + el.width);
+    maxY = Math.max(maxY, el.y + el.height);
+  }
+
+  if (!Number.isFinite(minX) || maxX <= minX || maxY <= minY) return null;
+
+  return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+}
+
 /**
  * Size and internal offsets of one item, independent of where it is placed.
  *
@@ -1608,19 +1651,30 @@ export interface ItemLayout {
  * item is *before* choosing its position. They used to assume a fixed 160/180
  * unit pitch, which silently overlapped neighbours as soon as a card grew -
  * long service names and any `iconScale` above 1 both did it.
+ *
+ * `artworkSize` overrides the nominal `ICON_BASE_SIZE * iconScale` square, and
+ * is how `fitFrame` works: the caller converts first, measures the real ink,
+ * and passes it back in. Left out, the result is the nominal layout - which is
+ * what `gridPitch` wants, and what keeps this callable from a filename alone.
  */
-export function measureExcalidrawItem(icon: IconAsset, options: ExcalidrawOptions): ItemLayout {
-  const iconWidth = Math.round(ICON_BASE_SIZE * options.iconScale);
-  const iconHeight = iconWidth;
+export function measureExcalidrawItem(
+  icon: IconAsset,
+  options: ExcalidrawOptions,
+  artworkSize?: { width: number; height: number }
+): ItemLayout {
+  const nominal = Math.round(ICON_BASE_SIZE * options.iconScale);
+  const iconWidth = artworkSize ? artworkSize.width : nominal;
+  const iconHeight = artworkSize ? artworkSize.height : nominal;
   const padding = options.showCard ? options.padding : 0;
 
-  const labelFontSize = options.labelFontSize;
-  // Excalidraw measures text with the real font; this is an estimate, so it
-  // errs wide rather than letting neighbouring labels collide.
-  const labelWidth = options.showLabel
-    ? Math.max(Math.round(icon.title.length * labelFontSize * 0.6), 40)
-    : 0;
-  const labelHeight = options.showLabel ? Math.round(labelFontSize * 1.3) : 0;
+  // Measured against the real font's advance widths rather than estimated from
+  // the character count. Excalidraw does not re-measure pasted text, so the
+  // number written here is the one the card is sized around forever.
+  const label = options.showLabel
+    ? measureLabel(icon.title, options.labelFontFamily, options.labelFontSize)
+    : { width: 0, height: 0 };
+  const labelWidth = label.width;
+  const labelHeight = label.height;
 
   let cardWidth: number;
   let cardHeight: number;
@@ -1630,22 +1684,23 @@ export function measureExcalidrawItem(icon: IconAsset, options: ExcalidrawOption
   let labelDy: number;
 
   if (options.labelPosition === 'right') {
-    cardWidth = iconWidth + (options.showLabel ? labelWidth + 12 : 0) + padding * 2;
+    const gap = options.showLabel ? LABEL_GAP_BESIDE : 0;
+    cardWidth = iconWidth + (options.showLabel ? labelWidth + gap : 0) + padding * 2;
     cardHeight = Math.max(iconHeight, labelHeight) + padding * 2;
     iconDx = padding;
     iconDy = (cardHeight - iconHeight) / 2;
-    labelDx = padding + iconWidth + 12;
+    labelDx = padding + iconWidth + gap;
     labelDy = (cardHeight - labelHeight) / 2;
   } else if (options.labelPosition === 'top') {
+    const gap = options.showLabel ? LABEL_GAP_STACKED : 0;
     cardWidth = Math.max(iconWidth, labelWidth) + padding * 2;
-    cardHeight = iconHeight + padding * 2 + (options.showLabel ? labelHeight + 8 : 0);
+    cardHeight = iconHeight + padding * 2 + (options.showLabel ? labelHeight + gap : 0);
     labelDx = (cardWidth - labelWidth) / 2;
     labelDy = padding;
     iconDx = (cardWidth - iconWidth) / 2;
-    iconDy = padding + (options.showLabel ? labelHeight + 8 : 0);
+    iconDy = padding + (options.showLabel ? labelHeight + gap : 0);
   } else {
-    // `bottom` and `inside` differ only in the gap between icon and label.
-    const gap = options.labelPosition === 'inside' ? 4 : 8;
+    const gap = options.showLabel ? LABEL_GAP_STACKED : 0;
     cardWidth = Math.max(iconWidth, labelWidth) + padding * 2;
     cardHeight = iconHeight + padding * 2 + (options.showLabel ? labelHeight + gap : 0);
     iconDx = (cardWidth - iconWidth) / 2;
@@ -1668,6 +1723,53 @@ export function measureExcalidrawItem(icon: IconAsset, options: ExcalidrawOption
   };
 }
 
+/** Grows a box to the nearest whole units on every side. */
+function snapOutward(bounds: Bounds | null): Bounds | null {
+  if (!bounds) return null;
+
+  const x = Math.floor(bounds.x);
+  const y = Math.floor(bounds.y);
+
+  return {
+    x,
+    y,
+    width: Math.ceil(bounds.x + bounds.width) - x,
+    height: Math.ceil(bounds.y + bounds.height) - y,
+  };
+}
+
+/**
+ * The box a frame is sized around, or `null` to use the nominal icon square.
+ *
+ * Exported because the grid preview needs the identical answer. The preview
+ * has already converted the icon in order to render it, so it can measure the
+ * same ink the exporter will - but only if it measures it the *same way*.
+ * Reimplementing "bounds, snapped outward" on the UI side is how a preview
+ * starts disagreeing with its export by a unit or two under `fitFrame`.
+ *
+ * Snapped outward rather than rounded: ink bounds are arbitrary floats, and
+ * feeding them straight into the layout produced cards like 96.06 x 127.01,
+ * which made every derived offset fractional and pushed the artwork half a
+ * unit off centre once positions were rounded. Expanding guarantees the frame
+ * still contains all of the ink.
+ */
+export function inkBoxFor(
+  elements: ExcalidrawElement[],
+  options: ExcalidrawOptions
+): Bounds | null {
+  if (!options.fitFrame) return null;
+  return snapOutward(elementsBounds(elements));
+}
+
+/** Shifts elements in place. */
+function translateElements(elements: ExcalidrawElement[], dx: number, dy: number): void {
+  if (dx === 0 && dy === 0) return;
+  for (const el of elements) {
+    el.x += dx;
+    el.y += dy;
+  }
+}
+
 export function createExcalidrawItem(
   icon: IconAsset,
   options: ExcalidrawOptions,
@@ -1678,73 +1780,96 @@ export function createExcalidrawItem(
   const files: Record<string, ExcalidrawFile> = {};
   const groupId = generateRandomId();
 
-  const layout = measureExcalidrawItem(icon, options);
-  const { cardWidth, cardHeight, iconWidth, iconHeight, labelWidth, labelHeight } = layout;
+  const nominalSize = Math.round(ICON_BASE_SIZE * options.iconScale);
+
+  // 1. Convert the artwork first, at the origin.
+  //
+  // The layout depends on the result when `fitFrame` is on, so this has to run
+  // before anything is measured or placed. It is still exactly one conversion
+  // per item: the elements are translated into position afterwards rather than
+  // being re-converted at an offset.
+  //
+  // An embedded image is the last resort, not a user-selectable mode: a bitmap
+  // is not editable, not restyleable and not what this project is for. It
+  // survives purely so a file the converter cannot handle still pastes as
+  // *something* visible rather than vanishing.
+  const vectorElements = parseSvgToExcalidrawElements(
+    icon.rawSvg,
+    0,
+    0,
+    nominalSize,
+    nominalSize,
+    groupId,
+    options.iconRoughness
+  );
+
+  /*
+   * 2. Decide what the frame is being sized around.
+   *
+   * The nominal box is the source viewBox scaled to fit, so it includes any
+   * padding the author baked into the file, and letterboxes anything that is
+   * not square (`parseSvgToExcalidrawElements` fits with `Math.min` of the two
+   * ratios and centres). That dead space is the gap between "the icon is
+   * accurate" and "the frame is not".
+   *
+   * `fitFrame` closes it by measuring the ink that was actually produced. The
+   * artwork itself is untouched - same conversion, same scale, same fidelity -
+   * only the box drawn around it changes.
+   */
+  const ink = inkBoxFor(vectorElements, options);
+  const artwork = ink
+    ? { width: ink.width, height: ink.height }
+    : { width: nominalSize, height: nominalSize };
+
+  const layout = measureExcalidrawItem(icon, options, artwork);
+  const { cardWidth, cardHeight, labelWidth, labelHeight } = layout;
   const labelText = icon.title;
 
-  const iconX = baseX + layout.iconDx;
-  const iconY = baseY + layout.iconDy;
-  const labelX = baseX + layout.labelDx;
-  const labelY = baseY + layout.labelDy;
+  const iconX = Math.round(baseX + layout.iconDx);
+  const iconY = Math.round(baseY + layout.iconDy);
+  const labelX = Math.round(baseX + layout.labelDx);
+  const labelY = Math.round(baseY + layout.labelDy);
 
-  // 1. Frame Card
+  // 3. Frame rectangle.
   //
-  // Three styles, each differing in something Excalidraw can actually render:
-  //
-  //   soft-card   rounded corners, hairline stroke, filled
-  //   sketch-box  square corners, hairline stroke, hachure fill
-  //   outline     square corners, 2px stroke, NOT filled
-  //
-  // `outline` used to be filled, which made it a soft card with a thicker edge
-  // rather than an outline. A fourth `badge` style used to exist and emitted a
-  // rectangle byte-identical to `soft-card` - see the note on `CardStyle`.
-  if (options.showCard && options.cardStyle !== 'none') {
-    const outlined = options.cardStyle === 'outline';
-    const sketched = options.cardStyle === 'sketch-box';
-
+  // Every property is taken from the options rather than implied by a named
+  // style. In particular `backgroundColor` is applied unconditionally: the old
+  // `outline` style forced it to transparent, so the background swatch did
+  // nothing whenever outline was selected.
+  if (options.showCard) {
     elements.push(createBaseElement('rectangle', baseX, baseY, cardWidth, cardHeight, groupId, {
       index: 'a0',
       strokeColor: options.cardStrokeColor,
-      backgroundColor: outlined ? 'transparent' : options.cardBgColor,
-      fillStyle: sketched ? 'hachure' : 'solid',
-      strokeWidth: outlined ? 2 : 1,
-      roughness: options.roughness,
-      roundness: outlined || sketched ? null : { type: 3 },
+      backgroundColor: options.cardBgColor,
+      fillStyle: options.cardFillStyle,
+      strokeWidth: options.cardStrokeWidth,
+      roughness: options.cardRoughness,
+      // Excalidraw's `getCornerRadius` gives `shorterSide * 0.25` below 128
+      // units, which is the rounding people expect from a card.
+      roundness: options.cardCorners === 'rounded' ? { type: 3 } : null,
     }));
   }
 
-  // 2. Vector shapes, with an embedded image only as a last resort.
-  //
-  // The image path is no longer user-selectable: an embedded bitmap is not
-  // editable, not restyleable and not what this project is for. It survives
-  // purely as a fallback so that a file the converter cannot handle still
-  // pastes as *something* visible rather than vanishing.
-  const vectorElements = parseSvgToExcalidrawElements(
-    icon.rawSvg,
-    Math.round(iconX),
-    Math.round(iconY),
-    iconWidth,
-    iconHeight,
-    groupId,
-    options.roughness
-  );
-
+  // 4. Artwork, moved into place.
   if (vectorElements.length > 0) {
+    // Under `fitFrame` the ink box is what was positioned, so the offset is
+    // measured from the ink's own origin rather than from the nominal box.
+    translateElements(vectorElements, iconX - (ink?.x ?? 0), iconY - (ink?.y ?? 0));
     elements.push(...vectorElements);
   } else {
     const fileId = generateRandomId();
     files[fileId] = { mimeType: 'image/svg+xml', id: fileId, dataURL: icon.dataUrl, created: Date.now() };
 
-    elements.push(createBaseElement('image', Math.round(iconX), Math.round(iconY), iconWidth, iconHeight, groupId, {
+    elements.push(createBaseElement('image', iconX, iconY, artwork.width, artwork.height, groupId, {
       fileId,
       scale: [1, 1],
       status: 'saved',
     }));
   }
 
-  // 3. Label Text Element
+  // 5. Label.
   if (options.showLabel) {
-    elements.push(createBaseElement('text', Math.round(labelX), Math.round(labelY), labelWidth, labelHeight, groupId, {
+    elements.push(createBaseElement('text', labelX, labelY, labelWidth, labelHeight, groupId, {
       index: 'a2',
       strokeColor: options.labelColor,
       text: labelText,
@@ -1753,9 +1878,11 @@ export function createExcalidrawItem(
       fontFamily: options.labelFontFamily,
       textAlign: 'center',
       verticalAlign: 'top',
-      baseline: options.labelFontSize,
       containerId: null,
-      lineHeight: 1.25,
+      // This font's real line height, not a constant. `restoreElement` only
+      // back-solves one from the supplied height when the field is absent, and
+      // its guess disagrees with the font for everything except Excalifont.
+      lineHeight: lineHeightFor(options.labelFontFamily),
     }));
   }
 
@@ -1773,6 +1900,17 @@ export function createExcalidrawItem(
  * converted anything: `measureExcalidrawItem` reads only `icon.title` and the
  * options, so the layout can be computed from filenames alone and handed to
  * worker processes that each own one slice of the corpus.
+ *
+ * Always measures the *nominal* artwork box, so the answer never depends on a
+ * conversion. Labels are measured exactly, which removes the axis that
+ * actually used to overlap - long titles against a pitch that ignored them.
+ *
+ * This is an estimate, not a bound, and the packers below no longer rely on
+ * it. Two things can make a real item exceed it: `fitFrame`, which is measured
+ * from ink this function has not seen, and source artwork drawn outside its
+ * own `viewBox`. A browser clips the latter to the viewport and this converter
+ * does not, so `Iot-Edge.svg` genuinely produces geometry 12 units past the
+ * edge of its 96-unit box.
  */
 export function gridPitch(
   icons: IconAsset[],
@@ -1791,15 +1929,63 @@ export function gridPitch(
   return { pitchX: Math.ceil(widest) + gutter, pitchY: Math.ceil(tallest) + gutter };
 }
 
+interface PackedItem {
+  icon: IconAsset;
+  elements: ExcalidrawElement[];
+  files: Record<string, ExcalidrawFile>;
+}
+
+/**
+ * Builds every item and lays them out on a grid sized to what they measure.
+ *
+ * Two passes over one conversion each: build at the origin, take each item's
+ * real extent, then translate into a cell. Deriving the pitch from the built
+ * items rather than from `gridPitch` is what makes the packing exact - an item
+ * can be larger than the nominal estimate for two reasons that no
+ * pre-conversion measurement can see. `fitFrame` sizes the frame from ink, and
+ * source artwork is not clipped to its own `viewBox`, so a file that draws
+ * outside it (`Iot-Edge.svg` does, by 12 units) used to overlap its neighbour.
+ *
+ * Cells are aligned on each item's measured bounds rather than on its
+ * nominal origin, so the escaping case is centred in its cell instead of
+ * hanging out of one corner. For the 259 icons that stay inside their viewBox
+ * the two are the same point and nothing moves.
+ */
+function packGrid(
+  icons: IconAsset[],
+  options: ExcalidrawOptions,
+  gutter: number,
+  columns: number
+): PackedItem[] {
+  const built = icons.map(icon => ({ icon, ...createExcalidrawItem(icon, options, 0, 0) }));
+  const boxes = built.map(item => elementsBounds(item.elements));
+
+  let widest = 0;
+  let tallest = 0;
+  for (const box of boxes) {
+    if (!box) continue;
+    if (box.width > widest) widest = box.width;
+    if (box.height > tallest) tallest = box.height;
+  }
+
+  const pitchX = Math.ceil(widest) + gutter;
+  const pitchY = Math.ceil(tallest) + gutter;
+
+  built.forEach((item, idx) => {
+    const box = boxes[idx];
+    if (!box) return;
+    const col = idx % columns;
+    const row = Math.floor(idx / columns);
+    translateElements(item.elements, col * pitchX - box.x, row * pitchY - box.y);
+  });
+
+  return built;
+}
+
 export function buildExcalidrawLibraryPackage(icons: IconAsset[], options: ExcalidrawOptions): ExcalidrawLibraryPackage {
   const allFiles: Record<string, ExcalidrawFile> = {};
-  const { pitchX, pitchY } = gridPitch(icons, options, 32);
 
-  const libraryItems = icons.map((icon, idx) => {
-    const col = idx % 10;
-    const row = Math.floor(idx / 10);
-    const { elements, files } = createExcalidrawItem(icon, options, col * pitchX, row * pitchY);
-
+  const libraryItems = packGrid(icons, options, 32, 10).map(({ icon, elements, files }) => {
     // `files` used to be discarded here. When vector conversion yields nothing,
     // `createExcalidrawItem` falls back to an `image` element whose bitmap
     // lives in `files` - dropping the map left a library item pointing at a
@@ -1833,15 +2019,11 @@ export function buildExcalidrawClipboardData(
 ): { jsonText: string; excalidrawClipboardJson: string } {
   let allElements: ExcalidrawElement[] = [];
   const allFiles: Record<string, ExcalidrawFile> = {};
-  const { pitchX, pitchY } = gridPitch(icons, options, 24);
 
-  icons.forEach((icon, idx) => {
-    const col = idx % 8;
-    const row = Math.floor(idx / 8);
-    const { elements, files } = createExcalidrawItem(icon, options, col * pitchX, row * pitchY);
+  for (const { elements, files } of packGrid(icons, options, 24, 8)) {
     allElements = allElements.concat(elements);
     Object.assign(allFiles, files);
-  });
+  }
 
   const payload = {
     type: 'excalidraw/clipboard',

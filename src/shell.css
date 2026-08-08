@@ -989,18 +989,17 @@
   }
 }
 
-@media (max-width: 560px) {
-  /* 170px minimums leave a single column at 390px, which wastes most of the
-     width on a 96px icon. */
-  .icon-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.65rem;
-  }
-
-  .icon-preview-box {
-    min-height: 104px;
-  }
-}
+/*
+ * The grid's columns and gap are set inline by `IconGrid`, which needs the
+ * exact column width to scale each card's contents, so a media query cannot
+ * override them - an inline style wins. Narrow viewports are handled by
+ * `columnCountFor`, which returns however many tracks actually fit: two at
+ * 390px, the same as the rule that used to live here.
+ *
+ * `.icon-preview-box` was replaced by `.icon-preview-stage`, whose height is
+ * `STAGE_HEIGHT_PX` in `gridMetrics.ts` rather than a CSS constant, so that a
+ * card's scale factor and the box it is being scaled into cannot disagree.
+ */
 
 /* --- Methodology: evidence gallery -------------------------------------- */
 

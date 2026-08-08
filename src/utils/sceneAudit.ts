@@ -16,9 +16,12 @@ import { LINE_CONFIRM_THRESHOLD } from './defaultOptions';
 export interface FidelityIssue {
   elementIndex: number;
   elementType: string;
-  kind: 'unfilled-open-path' | 'degenerate' | 'missing-file';
+  kind: 'unfilled-open-path' | 'degenerate' | 'missing-file' | 'invisible-fill';
   detail: string;
 }
+
+/** Rough.js fill styles that draw strokes *of the background colour*. */
+const HATCHED_FILL_STYLES = new Set(['hachure', 'cross-hatch', 'zigzag', 'dots', 'dashed']);
 
 export function auditSceneFidelity(
   elements: ExcalidrawElement[],
@@ -58,6 +61,32 @@ export function auditSceneFidelity(
           });
         }
       }
+    }
+
+    /*
+     * A hatched fill is drawn by stroking lines *in the background colour*
+     * across the shape, so `backgroundColor: 'transparent'` produces nothing
+     * at all - not a faint fill, not a solid one. Nothing errors and the
+     * element still renders its outline, so the fill style silently has no
+     * effect.
+     *
+     * Every "Sketch" preset this project shipped paired `hachure` with a
+     * transparent background, in all three icon sets, and none of them had
+     * ever drawn a hatch. `normaliseOptions` now repairs the pairing; this
+     * catches it anywhere else it appears.
+     */
+    if (
+      HATCHED_FILL_STYLES.has(el.fillStyle) &&
+      (!el.backgroundColor || el.backgroundColor === 'transparent')
+    ) {
+      issues.push({
+        elementIndex,
+        elementType: el.type,
+        kind: 'invisible-fill',
+        detail:
+          `fillStyle "${el.fillStyle}" draws in the background colour, which is ` +
+          `transparent: the fill will not be visible`,
+      });
     }
 
     if ((el.type === 'ellipse' || el.type === 'rectangle') && (el.width <= 0 || el.height <= 0)) {

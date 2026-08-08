@@ -12,8 +12,8 @@
   ],
   "_styling_note": "The 2026 marks are drawn with more internal detail than the legacy set, so they hold up at a slightly larger default size. Label colour follows the set accent rather than product blue, which keeps the two Google Cloud sets visually separable when icons from both land on one canvas.",
   "defaults": {
-    "showLabel": true,
-    "labelFontFamily": 1,
+    "showLabel": false,
+    "labelFontFamily": 5,
     "labelFontSize": 18,
     "labelColor": "#a142f4",
     "iconScale": 1.25
@@ -22,18 +22,31 @@
     {
       "id": "default",
       "label": "Default",
-      "hint": "Excalifont 18px, 120px marks"
+      "hint": "Just the marks at 120px - no label, no frame"
+    },
+    {
+      "id": "labelled",
+      "label": "Labelled",
+      "hint": "Each mark with its product name underneath",
+      "options": {
+        "showLabel": true,
+        "showCard": false
+      }
     },
     {
       "id": "sketch",
       "label": "Sketch",
-      "hint": "Hand-drawn frame",
+      "hint": "Hand-drawn hatched frame",
       "options": {
         "showCard": true,
-        "cardStyle": "sketch-box",
-        "roughness": 2,
-        "cardBgColor": "transparent",
+        "showLabel": true,
+        "cardCorners": "square",
+        "cardStrokeWidth": 1,
+        "cardFillStyle": "hachure",
+        "cardBgColor": "#f3e8fd",
         "cardStrokeColor": "#a142f4",
+        "cardRoughness": 2,
+        "iconRoughness": 1,
         "padding": 12
       }
     },
@@ -43,10 +56,13 @@
       "hint": "Soft dark panel",
       "options": {
         "showCard": true,
-        "cardStyle": "soft-card",
-        "roughness": 0,
+        "showLabel": true,
+        "cardCorners": "rounded",
+        "cardStrokeWidth": 1,
+        "cardFillStyle": "solid",
         "cardBgColor": "rgba(30, 41, 59, 0.8)",
         "cardStrokeColor": "#a142f4",
+        "cardRoughness": 0,
         "labelColor": "#f8fafc",
         "padding": 12
       }
@@ -57,10 +73,31 @@
       "hint": "Unfilled frame, keeps the canvas showing through",
       "options": {
         "showCard": true,
-        "cardStyle": "outline",
-        "roughness": 0,
+        "showLabel": true,
+        "cardCorners": "square",
+        "cardStrokeWidth": 2,
+        "cardFillStyle": "solid",
+        "cardBgColor": "transparent",
         "cardStrokeColor": "#a142f4",
+        "cardRoughness": 0,
         "padding": 12
+      }
+    },
+    {
+      "id": "tight",
+      "label": "Tight",
+      "hint": "Frame fitted to the artwork rather than its viewBox",
+      "options": {
+        "showCard": true,
+        "showLabel": true,
+        "cardCorners": "rounded",
+        "cardStrokeWidth": 1,
+        "cardFillStyle": "solid",
+        "cardBgColor": "transparent",
+        "cardStrokeColor": "#a142f4",
+        "cardRoughness": 0,
+        "fitFrame": true,
+        "padding": 10
       }
     },
     {
@@ -69,16 +106,8 @@
       "hint": "Smaller marks for a dense diagram",
       "options": {
         "iconScale": 0.75,
+        "showLabel": true,
         "labelFontSize": 12
-      }
-    },
-    {
-      "id": "bare",
-      "label": "Bare",
-      "hint": "Just the mark",
-      "options": {
-        "showLabel": false,
-        "showCard": false
       }
     }
   ],

@@ -2,10 +2,17 @@ import { useState, useMemo, useEffect, useCallback, useDeferredValue } from 'rea
 import { ArrowLeft } from 'lucide-react';
 import { ExcalidrawOptions, IconSet } from '../types';
 import { findIconSetSummary, loadIconSet } from '../utils/iconSets';
-import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from '../utils/defaultOptions';
+import {
+  DEFAULT_EXCALIDRAW_OPTIONS,
+  OPTIONS_STORAGE_VERSION,
+  looksLikeV1Options,
+  migrateOptionsV1,
+  normaliseOptions,
+} from '../utils/defaultOptions';
 import { IconsToolbar } from '../components/IconsToolbar';
 import { SidebarOptions } from '../components/SidebarOptions';
 import { IconGrid } from '../components/IconGrid';
+import { trackWidthFor } from '../components/gridMetrics';
 import { Toast } from '../components/Toast';
 import { Link } from '../router';
 import {
@@ -13,11 +20,55 @@ import {
   asPartialOf,
   asString,
   asStringArray,
+  storageKey,
   usePersistentState,
 } from '../hooks/usePersistentState';
 
 interface IconsPageProps {
   setId: string;
+}
+
+/**
+ * Whatever a pre-v2 build left behind for this set, translated into v2 shape.
+ *
+ * Used only as the *seed* for the v2 key, so it is overridden the moment a v2
+ * value exists. Returns `{}` for anything missing or unparseable - a failed
+ * migration must fall through to the set's defaults, never take the page down.
+ */
+function readLegacyOptions(setId: string): Partial<ExcalidrawOptions> {
+  if (typeof window === 'undefined') return {};
+
+  try {
+    const stored = window.localStorage.getItem(storageKey(`icons.${setId}.options`));
+    if (stored === null) return {};
+
+    const raw: unknown = JSON.parse(stored);
+    if (!looksLikeV1Options(raw)) return {};
+
+    /*
+     * Only keys the stored object actually had are carried over.
+     *
+     * `asPartialOf` returns a *complete* object, filling absent keys from the
+     * defaults it was given - which is what a restore wants and a migration
+     * does not. Left unfiltered, a v1 object with no `labelColor` would arrive
+     * carrying the app's grey and overwrite the set's own accent, so migrating
+     * would quietly reset colours the user never touched.
+     */
+    const stale = raw as Record<string, unknown>;
+    const merged = asPartialOf(DEFAULT_EXCALIDRAW_OPTIONS as unknown as Record<string, unknown>)(raw);
+    const carried: Record<string, unknown> = {};
+
+    if (merged) {
+      for (const key of Object.keys(merged)) {
+        if (key in stale) carried[key] = merged[key];
+      }
+    }
+
+    // Keys whose meaning changed are rewritten last and win outright.
+    return { ...carried, ...migrateOptionsV1(raw) } as Partial<ExcalidrawOptions>;
+  } catch {
+    return {};
+  }
 }
 
 export function IconsPage({ setId }: IconsPageProps) {
@@ -60,15 +111,40 @@ export function IconsPage({ setId }: IconsPageProps) {
   );
   const setDefaults = summary?.defaults ?? DEFAULT_EXCALIDRAW_OPTIONS;
 
-  const [options, setOptions] = usePersistentState<ExcalidrawOptions>(
-    `icons.${setId}.options`,
-    setDefaults,
-    raw => {
+  /*
+   * Styling is stored under a versioned key.
+   *
+   * `asPartialOf` alone cannot carry a v1 object across: it compares `typeof`
+   * against the defaults, so it correctly drops `cardStyle` and `roughness`
+   * (keys v2 does not have) but happily keeps `labelFontFamily`, whose type is
+   * unchanged and whose *meaning* is not - v1's `5` meant Nunito and v2's `5`
+   * means Excalifont. Reading a v1 object under the v2 key would silently
+   * apply the wrong font and drop the frame style.
+   *
+   * So v1 is read from its own key, translated, and merged underneath the
+   * stored v2 value. The old key is left in place: this runs on every render
+   * of a page that can be opened in several tabs, and deleting it would make
+   * the migration depend on which tab loaded first.
+   */
+  const restoreOptions = useCallback(
+    (raw: unknown): ExcalidrawOptions | null => {
       const merged = asPartialOf(setDefaults as unknown as Record<string, unknown>)(
         raw
       ) as ExcalidrawOptions | null;
       return merged && normaliseOptions(merged);
-    }
+    },
+    [setDefaults]
+  );
+
+  const seedOptions = useMemo(
+    () => normaliseOptions({ ...setDefaults, ...readLegacyOptions(setId) }),
+    [setId, setDefaults]
+  );
+
+  const [options, setOptions] = usePersistentState<ExcalidrawOptions>(
+    `icons.${setId}.options.v${OPTIONS_STORAGE_VERSION}`,
+    seedOptions,
+    restoreOptions
   );
 
   // Materialising a set runs SVGO over every file in it, so it happens after
@@ -144,6 +220,24 @@ export function IconsPage({ setId }: IconsPageProps) {
    */
   const gridOptions = useDeferredValue(options);
   const isRestyling = gridOptions !== options;
+
+  /**
+   * Column width for the layout currently selected.
+   *
+   * A bottom-label card is narrower than the minimum track at every icon
+   * scale, so this sits at its floor for the common case. A side label is a
+   * different shape entirely - up to 400 units across - and squeezing that
+   * into a square cell is what used to collapse the artwork to a sliver and
+   * break the label mid-word. Widening the track trades columns for cards that
+   * are legible and in proportion.
+   *
+   * Cheap enough to run over the whole set: `measureExcalidrawItem` is
+   * arithmetic over the title and the options, with no conversion.
+   */
+  const trackPx = useMemo(
+    () => trackWidthFor(filteredIcons, gridOptions),
+    [filteredIcons, gridOptions]
+  );
 
   if (!isLoading && !set) {
     return (
@@ -224,6 +318,7 @@ export function IconsPage({ setId }: IconsPageProps) {
                 isSelectionMode={isSelectionMode}
                 options={gridOptions}
                 onToast={showToast}
+                trackPx={trackPx}
               />
             </div>
           )}
