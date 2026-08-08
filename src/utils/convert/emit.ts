@@ -153,6 +153,22 @@ export function rawShapesToElements(
           roughness,
           opacity: shape.opacity,
           points: relPoints,
+          /*
+           * Does not affect rendering. Excalidraw decides whether to fill a
+           * `line` from `isPathALoop(points)` alone, which a closed ring
+           * already satisfies.
+           *
+           * It is set so the editor treats our output as what it is - a closed
+           * polygon. Without it the line editor offers "Convert to polygon",
+           * and the bucket-fill tool does not recognise our fills as paint it
+           * can restyle in place, so clicking one stacks a second fill on top.
+           *
+           * Guarded on `> 3` rather than `>= 3` to match Excalidraw's
+           * `isValidPolygon`, which is stricter than `isPathALoop`. `restore`
+           * silently forces the field back to false when it disagrees, so a
+           * claim we cannot back is worse than not making it.
+           */
+          ...(wantsFill && relPoints.length > 3 ? { polygon: true } : {}),
         }
       )
     );

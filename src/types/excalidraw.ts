@@ -52,8 +52,20 @@ export interface ExcalidrawElement {
   /** Hyperlink attached to the element. Always `null` here. */
   link: string | null;
   locked: boolean;
-  // Specific for line/polygon
+  // Specific for line
   points?: [number, number][];
+  /**
+   * Marks a `line` as a closed polygon.
+   *
+   * Not a rendering flag - Excalidraw fills a line based on
+   * `isPathALoop(points)` and never reads this when drawing. It drives editor
+   * behaviour: the line editor's polygon toggle, and whether the bucket-fill
+   * tool treats existing paint as restylable.
+   *
+   * Excalidraw's `restore` resets it to false unless `isValidPolygon(points)`
+   * holds, which needs more than three points and a first that equals the last.
+   */
+  polygon?: boolean;
   // Specific for image
   fileId?: string;
   scale?: [number, number];
