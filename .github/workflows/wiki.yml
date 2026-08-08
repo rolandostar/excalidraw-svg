@@ -1,0 +1,43 @@
+# Publishes wiki/ to the GitHub wiki.
+#
+# The wiki lives in a separate git repository (<repo>.wiki.git) that GitHub
+# does NOT create until somebody has saved at least one page by hand in the
+# Wiki tab. Until that happens this job fails with "repository not found".
+# Create any page in the UI once; this workflow overwrites it on the next push.
+#
+# Auth: the default GITHUB_TOKEN normally works. If it is refused - some org
+# policies block it for the wiki remote - create a fine-grained PAT with
+# read/write on Contents for this repository, store it as the WIKI_TOKEN
+# secret, and swap the `token:` line below to
+#   token: ${{ secrets.WIKI_TOKEN }}
+#
+# Pages authored here are the source of truth. Edits made in the wiki UI are
+# overwritten on the next push to wiki/.
+name: Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wiki/**'
+      - '.github/workflows/wiki.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wiki
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish wiki/ to the wiki repository
+        uses: Andrew-Chen-Wang/github-wiki-action@v4
+        with:
+          path: wiki/
+          token: ${{ secrets.GITHUB_TOKEN }}

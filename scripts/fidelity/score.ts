@@ -119,15 +119,10 @@ export async function scoreFile(candidate: Candidate, config: Config): Promise<S
     if (features.length > 0) record.featureWarnings = describeWarnings(features);
 
     // --- geometry under test ---------------------------------------------
-    const elements = parseSvgToExcalidrawElements(
-      icon.rawSvg,
-      TARGET.x,
-      TARGET.y,
-      TARGET.width,
-      TARGET.height,
-      `group_${name.replace(/[^a-zA-Z0-9]/g, '_')}`,
-      DEFAULT_EXCALIDRAW_OPTIONS.iconRoughness
-    );
+    const elements = parseSvgToExcalidrawElements(icon.rawSvg, TARGET, {
+      groupId: `group_${name.replace(/[^a-zA-Z0-9]/g, '_')}`,
+      roughness: DEFAULT_EXCALIDRAW_OPTIONS.iconRoughness,
+    });
     record.elementCount = elements.length;
 
     // --- structural audit of every shipped export path --------------------

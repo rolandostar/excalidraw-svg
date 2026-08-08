@@ -57,12 +57,8 @@ function convertIcon(
 
   const elements = parseSvgToExcalidrawElements(
     icon.rawSvg,
-    0,
-    0,
-    exportPx,
-    exportPx,
-    `card_${icon.id}`,
-    roughness
+    { x: 0, y: 0, width: exportPx, height: exportPx },
+    { groupId: `card_${icon.id}`, roughness }
   );
 
   if (sceneCache.size >= MAX_CACHED_SCENES) {

@@ -16,6 +16,7 @@ import {
   parseSvgToExcalidrawElements,
   type ConversionDiagnostics,
 } from './excalidrawGenerator';
+import { readViewBox, type ViewBox } from './svg/viewBox';
 import { collectUnsupportedFeatures, type SvgFeatureWarning } from './svgSupport';
 import { auditSceneFidelity, type FidelityIssue } from './sceneAudit';
 import type { ExcalidrawElement } from '../types';
@@ -29,8 +30,15 @@ export interface SvgDimensions {
   width: number;
   height: number;
   /** Where the numbers came from, so the UI can say so honestly. */
-  source: 'viewBox' | 'width/height' | 'fallback';
+  source: ViewBox['source'];
 }
+
+/**
+ * Size assumed for a file that declares neither a usable viewBox nor usable
+ * dimensions. Larger than the converter's 24 because an arbitrary upload is
+ * far more likely to be a diagram than a 24-unit icon.
+ */
+const FALLBACK_SIZE = { width: 100, height: 100 };
 
 /**
  * Carries the drop tally so the failure path can say *why*.
@@ -49,29 +57,16 @@ export class SvgConversionError extends Error {
 /**
  * Intrinsic size of an SVG, preferring the viewBox.
  *
- * `width`/`height` may carry units (`100mm`, `12em`) or percentages, none of
- * which mean anything without a containing block, so the viewBox is the only
- * dependable source of an aspect ratio.
+ * The reading itself lives in `svg/viewBox.ts`, shared with the converter and
+ * the icon-set loader; only the "there must be an `<svg>`" precondition and
+ * the 100x100 fallback are specific to the upload path.
  */
 export function readSvgDimensions(doc: Document): SvgDimensions {
   const svg = doc.querySelector('svg');
   if (!svg) throw new SvgConversionError('No <svg> element found.');
 
-  const viewBox = svg.getAttribute('viewBox');
-  if (viewBox) {
-    const parts = viewBox.split(/[\s,]+/).map(Number).filter(n => Number.isFinite(n));
-    if (parts.length >= 4 && parts[2] > 0 && parts[3] > 0) {
-      return { width: parts[2], height: parts[3], source: 'viewBox' };
-    }
-  }
-
-  const w = parseFloat(svg.getAttribute('width') || '');
-  const h = parseFloat(svg.getAttribute('height') || '');
-  if (Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0) {
-    return { width: w, height: h, source: 'width/height' };
-  }
-
-  return { width: 100, height: 100, source: 'fallback' };
+  const { width, height, source } = readViewBox(svg, FALLBACK_SIZE);
+  return { width, height, source };
 }
 
 /** Scales the intrinsic box into the pasteable range, preserving aspect ratio. */
@@ -120,13 +115,8 @@ export function convertSvg(rawSvg: string, roughness = 0): ConversionResult {
   const diagnostics = emptyDiagnostics();
   const elements = parseSvgToExcalidrawElements(
     rawSvg,
-    0,
-    0,
-    width,
-    height,
-    `svg_${Math.random().toString(36).slice(2, 10)}`,
-    roughness,
-    diagnostics
+    { x: 0, y: 0, width, height },
+    { groupId: `svg_${Math.random().toString(36).slice(2, 10)}`, roughness, diagnostics }
   );
 
   const warnings = collectUnsupportedFeatures(rawSvg);

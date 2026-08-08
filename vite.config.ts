@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { iconSets } from './vite/icon-sets';
+import { spaFallback } from './vite/spa-fallback';
 
 /** Matches the inlined font payloads in the prebuilt @excalidraw/utils bundle. */
 const FONT_DATA_URL = /data:font\/[a-z0-9+.-]+;base64,[A-Za-z0-9+/=]{1000,}/gi;
@@ -60,7 +61,7 @@ function stripExcalidrawFonts(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), iconSets(), stripExcalidrawFonts()],
+  plugins: [react(), iconSets(), stripExcalidrawFonts(), spaFallback()],
   server: {
     port: 3000,
     open: true,

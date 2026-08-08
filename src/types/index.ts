@@ -39,13 +39,6 @@ export interface IconCategoryRule {
 }
 
 /**
- * `svg/<set-id>/set.json`.
- *
- * Every field is optional. Dropping a bare folder of SVGs into `svg/` with no
- * manifest at all has to produce a working, browsable set - requiring
- * boilerplate before an icon shows up would defeat the point of the drop.
- */
-/**
  * A named styling preset declared by a set.
  *
  * `options` is a *patch*: only the fields it changes need stating, and it is
@@ -69,6 +62,13 @@ export interface ResolvedPreset {
   options: ExcalidrawOptions;
 }
 
+/**
+ * `svg/<set-id>/set.json`.
+ *
+ * Every field is optional. Dropping a bare folder of SVGs into `svg/` with no
+ * manifest at all has to produce a working, browsable set - requiring
+ * boilerplate before an icon shows up would defeat the point of the drop.
+ */
 export interface IconSetManifest {
   /** Display name. Defaults to a title-cased folder name. */
   name?: string;

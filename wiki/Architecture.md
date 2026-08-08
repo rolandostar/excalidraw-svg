@@ -5,7 +5,7 @@ way they are.
 
 Read the **Invariants** section before you change anything in `src/utils/`.
 Most of them look like they could be simplified. They cannot — each one is
-there because of a real failure.
+there because of a real failure, and most have a fixture pinning them in place.
 
 ---
 
@@ -46,17 +46,19 @@ categorises it. `src/utils/iconSets.ts` discovers both with `import.meta.glob`,
 so a folder dropped into `svg/` needs no registration anywhere — Vite watches
 the glob patterns and invalidates the module when the match list changes.
 
+If you want to add one, see [Submit an icon set](Submit-an-icon-set).
+
 Two properties of that module are load-bearing:
 
 - **The optimiser runs at build time, not in the browser.** `vite/icon-sets.ts`
   globs `svg/`, runs `optimizeSvgString` in Node and exposes the result as
   `virtual:icon-sets`. Opening a set used to run SVGO over every file in it
-  before the grid could paint, and shipping SVGO to do that cost 187 KB gzip -
-  roughly half the main chunk - to process files that were already in the repo.
+  before the grid could paint, and shipping SVGO to do that cost 187 KB gzip —
+  roughly half the main chunk — to process files that were already in the repo.
   The converter page, which handles files the build has never seen, does not
   use the optimiser at all, so nothing in the client needs it. Both the plugin
-  and the fidelity harness call the same `optimizeSvgString`, verified to
-  produce byte-identical markup for all 261 icons.
+  and the fidelity harness call the same `optimizeSvgString`, and the output is
+  byte-identical for all 261 icons.
 - **Category rules live in the manifest, not in code.** `categorizer.ts` keeps
   only the matching engine and `formatTitle`. The GCP keyword lists moved
   verbatim into `svg/legacy-gcp/set.json`, order preserved — the matcher is
@@ -161,8 +163,8 @@ whole stroke for clockwise rings.
 
 An Excalidraw `line` has a single point list, so a hole can only be expressed by
 walking into it and back out along a coincident pair of edges. This works
-because Rough.js fills `polygon` shapes with `fill-rule: evenodd` — verified in
-both its canvas and SVG renderers.
+because Rough.js fills `polygon` shapes with `fill-rule: evenodd` — in both its
+canvas and SVG renderers.
 
 `bridgeHoles()` anchors every corridor on a vertex of the **original** outer
 ring. Stitching into an accumulating ring lets the second hole attach to the
@@ -244,8 +246,8 @@ Three mitigations, all in `pathRegions.ts`:
 
 ## Traps that were already fallen into
 
-Do not reintroduce these. Each shipped at some point and was caught by
-measurement.
+Do not reintroduce these. Each shipped at some point, and the number beside it
+is what the harness reported when it did.
 
 | trap | what happened |
 |---|---|
@@ -267,9 +269,10 @@ measurement.
 
 - `roundness: null` on every emitted `line` — otherwise Excalidraw curves the
   point list.
-- `roughness: 0` makes Rough.js deterministic, so `seed` and `versionNonce`
-  do not affect rendering (they still change per run; the harness stabilises
-  them for on-disk snapshots only — `scripts/lib/snapshot.ts`).
+- `roughness: 0` makes Rough.js deterministic, so `seed` and `versionNonce` do
+  not affect rendering. They still change per run, which is why nothing in
+  `tests/results/` is committed or compared byte-for-byte; the gate compares
+  scores, not files.
 - Element `index` values (`a0`/`a1`/`a2`) are placeholders. Excalidraw
   regenerates fractional indices from array order on restore, so paint order
   follows array order — preserve it.
@@ -297,7 +300,8 @@ measurement.
 
 ## Known gaps
 
-Beyond the reported-unsupported list in the README:
+Beyond the reported-unsupported list in the
+[README](../../blob/main/README.md#known-limitations):
 
 - **Rotated ellipses lose their angle.** `angle` is always 0; radii come from
   `hypot` of the matrix columns. No icon in the corpus is affected.
@@ -312,7 +316,11 @@ Beyond the reported-unsupported list in the README:
 - **`gridPitch` measures the nominal artwork box even under `fitFrame`.**
   Deliberate, and an upper bound rather than an approximation: the converter
   fits a viewBox with `Math.min` of the two axis ratios and centres it, so ink
-  can never exceed the nominal box. Keeping it conversion-free is what lets
-  `run-fidelity.ts` compute the packed layout from filenames alone and shard
-  the corpus across workers. Cost is slightly wider gutters around icons that
-  do not fill their viewBox.
+  can never exceed the nominal box. Keeping it conversion-free is what lets the
+  packed grid layout be computed from titles and options alone —
+  `measureExcalidrawItem` never touches the SVG. Cost is slightly wider gutters
+  around icons that do not fill their viewBox.
+
+---
+
+Next: [Testing](Testing) for how any of this gets verified.

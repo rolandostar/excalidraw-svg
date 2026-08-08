@@ -1,4 +1,12 @@
-import { MultiPolygon, Point, differenceMultiPolygons, normaliseRegion, robustUnion } from './pathRegions';
+import {
+  MultiPolygon,
+  Point,
+  differenceMultiPolygons,
+  normaliseRegion,
+  robustUnion,
+  signedArea,
+} from './pathRegions';
+import { arcSegmentCount, closeRing } from './svg/geometry';
 
 /**
  * Converts a stroked polyline into the filled region that stroke covers.
@@ -45,9 +53,7 @@ function dedupe(points: Point[]): Point[] {
 }
 
 function circle(center: Point, radius: number, tolerance: number): Point[] {
-  const ratio = Math.max(-1, Math.min(1, 1 - tolerance / radius));
-  const maxAngle = 2 * Math.acos(ratio);
-  const segments = Math.max(8, Math.min(128, Math.ceil((2 * Math.PI) / maxAngle)));
+  const segments = arcSegmentCount(2 * Math.PI, radius, tolerance, 8, 128);
   const ring: Point[] = [];
   for (let i = 0; i < segments; i++) {
     const angle = (2 * Math.PI * i) / segments;
@@ -55,13 +61,6 @@ function circle(center: Point, radius: number, tolerance: number): Point[] {
   }
   ring.push([ring[0][0], ring[0][1]]);
   return ring;
-}
-
-function closeRing(ring: Point[]): Point[] {
-  const first = ring[0];
-  const last = ring[ring.length - 1];
-  if (Math.hypot(first[0] - last[0], first[1] - last[1]) <= EPSILON) return ring;
-  return [...ring, [first[0], first[1]] as Point];
 }
 
 /**
@@ -102,8 +101,7 @@ function offsetSide(pts: Point[], directions: Point[], delta: number, closed: bo
         let sweep = end - start;
         while (sweep > Math.PI) sweep -= 2 * Math.PI;
         while (sweep < -Math.PI) sweep += 2 * Math.PI;
-        const ratio = Math.max(-1, Math.min(1, 1 - style.tolerance / radius));
-        const steps = Math.max(1, Math.min(32, Math.ceil(Math.abs(sweep) / (2 * Math.acos(ratio)))));
+        const steps = arcSegmentCount(sweep, radius, style.tolerance, 1, 32);
         for (let k = 0; k <= steps; k++) {
           const angle = start + (sweep * k) / steps;
           out.push([vertex[0] + radius * Math.cos(angle), vertex[1] + radius * Math.sin(angle)]);
@@ -155,8 +153,7 @@ function capPoints(end: Point, direction: Point, half: number, cap: LineCap, tol
   }
 
   if (cap === 'round') {
-    const ratio = Math.max(-1, Math.min(1, 1 - tolerance / half));
-    const steps = Math.max(2, Math.min(64, Math.ceil(Math.PI / (2 * Math.acos(ratio)))));
+    const steps = arcSegmentCount(Math.PI, half, tolerance, 2, 64);
     const start = Math.atan2(ny, nx);
     const points: Point[] = [];
     for (let k = 0; k <= steps; k++) {
@@ -196,7 +193,13 @@ function outlinePolyline(points: Point[], closed: boolean, style: StrokeStyle): 
     if (style.cap === 'round') return [[circle(pts[0], half, style.tolerance)]];
     if (style.cap === 'square') {
       const [x, y] = pts[0];
-      return [[closeRing([[x - half, y - half], [x + half, y - half], [x + half, y + half], [x - half, y + half]])]];
+      const square: Point[] = [
+        [x - half, y - half],
+        [x + half, y - half],
+        [x + half, y + half],
+        [x - half, y + half],
+      ];
+      return [[closeRing(square, EPSILON)]];
     }
     return [];
   }
@@ -223,22 +226,14 @@ function outlinePolyline(points: Point[], closed: boolean, style: StrokeStyle): 
     const b = offsetSide(pts, directions, -half, true, style);
     if (a.length < 3 && b.length < 3) return [];
 
-    const area = (ring: Point[]) => {
-      let sum = 0;
-      for (let i = 0; i < ring.length; i++) {
-        const p = ring[i];
-        const q = ring[(i + 1) % ring.length];
-        sum += p[0] * q[1] - q[0] * p[1];
-      }
-      return Math.abs(sum / 2);
-    };
+    const area = (ring: Point[]) => Math.abs(signedArea(ring));
 
     const [outerRing, innerRing] = area(a) >= area(b) ? [a, b] : [b, a];
-    const outer = normaliseRegion([[closeRing(outerRing)]]);
+    const outer = normaliseRegion([[closeRing(outerRing, EPSILON)]]);
     if (outer.length === 0) return [];
     if (innerRing.length < 3) return outer as Point[][][];
 
-    const inner = normaliseRegion([[closeRing(innerRing)]]);
+    const inner = normaliseRegion([[closeRing(innerRing, EPSILON)]]);
     return differenceMultiPolygons(outer, inner) as Point[][][];
   }
 
@@ -254,7 +249,7 @@ function outlinePolyline(points: Point[], closed: boolean, style: StrokeStyle): 
   // An open stroke is a single ring, which crosses itself on the inside of any
   // sharp turn; normalising turns that crossing into proper geometry instead
   // of a punched-out lobe.
-  return normaliseRegion([[closeRing(ring)]]) as Point[][][];
+  return normaliseRegion([[closeRing(ring, EPSILON)]]) as Point[][][];
 }
 
 /**
@@ -272,9 +267,10 @@ export function strokeToRegion(subpaths: Point[][], closed: boolean, style: Stro
   if (pieces.length === 0) return [];
 
   // Each piece is one polygon; wrap it as a single-polygon MultiPolygon so the
-  // union sees a flat list of regions to merge. The final normalise resolves
-  // the self-intersection an offset leaves on the inside of a sharp turn.
-  // Each piece is already self-normalised by `outlinePolyline`.
+  // union sees a flat list of regions to merge. `outlinePolyline` has already
+  // normalised each piece on its own - that is where the self-intersection an
+  // offset leaves on the inside of a sharp turn gets resolved - so a single
+  // piece needs nothing further and is returned as-is.
   return pieces.length === 1
     ? ([pieces[0]] as MultiPolygon)
     : robustUnion(pieces.map(piece => [piece] as MultiPolygon));

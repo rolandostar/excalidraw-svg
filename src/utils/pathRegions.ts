@@ -1,5 +1,7 @@
 import polygonClipping from 'polygon-clipping';
 
+import { boundsOfRings, closeRing } from './svg/geometry';
+
 /**
  * Turns the flattened subpaths of an SVG path element into the set of filled
  * regions that path actually paints, then flattens each region into the single
@@ -44,7 +46,7 @@ const EPSILON = 1e-9;
  * last element - as the old code did - deleted a real vertex from every
  * unclosed subpath.
  */
-export function normaliseRing(points: Point[]): Ring {
+function normaliseRing(points: Point[]): Ring {
   if (points.length < 2) return points.slice();
   const first = points[0];
   const last = points[points.length - 1];
@@ -62,7 +64,7 @@ export function signedArea(ring: Ring): number {
 }
 
 /** Even-odd containment of `point` in a single ring. */
-export function pointInRing(point: Point, ring: Ring): boolean {
+function pointInRing(point: Point, ring: Ring): boolean {
   const [px, py] = point;
   let inside = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -77,7 +79,7 @@ export function pointInRing(point: Point, ring: Ring): boolean {
 }
 
 /** Winding contribution of a single ring around `point`. */
-export function windingNumber(point: Point, ring: Ring): number {
+function windingNumber(point: Point, ring: Ring): number {
   const [px, py] = point;
   let winding = 0;
   for (let i = 0; i < ring.length; i++) {
@@ -137,7 +139,7 @@ const CANDIDATE_EDGES = 12;
  * and the entire shape is classified as empty. Choosing the edge with the best
  * clearance from other rings makes the fill-rule evaluation unambiguous.
  */
-export function representativePoints(rings: Ring[]): Array<Point | null> {
+function representativePoints(rings: Ring[]): Array<Point | null> {
   return rings.map((ring, index) => {
     if (ring.length < 3) return null;
 
@@ -195,14 +197,13 @@ export function representativePoints(rings: Ring[]): Array<Point | null> {
   });
 }
 
-function toClosed(ring: Ring): Point[] {
-  if (ring.length === 0) return [];
-  const first = ring[0];
-  const last = ring[ring.length - 1];
-  return Math.hypot(first[0] - last[0], first[1] - last[1]) <= EPSILON
-    ? ring.slice()
-    : [...ring, [first[0], first[1]] as Point];
-}
+/**
+ * Appends the first point to the end of a ring for `polygon-clipping`, which
+ * requires explicitly closed rings. `EPSILON` here is 1e-9, not the 1e-6 the
+ * emitter uses: these are user-space coordinates feeding a boolean engine, and
+ * a micro-unit gap is a real gap.
+ */
+const toClosed = (ring: Ring): Point[] => closeRing(ring, EPSILON);
 
 /**
  * Resolves the flattened subpaths of one path element into filled regions.
@@ -301,11 +302,11 @@ export function polygonsToMultiPolygon(polygons: PolygonWithHoles[]): MultiPolyg
  */
 const SNAP = 1e7;
 
-export function snapPoint(p: Point): Point {
+function snapPoint(p: Point): Point {
   return [Math.round(p[0] * SNAP) / SNAP, Math.round(p[1] * SNAP) / SNAP];
 }
 
-export function snapMultiPolygon(region: MultiPolygon): MultiPolygon {
+function snapMultiPolygon(region: MultiPolygon): MultiPolygon {
   return region.map(polygon => polygon.map(ring => ring.map(snapPoint)));
 }
 
@@ -317,6 +318,10 @@ export function snapMultiPolygon(region: MultiPolygon): MultiPolygon {
  * smaller and far more likely to succeed, and a failure at one node costs only
  * that subtree's simplification - the geometry is still all there, just as
  * separate polygons.
+ *
+ * This is also the union `clipping.ts` wants - a `<clipPath>` with several
+ * children, and a `<mask>` accumulating light shapes - which used to reach it
+ * through a one-line `unionMultiPolygons` alias.
  */
 export function robustUnion(regions: MultiPolygon[]): MultiPolygon {
   const usable = regions.filter(r => r.length > 0).map(snapMultiPolygon);
@@ -347,11 +352,6 @@ export function normaliseRegion(region: MultiPolygon): MultiPolygon {
   } catch {
     return region;
   }
-}
-
-/** Union of several regions - the semantics of a `<clipPath>` with multiple children. */
-export function unionMultiPolygons(regions: MultiPolygon[]): MultiPolygon {
-  return robustUnion(regions);
 }
 
 /** `a` minus `b`. Used by masks, where a dark shape subtracts from the visible area. */
@@ -393,20 +393,9 @@ export function rectRegion(x: number, y: number, width: number, height: number):
   ];
 }
 
+/** Extent of a region's outer rings; holes cannot extend past them. */
 export function multiPolygonBounds(region: MultiPolygon) {
-  let minX = Infinity;
-  let minY = Infinity;
-  let maxX = -Infinity;
-  let maxY = -Infinity;
-  for (const polygon of region) {
-    for (const [x, y] of polygon[0] ?? []) {
-      if (x < minX) minX = x;
-      if (y < minY) minY = y;
-      if (x > maxX) maxX = x;
-      if (y > maxY) maxY = y;
-    }
-  }
-  return { minX, minY, maxX, maxY };
+  return boundsOfRings(region.map(polygon => polygon[0] ?? []));
 }
 
 /**

@@ -1,0 +1,62 @@
+# Builds the site and publishes it to GitHub Pages.
+#
+# One-time setup: Settings -> Pages -> Source must be set to "GitHub Actions",
+# and public/CNAME must hold the real custom domain (it ships a placeholder).
+#
+# Wiki- and markdown-only commits are skipped: they cannot change the bundle,
+# and the wiki has its own workflow.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'wiki/**'
+      - '**/*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel a deploy in flight - a half-published site is worse than a
+# slightly stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Runs tsc first, then vite build. The spa-fallback plugin copies
+      # dist/index.html to dist/404.html so deep links survive a hard refresh.
+      - run: pnpm build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -11,6 +11,7 @@ import type {
 import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from './defaultOptions';
 import { sanitizeOptionsPatch } from './optionsSchema';
 import { IMPLICIT_CATEGORY, categorizeByRules, expandSynonyms, formatTitle } from './categorizer';
+import { readViewBoxFromMarkup } from './svg/viewBox';
 // eslint-disable-next-line import/no-unresolved -- supplied by vite/icon-sets.ts
 import { ICON_SETS } from 'virtual:icon-sets';
 
@@ -48,19 +49,16 @@ function toDataUrl(svg: string): string {
   return `data:image/svg+xml,${encoded}`;
 }
 
+/**
+ * Nominal size of a set icon. 48 rather than the converter's 24 or the upload
+ * path's 100: these are curated square marks, and 48 is what the gallery draws
+ * them at.
+ */
+const FALLBACK_ICON_SIZE = { width: 48, height: 48 };
+
 function readIntrinsicSize(svg: string): { width: number; height: number } {
-  const viewBox = svg.match(/viewBox=["']\s*[\d.+-]+\s+[\d.+-]+\s+([\d.]+)\s+([\d.]+)/i);
-  if (viewBox) {
-    return { width: parseFloat(viewBox[1]) || 48, height: parseFloat(viewBox[2]) || 48 };
-  }
-
-  const width = svg.match(/width=["']([\d.]+)(?:px)?["']/i);
-  const height = svg.match(/height=["']([\d.]+)(?:px)?["']/i);
-  if (width && height) {
-    return { width: parseFloat(width[1]) || 48, height: parseFloat(height[1]) || 48 };
-  }
-
-  return { width: 48, height: 48 };
+  const { width, height } = readViewBoxFromMarkup(svg, FALLBACK_ICON_SIZE);
+  return { width, height };
 }
 
 interface Discovered {

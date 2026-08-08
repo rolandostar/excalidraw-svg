@@ -1,0 +1,41 @@
+# Build + the two fidelity suites, on every PR and every push to main.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # `pnpm build` is `tsc && vite build`, so this is the typecheck too.
+      - run: pnpm build
+
+      # Both suites exit 1 on a scoring error, on anything over the published
+      # thresholds that is not a listed expected failure, or on a regression
+      # against tests/baselines/.
+      - run: pnpm test:fidelity
+
+      - run: pnpm test:torture
