@@ -159,16 +159,29 @@ ring's winding, which the source controls — so the two are chosen **by area**.
 Assuming a direction silently produced an empty difference and dropped the
 whole stroke for clockwise rings.
 
-### 5. Holes are bridged with zero-width corridors, under `evenodd`
+### 5. Holes are bridged with zero-width corridors
 
 An Excalidraw `line` has a single point list, so a hole can only be expressed by
-walking into it and back out along a coincident pair of edges. This works
-because Rough.js fills `polygon` shapes with `fill-rule: evenodd` — in both its
-canvas and SVG renderers.
+walking into it and back out along a coincident pair of edges.
+
+The corridor disappears two ways, and the ring is built to satisfy both. Under
+`evenodd` the doubled edges cancel regardless of direction. Under `nonzero` they
+only cancel when the hole winds *against* its outer ring, so `bridgeHoles()`
+reverses any hole that does not. Excalidraw uses `evenodd` everywhere (see
+[Excalidraw output notes](#excalidraw-output-notes)), so only the first rule is
+ever exercised — the second is there because a `.excalidrawlib` is a public
+format and we do not control what opens one.
 
 `bridgeHoles()` anchors every corridor on a vertex of the **original** outer
 ring. Stitching into an accumulating ring lets the second hole attach to the
 first hole's boundary and drive its corridor through the first hole's interior.
+
+> Excalidraw's own bucket-fill tool, added in August 2026
+> ([`792ea3a`](https://github.com/excalidraw/excalidraw/commit/792ea3a06c60079229f36819d8695af7d563832a)),
+> arrived at the same technique independently — it calls the corridors
+> "keyhole bridges" and reverses hole winding for the same stated reason. If
+> you are wondering whether this is still the way to do it: upstream thinks so,
+> and they have no compound-path support to offer instead.
 
 `regionToBridgedRings()` drops holes below `MIN_VISIBLE_HOLE_AREA_PX` (0.02
 square output pixels) rather than bridging them — see §4 for why.
@@ -267,6 +280,31 @@ is what the harness reported when it did.
 
 ## Excalidraw output notes
 
+Verified against Excalidraw `master` in August 2026. Worth re-checking after a
+major upgrade, but these have all held since 2023.
+
+- **A `line` is filled when `isPathALoop(points)` holds** — first and last point
+  within `LINE_CONFIRM_THRESHOLD` (8), and at least 3 points.
+  `generateRoughOptions` in `packages/element/src/shape.ts` reads nothing else.
+  In particular it does **not** read `element.polygon`; see below.
+- **`fill-rule: evenodd` is used at all three layers.** Rough.js canvas and SVG
+  renderers both pick `evenodd` for `polygon` and `curve` shapes, and
+  Excalidraw's SVG export sets the attribute explicitly in
+  `renderer/staticSvgScene.ts` — also gated on `isPathALoop`. Hachure fills go
+  through scanline parity, which behaves the same. This is what §5 relies on.
+- **`polygon: true` is an editor flag, not a rendering one.** Added May 2025. It
+  drives the line editor's polygon toggle and lets the bucket-fill tool
+  recognise existing paint as restylable. `restore` resets it to `false` unless
+  `isValidPolygon(points)` holds, which is stricter than `isPathALoop`: more
+  than 3 points, and first equal to last within `1e-4` per axis. We set it, and
+  guard on the stricter rule.
+- **There is no point-count limit** in the renderer or in `restore`. Excalidraw's
+  own bucket fill caps generated polygons at 1536 points, but that is its own
+  budget, not a platform limit. High counts cost render time, not correctness.
+- **`restore` deletes any linear element over 75,000 px** on either axis
+  (`MAX_LINEAR_PX`), replacing it with a deleted stub. Unreachable here — icons
+  fit a 48 px target and uploads are capped at `MAX_DIMENSION` (1200) — but it
+  is the kind of silent destruction worth knowing about.
 - `roundness: null` on every emitted `line` — otherwise Excalidraw curves the
   point list.
 - `roughness: 0` makes Rough.js deterministic, so `seed` and `versionNonce` do
