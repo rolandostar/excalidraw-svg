@@ -3,6 +3,11 @@
 # One-time setup: Settings -> Pages -> Source must be set to "GitHub Actions".
 # The sub-path the site is served from lives in vite.config.ts (`base`).
 #
+# Skipped entirely while the repository is private. GitHub Pages needs a public
+# repository on the free plan, and a workflow that fails on every push is a
+# workflow people stop reading. It starts running by itself the moment the repo
+# goes public - there is nothing to switch on here.
+#
 # Wiki- and markdown-only commits are skipped: they cannot change the bundle,
 # and the wiki has its own workflow.
 name: Deploy
@@ -28,6 +33,9 @@ concurrency:
 
 jobs:
   build:
+    # `github.event.repository.private` is present on both push and
+    # workflow_dispatch payloads.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

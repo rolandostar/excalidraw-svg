@@ -166,19 +166,33 @@ The site lives at **https://rolandostar.github.io/excalidraw-svg/** — a Pages
 *project* page, so it is served from a sub-path, not the domain root.
 
 That sub-path is `base` in `vite.config.ts`, and it is named after the
-repository. **Rename the repo and it has to change with it**, in three places:
-`base`, the `<link rel="canonical">` in `index.html`, and `DEPLOY_BASE` in
-`scripts/verify-font-strip.ts`. Everything in `src/` reads
-`import.meta.env.BASE_URL` instead of hard-coding it, so moving to a custom
-domain or to a user page at the root is just `base: '/'`.
+repository. **Rename the repo and it has to change with it**, in four places:
+`base`, the `<link rel="canonical">` in `index.html`, `DEPLOY_BASE` in
+`scripts/verify-font-strip.ts`, and the methodology link in
+`scripts/lib/claims.ts`. Everything in `src/` reads `import.meta.env.BASE_URL`
+instead of hard-coding it, so moving to a custom domain or to a user page at
+the root is just `base: '/'`.
 
-Two things need doing once, by hand:
+### While the repository is private
+
+Pages and wikis both need a **public** repository on GitHub's free plan. Until
+then the deploy and wiki workflows skip themselves rather than failing on every
+push — there is no switch to flip, they start running when the repo goes
+public. CI still runs, since Actions works on private repositories.
+
+Nothing else is blocked: `pnpm dev`, `pnpm preview`, the test suites and
+`pnpm shoot` all work locally, and the wiki content is readable in `wiki/`.
+
+### When the repository goes public
 
 - **Settings → Pages → Source must be set to "GitHub Actions".** The workflow
   cannot set this itself, and the first deploy fails without it.
 - **The wiki repository must exist** before `.github/workflows/wiki.yml` can
   push to it. Save any page once in the Wiki tab; the workflow overwrites it
   from `wiki/` on the next push.
+- Hard-refresh a deep link such as `/excalidraw-svg/icons/legacy-gcp` once it
+  is live. `vite preview` does its own SPA rewrite, so local testing cannot
+  prove that part.
 
 `vite/spa-fallback.ts` copies `dist/index.html` to `dist/404.html` at build
 time. Pages has no rewrite rule, so that copy is what keeps a hard refresh on

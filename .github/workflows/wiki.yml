@@ -32,6 +32,10 @@ concurrency:
 
 jobs:
   publish:
+    # Wikis, like Pages, need a public repository on the free plan. Skip rather
+    # than fail; this starts working on its own once the repo is public and the
+    # Wiki tab has one page saved in it.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
