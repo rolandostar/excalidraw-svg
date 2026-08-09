@@ -7,6 +7,7 @@
  */
 import type { ExcalidrawElement } from '../../types';
 import { closeRing, boundsOf } from '../svg/geometry';
+import { OUTPUT_SIMPLIFY_TOLERANCE_PX, simplifyClosedRing } from './simplify';
 import type { RawShape } from './rawShape';
 
 export function generateRandomId(): string {
@@ -128,7 +129,15 @@ export function rawShapesToElements(
     // space, where a micro-unit gap really is closed - hence 1e-6 rather than
     // the 1e-9 the boolean engine uses upstream.
     const wantsFill = !!shape.fill && shape.fill !== 'transparent';
-    const absPoints = wantsFill ? closeRing(shape.absPoints, 1e-6) : shape.absPoints;
+    const closed = wantsFill ? closeRing(shape.absPoints, 1e-6) : shape.absPoints;
+
+    // Simplified before the bounds are taken, so the element box stays tight
+    // around the points that actually survive. Tolerance converts from output
+    // units into the source's own units, the same way the flattening tolerance
+    // does, so the error stays constant in pixels at any `iconScale`.
+    const absPoints = wantsFill
+      ? simplifyClosedRing(closed, OUTPUT_SIMPLIFY_TOLERANCE_PX / scale)
+      : closed;
 
     const { minX, minY, maxX, maxY } = boundsOf(absPoints);
 

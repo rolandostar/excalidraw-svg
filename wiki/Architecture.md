@@ -28,7 +28,7 @@ raw SVG string
    │      resolve visibility region (clip-path + mask, intersected)
    │      FILL   -> resolveFilledRegions() -> bridgeHoles() -> ring
    │      STROKE -> strokeToRegion()       -> filled area
-   │      clip each result, emit as Excalidraw `line` / `ellipse`
+   │      clip each result, simplify the ring, emit as `line` / `ellipse`
    │
    └─ createExcalidrawItem()                  src/utils/excalidrawGenerator.ts
         card + label layout, then
@@ -196,6 +196,48 @@ tessellation.
 The old constant tolerance plus a Ramer–Douglas–Peucker pass at 0.2 user units
 (0.8 % of a 24-unit artboard) visibly polygonised every circle and got twice as
 bad each time the icon was scaled up.
+
+There *is* an RDP pass again, but at the other end of the pipeline and for a
+different reason — see §11.
+
+### 11. Output rings are simplified, after every boolean
+
+`simplifyClosedRing()` runs in `emit.ts`, on finished rings only. This is
+deliberately **not** the flattening tolerance of §6: that one feeds
+`polygon-clipping` (fragile on near-collinear input, §10) and gates stroke join
+wedges, so it changes topology decisions. This one only removes points from a
+ring whose shape is already decided, so it cannot.
+
+`OUTPUT_SIMPLIFY_TOLERANCE_PX = 0.05`, divided by the fit scale so the error
+stays constant in pixels. Picked by sweeping the corpus through the harness:
+
+| tolerance | points | payload | generation | worst error |
+|---|---|---|---|---|
+| off | 86,926 | 1922 KB | ~1230 ms | 0.10 % |
+| 0.02 | 63,795 | 1630 KB | ~1215 ms | 0.10 % |
+| **0.05** | **46,477** | **1412 KB** | **~780 ms** | **0.13 %** |
+| 0.10 | 34,150 | 1257 KB | ~637 ms | 0.15 % |
+| 0.20 | 27,020 | 1167 KB | ~587 ms | 0.37 % |
+
+Two things that sweep settled, worth not re-deriving:
+
+- **A point cap would do nothing.** No production element exceeds 1,536 points
+  (Excalidraw's own bucket-fill budget), and only 30 % of points live in
+  elements above 192. The cost is spread, not in a tail.
+- **Roughly half the generation cost is per-element, not per-point.** Time
+  floors at ~587 ms however far the points are cut, against 1,764 elements.
+  Cutting element count would mean merging same-colour shapes within an icon,
+  which would destroy editability — users select parts of an icon. Not worth it.
+
+There is no user-facing control for this and there should not be. The
+difference between 0.05 and no simplification is 0.03 percentage points of
+shape error against a 2 % gate, invisible in the render. `iconScale` already
+varies point density, because both tolerances divide by the fit scale.
+
+Three invariants the emitter depends on, all enforced in `simplifyClosedRing`:
+never fewer than 4 points (`isValidPolygon`, which our `polygon: true` claims),
+first point still exactly equal to last (`isPathALoop`, which is what makes
+Excalidraw fill at all), and a zero tolerance is an identity function.
 
 ### 7. `clip-path` and `mask` are real geometry, intersected across nesting
 
