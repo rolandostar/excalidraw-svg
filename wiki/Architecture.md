@@ -224,10 +224,10 @@ Two things that sweep settled, worth not re-deriving:
 - **A point cap would do nothing.** No production element exceeds 1,536 points
   (Excalidraw's own bucket-fill budget), and only 30 % of points live in
   elements above 192. The cost is spread, not in a tail.
-- **Roughly half the generation cost is per-element, not per-point.** Time
-  floors at ~587 ms however far the points are cut, against 1,764 elements.
-  Cutting element count would mean merging same-colour shapes within an icon,
-  which would destroy editability — users select parts of an icon. Not worth it.
+- **Element count costs nothing.** Rough.js generation is linear in points and
+  indifferent to how they are divided up — the same 46,477 points take 96 ms as
+  1,611 polygons, 83 ms as 100, and 159 ms as one. Merging shapes to reduce
+  element count is not a performance lever; see below.
 
 There is no user-facing control for this and there should not be. The
 difference between 0.05 and no simplification is 0.03 percentage points of
@@ -238,6 +238,33 @@ Three invariants the emitter depends on, all enforced in `simplifyClosedRing`:
 never fewer than 4 points (`isValidPolygon`, which our `polygon: true` claims),
 first point still exactly equal to last (`isPathALoop`, which is what makes
 Excalidraw fill at all), and a zero tolerance is an identity function.
+
+#### Things measured and rejected
+
+Kept so nobody re-runs them. All figures are the 261-icon library.
+
+**Merging same-colour shapes to cut element count.** Consecutive same-colour
+runs would collapse 1,611 line elements to 993 — 618 absorbed, 35 %. It buys
+**no time at all** (see above), only about 20 % of payload, and it costs
+sub-shape selection permanently. There is also an untested hazard: at
+`roughness: 2` the jitter separates a bridge corridor's doubled edges, and a
+corridor spanning a whole icon would show as a sliver where today's short
+hole-bridges do not. Rejected.
+
+**Omitting fields that equal Excalidraw's defaults.** Element envelopes are
+812 KB of the 1,412 KB payload — more than the points. Dropping the eight
+fields `restore` would fill in anyway (`angle`, `strokeStyle`, `frameId`,
+`version`, `isDeleted`, `boundElements`, `link`, `locked`) takes the payload to
+1,197 KB, −15 %, and the exporter's output is byte-identical without them.
+Rejected anyway: it makes the output depend on upstream defaults, so the day
+Excalidraw changes one, every element we ever exported changes appearance with
+no error anywhere. That is the failure mode §9 exists to prevent.
+
+**Where the export time actually goes.** Not where it looks. Of the ~780 ms
+`exportToSvg` takes, Rough.js generation is 96 ms, jsdom DOM construction 36 ms
+and serialisation 23 ms. The remaining ~620 ms is inside the exporter building
+path strings and setting attributes — work a canvas renderer never does. Do not
+use `exportToSvg` timings as a proxy for canvas performance.
 
 ### 7. `clip-path` and `mask` are real geometry, intersected across nesting
 
