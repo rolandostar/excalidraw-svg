@@ -29,6 +29,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isFailing } from './lib/thresholds';
+import { renderClaimsBlock, writeClaimsBlock } from './lib/claims';
 import type { Summary } from './lib/thresholds';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -37,8 +38,18 @@ const TORTURE_SRC = path.join(ROOT, 'tests', 'torture-svg');
 const OUT = path.join(ROOT, 'public', 'evidence');
 const HEADLINE_FILE = path.join(ROOT, 'src', 'generated', 'evidence-headline.json');
 
-/** Triptychs for icons are ~20 KB each and 214 of 216 score exactly zero. */
-const WORST_ICONS_TO_PUBLISH = 6;
+/**
+ * Sanity ceiling on how many imperfect icons we are willing to publish.
+ *
+ * NOT a display cap. Every icon that scores above zero is published, because
+ * the methodology page calls that list complete and it has to be. This exists
+ * so that a change which quietly makes a hundred icons imperfect fails the
+ * build instead of shipping a hundred triptychs.
+ *
+ * This replaced a hard cap of 6, which silently truncated the list the moment
+ * a seventh icon became imperfect - and the page went on calling it complete.
+ */
+const MAX_IMPERFECT_ICONS = 40;
 
 export interface EvidenceCase {
   id: string;
@@ -67,11 +78,18 @@ export interface EvidenceSuite {
   name: string;
   generatedAt: string;
   total: number;
+  /** Cases that are a pixel-exact match. Counted from scores, not from images. */
+  perfect: number;
+  imperfect: number;
+  /** Per-set counts, for suites whose ids are `<set>__<name>`. */
+  sets: { id: string; count: number }[];
   meanShapeScore: number;
   worstShapeScore: number;
   meanPlacementErrorPx: number;
   worstPlacementErrorPx: number;
   failing: number;
+  /** How many cases are listed as meant to fail. */
+  expectedFailures: number;
   auditIssueCount: number;
   cases: EvidenceCase[];
 }
@@ -153,10 +171,20 @@ function publish(
 
     if (selectIds.has(icon.id)) {
       const src = path.join(RESULTS, suite, 'comparisons', `${icon.id}.png`);
-      if (fs.existsSync(src)) {
-        fs.copyFileSync(src, path.join(imageDir, `${icon.id}.png`));
-        image = `${suite}/${icon.id}.png`;
+      if (!fs.existsSync(src)) {
+        // The harness writes a triptych for every case with a non-empty diff,
+        // so a selected case without one means summary.json and the results
+        // directory came from different runs. Copying what is there and
+        // staying quiet is how the page ended up calling six cases "complete"
+        // when there were eight.
+        throw new Error(
+          `${suite}/${icon.id} scores ${((icon.shapeScore ?? 0) * 100).toFixed(4)}% but has no\n` +
+            `comparison image at ${path.relative(ROOT, src)}.\n` +
+            `The summary and the results directory disagree - re-run the suite.`
+        );
       }
+      fs.copyFileSync(src, path.join(imageDir, `${icon.id}.png`));
+      image = `${suite}/${icon.id}.png`;
     }
 
     return {
@@ -174,15 +202,32 @@ function publish(
     };
   });
 
+  // Counted from the scores, never from how many images happened to be
+  // published. Deriving it from the image count is exactly how the site came
+  // to claim 255 perfect icons when the real figure was 253.
+  const perfect = summary.icons.filter(icon => icon.shapeScore === 0).length;
+
+  // Set ids are the part of the case id before `__`; a suite with no sets
+  // (torture) leaves this empty rather than inventing one.
+  const bySet = new Map<string, number>();
+  for (const icon of summary.icons) {
+    const cut = icon.id.indexOf('__');
+    if (cut > 0) bySet.set(icon.id.slice(0, cut), (bySet.get(icon.id.slice(0, cut)) ?? 0) + 1);
+  }
+
   return {
     name: suite,
     generatedAt: summary.generatedAt,
     total: summary.totalProcessed,
+    perfect,
+    imperfect: summary.totalProcessed - perfect,
+    sets: [...bySet].sort((a, b) => b[1] - a[1]).map(([id, count]) => ({ id, count })),
     meanShapeScore: summary.meanShapeScore,
     worstShapeScore: summary.worstShapeScore,
     meanPlacementErrorPx: summary.meanPlacementErrorPx,
     worstPlacementErrorPx: summary.worstPlacementErrorPx,
     failing: summary.failingIcons,
+    expectedFailures: Object.keys(expectedFailures).length,
     auditIssueCount: summary.auditIssueCount,
     cases,
   };
@@ -199,17 +244,23 @@ function run() {
   // Every torture case gets an image - the gallery is the point of the page.
   const tortureIds = new Set(tortureSummary.icons.map(i => i.id));
 
-  // Icons publish only the interesting tail: anything non-zero or failing, so
-  // "0.000% mean" is backed by a visible non-trivial example. Padding this out
-  // with icons that score exactly zero would put six identical strips under a
-  // heading that says "the worst ones", which reads as a hedge.
-  const iconIds = new Set(
-    [...iconsSummary.icons]
-      .filter(icon => (icon.shapeScore ?? 0) > 0 || isFailing(icon, iconsSummary.thresholds))
-      .sort((a, b) => (b.shapeScore ?? 0) - (a.shapeScore ?? 0))
-      .slice(0, WORST_ICONS_TO_PUBLISH)
-      .map(i => i.id)
-  );
+  // Icons publish the interesting tail: every case that is not a pixel-exact
+  // match. Padding it out with icons scoring exactly zero would put identical
+  // strips under a heading about the worst ones, which reads as a hedge - but
+  // leaving any of them out makes the page's "complete list" a lie.
+  const imperfect = [...iconsSummary.icons]
+    .filter(icon => (icon.shapeScore ?? 0) > 0 || isFailing(icon, iconsSummary.thresholds))
+    .sort((a, b) => (b.shapeScore ?? 0) - (a.shapeScore ?? 0));
+
+  if (imperfect.length > MAX_IMPERFECT_ICONS) {
+    throw new Error(
+      `${imperfect.length} icons score above zero, over the ${MAX_IMPERFECT_ICONS} ceiling.\n` +
+        `Something has regressed. Publishing a truncated list would hide it - fix the\n` +
+        `conversion, or raise MAX_IMPERFECT_ICONS deliberately if this is the new normal.`
+    );
+  }
+
+  const iconIds = new Set(imperfect.map(i => i.id));
 
   const manifest: EvidenceManifest = {
     builtAt: new Date().toISOString(),
@@ -230,6 +281,15 @@ function run() {
   };
   fs.mkdirSync(path.dirname(HEADLINE_FILE), { recursive: true });
   fs.writeFileSync(HEADLINE_FILE, JSON.stringify(headline, null, 2), 'utf-8');
+
+  // The README quotes the same figures. Rewriting them here is what stops the
+  // two drifting; `claims.test.ts` fails if this was not re-run.
+  const readmeFile = path.join(ROOT, 'README.md');
+  fs.writeFileSync(
+    readmeFile,
+    writeClaimsBlock(fs.readFileSync(readmeFile, 'utf-8'), renderClaimsBlock(headline)),
+    'utf-8'
+  );
 
   const bytes = (dir: string) =>
     fs.existsSync(dir)

@@ -44,7 +44,18 @@ export function MethodologyPage() {
   );
   const visible = showAll ? sorted : sorted.slice(0, VISIBLE_CASES);
 
-  const worstIcons = manifest?.icons.cases.filter(c => c.image) ?? [];
+  /*
+   * Selected by score, not by whether an image exists. Filtering on `c.image`
+   * silently dropped any case the publisher had not produced a strip for, and
+   * the heading below calls this list complete.
+   */
+  const imperfectIcons = useMemo(
+    () =>
+      [...(manifest?.icons.cases ?? [])]
+        .filter(c => (c.shapeScore ?? 0) > 0)
+        .sort((a, b) => (b.shapeScore ?? 0) - (a.shapeScore ?? 0)),
+    [manifest]
+  );
 
   return (
     <main className="page page-doc">
@@ -133,19 +144,30 @@ export function MethodologyPage() {
         )}
       </section>
 
-      {worstIcons.length > 0 && (
+      {imperfectIcons.length > 0 && (
         <section className="doc-section">
-          <h2>Every icon that is not perfect</h2>
+          <h2>Every icon that is not a perfect match</h2>
           <p className="doc-body">
-            Every icon in every set is scored — all {STATS.iconCount} of them, across{' '}
-            {plural(setCount, 'set')} — and{' '}
-            {STATS.iconCount - worstIcons.length} of them come out at <em>exactly</em> zero.
-            Here is the complete list of the ones that do not, so the headline{' '}
-            {formatPct(STATS.iconMeanError)} comes with its worst cases attached rather than
-            a sample.
+            All {STATS.iconCount} icons across {plural(setCount, 'set')} are checked, and{' '}
+            {STATS.iconPerfect} of them come out identical, pixel for pixel. Below is every
+            single one that does not — {plural(STATS.iconImperfect, 'icon')}, not a selection.
+          </p>
+          <p className="doc-body">
+            <strong>None of these are broken.</strong> In every case the difference is a few
+            pixels along a curved edge, of the kind you would have to zoom right in to find.
+            Look at the third panel in each strip: that is the difference, and it is almost
+            blank. Five of them differ by a single pixel.
+          </p>
+          <p className="doc-body">
+            The percentage is the share of the icon's ink that differs, which is why the
+            numbers look uneven. A thin, sparse icon has less ink to divide by, so the same
+            one-pixel difference shows up as a bigger number than it would on a solid one. A
+            genuine problem — a missing shape, a wrong fill, a chopped-off corner — lands in
+            whole percent. Everything here is a few thousandths of one, against a limit of{' '}
+            {formatPct(STATS.shapeThreshold, 0)}.
           </p>
           <div className="case-grid">
-            {worstIcons.map(item => (
+            {imperfectIcons.map(item => (
               <CaseCard key={item.id} item={item} />
             ))}
           </div>

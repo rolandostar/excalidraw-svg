@@ -53,8 +53,9 @@ export interface Config {
   readonly expectedFailuresFile: string;
   /**
    * Triptych policy. `scored` writes a comparison image only when the diff is
-   * non-empty; on the icon corpus 258 of 261 files are pixel-identical. `all`
-   * is required by any suite whose every case is published.
+   * non-empty, which spares the great majority of icons an encode they would
+   * never be published from. `all` is required by any suite whose every case
+   * is published, such as the torture gallery.
    */
   readonly comparisons: 'all' | 'scored';
   readonly updateBaseline: boolean;

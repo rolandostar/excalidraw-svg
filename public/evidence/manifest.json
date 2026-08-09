@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-09T01:31:53.638Z",
+  "builtAt": "2026-08-09T05:17:23.534Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,13 +7,30 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-09T01:31:41.666Z",
+    "generatedAt": "2026-08-09T03:32:48.791Z",
     "total": 261,
+    "perfect": 253,
+    "imperfect": 8,
+    "sets": [
+      {
+        "id": "legacy-gcp",
+        "count": 216
+      },
+      {
+        "id": "category-icons",
+        "count": 26
+      },
+      {
+        "id": "unique-icons",
+        "count": 19
+      }
+    ],
     "meanShapeScore": 0.000010912084613111697,
     "worstShapeScore": 0.0012701772955808414,
     "meanPlacementErrorPx": 0.09043582375478924,
     "worstPlacementErrorPx": 0.19999999999999574,
     "failing": 0,
+    "expectedFailures": 0,
     "auditIssueCount": 0,
     "cases": [
       {
@@ -1430,7 +1447,8 @@
         "placementErrorPx": 0.006249999999999645,
         "elementCount": 10,
         "auditIssues": [],
-        "failing": false
+        "failing": false,
+        "image": "icons/legacy-gcp__Free-Trial.png"
       },
       {
         "id": "legacy-gcp__Game-Servers",
@@ -2205,7 +2223,8 @@
         "placementErrorPx": 0.13250000000000028,
         "elementCount": 7,
         "auditIssues": [],
-        "failing": false
+        "failing": false,
+        "image": "icons/unique-icons__AI-Hypercomputer.png"
       },
       {
         "id": "unique-icons__AlloyDB",
@@ -2375,13 +2394,17 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-09T01:31:52.404Z",
+    "generatedAt": "2026-08-09T03:33:02.162Z",
     "total": 30,
+    "perfect": 26,
+    "imperfect": 4,
+    "sets": [],
     "meanShapeScore": 0.03062580388127374,
     "worstShapeScore": 0.5800853249389056,
     "meanPlacementErrorPx": 0.22749999999999987,
     "worstPlacementErrorPx": 4.03125,
     "failing": 4,
+    "expectedFailures": 4,
     "auditIssueCount": 0,
     "cases": [
       {

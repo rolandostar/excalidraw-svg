@@ -43,13 +43,19 @@ results are identical either way. `--help` lists every flag.
 
 ## Current fidelity
 
+<!-- claims:start -->
+
 | suite | files | mean shape error | worst | worst placement | failing |
 |---|---|---|---|---|---|
 | icons | 261 | **0.001 %** | 0.13 % | 0.200 px | **0** |
 | torture | 30 | 3.06 % | 58 % | — | 4 (expected) |
 
-That is all three sets: 216 legacy-gcp, 26 category-icons, 19 unique-icons.
-255 of the 261 are at *exactly* 0.00 %.
+That is every set: 216 legacy-gcp, 26 category-icons, 19 unique-icons. 253 of the 261 icons are a
+pixel-exact match; the rest differ by a few pixels along a curved edge, and all
+8 are published in full on the
+[methodology page](https://rolandostar.github.io/excalidraw-svg/methodology).
+
+<!-- claims:end -->
 
 `pnpm test` keeps these figures honest — it fails if the corpus on disk, the
 baseline and the totals quoted on the website ever disagree.

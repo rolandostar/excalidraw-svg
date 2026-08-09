@@ -18,6 +18,17 @@ export const NEW_ISSUE_URL = `${REPO_URL}/issues/new`;
 
 export const STATS = {
   iconCount: headline.icons.total,
+  /**
+   * Pixel-exact icons, counted from their scores.
+   *
+   * Never derive this from how many comparison images got published. The two
+   * used to be the same number by accident, then a publishing cap held at six
+   * while the real count moved, and the site spent a while claiming 255
+   * perfect icons when there were 253.
+   */
+  iconPerfect: headline.icons.perfect,
+  iconImperfect: headline.icons.imperfect,
+  iconSets: headline.icons.sets,
   iconMeanError: headline.icons.meanShapeScore,
   iconWorstError: headline.icons.worstShapeScore,
   iconFailures: headline.icons.failing,

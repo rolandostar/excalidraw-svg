@@ -191,6 +191,31 @@ evidence and the gate all import `isFailing` from it, so they cannot drift:
 | audit issues | any |
 | regression slack vs baseline | 0.001 shape score |
 
+### A non-zero score is not automatically a defect
+
+The score is **mismatched pixels over inked pixels**, measured on a 320 px
+panel rendered from a 48 px target — about 6.7x magnification. Two consequences
+that surprise people:
+
+- **The denominator is ink, not canvas.** The same one-pixel difference scores
+  roughly 0.003 % on a dense icon and 0.008 % on a sparse one. Comparing two
+  icons' scores does not compare how wrong they are.
+- **Sub-pixel offsets are real mismatches.** A vertex moved a fraction of a
+  pixel by curve flattening or by the output simplification (§11) lands a pixel
+  on the other side of a boundary. `pixelmatch` already excludes antialiasing
+  from the count, but the line between "antialiased" and "different" is itself
+  fuzzy at that scale.
+
+So the tail of the distribution is measurement noise, not damage. What an
+actual defect looks like is a whole shape missing, a fill inverted, a region
+clipped away — errors in whole percent. The `Kuberun` regression that the gate
+test reproduces is 91.89 %. The gate sits at 2 %, three orders of magnitude
+above the noise floor, which is why a corpus can sit at a 0.001 % mean and
+still have a meaningful pass/fail line.
+
+They are published anyway. A list of imperfect icons that omitted the least
+imperfect ones would make the headline worth nothing.
+
 `scripts/fidelity/gate.ts` turns scored files into a verdict. Three things
 exit 1, and they are reported separately because they mean different things:
 
@@ -263,11 +288,17 @@ only at corners means joins, radial hairlines mean bridged sliver holes.
 which is committed, so the numbers on the site come out of the same artifact
 the gate reads.
 
-A comparison triptych is only written when the diff is non-empty. On the icon
-corpus 258 of 261 files are pixel-identical, so writing all of them meant
-encoding 261 PNGs to publish six. Suites whose every case is published — the
-torture gallery shows passing cases too — pass `--comparisons=all`, which the
-`test:torture` scripts already do. The run prints how many were written.
+A comparison triptych is only written when the diff is non-empty. The great
+majority of icons are pixel-identical, so writing all of them means encoding a
+few hundred PNGs to publish a handful. Suites whose every case is published —
+the torture gallery shows passing cases too — pass `--comparisons=all`, which
+the `test:torture` scripts already do. The run prints how many were written.
+
+`build-evidence.ts` then publishes **every** icon that scores above zero, and
+throws if one of them has no triptych on disk. It used to publish the worst six
+and no more, which was fine until a seventh icon became imperfect — the page
+went on calling its list complete, and the perfect-icon count, derived from the
+length of that list, was quietly wrong by two.
 
 ## How the harness is laid out
 

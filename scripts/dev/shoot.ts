@@ -162,6 +162,19 @@ const SHOTS: Shot[] = [
     fullPage: true,
     prepare: async page => {
       await page.waitForSelector('.case-card', { timeout: 15_000 });
+
+      // Comparison strips are `loading="lazy"`, and a full-page screenshot
+      // never scrolls - so without this every strip below the first fold came
+      // out blank and the shot did not show what a reader sees.
+      await page.evaluate(async () => {
+        const step = window.innerHeight;
+        for (let y = 0; y < document.body.scrollHeight; y += step) {
+          window.scrollTo(0, y);
+          await new Promise(resolve => setTimeout(resolve, 120));
+        }
+        window.scrollTo(0, 0);
+      });
+      await page.waitForLoadState('networkidle');
       await page.waitForTimeout(600);
     },
   },
