@@ -1,7 +1,7 @@
 # Builds the site and publishes it to GitHub Pages.
 #
-# One-time setup: Settings -> Pages -> Source must be set to "GitHub Actions",
-# and public/CNAME must hold the real custom domain (it ships a placeholder).
+# One-time setup: Settings -> Pages -> Source must be set to "GitHub Actions".
+# The sub-path the site is served from lives in vite.config.ts (`base`).
 #
 # Wiki- and markdown-only commits are skipped: they cannot change the bundle,
 # and the wiki has its own workflow.

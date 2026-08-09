@@ -43,12 +43,20 @@ export interface EvidenceManifest {
 
 let cached: Promise<EvidenceManifest> | null = null;
 
+/**
+ * Where `public/` ends up once deployed. Always has a trailing slash, so the
+ * paths below are relative to it and never start with one - an absolute
+ * `/evidence/...` would look for the file at the domain root, which on a
+ * GitHub Pages project page is somebody else's site.
+ */
+const BASE = import.meta.env?.BASE_URL ?? '/';
+
 export function loadEvidence(): Promise<EvidenceManifest> {
-  cached ??= fetch('/evidence/manifest.json').then(res => {
+  cached ??= fetch(`${BASE}evidence/manifest.json`).then(res => {
     if (!res.ok) throw new Error(`Evidence manifest unavailable (${res.status})`);
     return res.json() as Promise<EvidenceManifest>;
   });
   return cached;
 }
 
-export const evidenceImageUrl = (image: string) => `/evidence/${image}`;
+export const evidenceImageUrl = (image: string) => `${BASE}evidence/${image}`;

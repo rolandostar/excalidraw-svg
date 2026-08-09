@@ -61,6 +61,20 @@ function stripExcalidrawFonts(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  /*
+   * The site is a GitHub Pages *project* page, so it is served from a
+   * sub-path named after the repository rather than from the domain root.
+   * Rename the repo and this has to change with it.
+   *
+   * Set for dev as well as for the build, deliberately. Everything that
+   * touches a URL reads `import.meta.env.BASE_URL` - the router, the evidence
+   * loader - and a base that only exists in production is a base nobody
+   * exercises until it is live.
+   *
+   * Moving to a custom domain, or to a user page at the domain root, is this
+   * one line back to '/'.
+   */
+  base: '/excalidraw-svg/',
   plugins: [react(), iconSets(), stripExcalidrawFonts(), spaFallback()],
   server: {
     port: 3000,

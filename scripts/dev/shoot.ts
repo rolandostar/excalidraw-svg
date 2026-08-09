@@ -5,8 +5,10 @@
  * bundled browser, so this adds no multi-hundred-megabyte download. Point
  * CHROME_PATH at any Chromium build if the default is missing.
  *
- *   pnpm shoot                      # default set, against the dev server
- *   pnpm shoot --url=http://... --only=convert-light
+ *   pnpm preview                    # in another shell; serves the built site
+ *   pnpm shoot                      # default set
+ *   pnpm shoot --url=http://localhost:3000/excalidraw-svg   # against `pnpm dev`
+ *   pnpm shoot --only=convert-light
  *
  * Every shot is written to .screenshots/ (gitignored). Existing files are
  * overwritten, and the console prints a byte count per file - identical sizes
@@ -43,7 +45,15 @@ function findChrome(): string {
 const arg = (name: string, fallback: string) =>
   process.argv.find(a => a.startsWith(`--${name}=`))?.split('=').slice(1).join('=') ?? fallback;
 
-const BASE = arg('url', 'http://localhost:5182');
+/**
+ * `vite preview`'s default port, plus the deploy sub-path - `vite.config.ts`
+ * sets `base` for the dev and preview servers too, so without the prefix every
+ * shot captures the 404 page. Keep in step with `base` there.
+ *
+ * Preview rather than dev, so the screenshots are of the built bundle. Pass
+ * `--url` for anything else; `pnpm dev` serves on port 3000.
+ */
+const BASE = arg('url', 'http://localhost:4173/excalidraw-svg');
 const ONLY = arg('only', '');
 
 type Theme = 'light' | 'dark';

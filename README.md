@@ -156,15 +156,20 @@ see [Architecture](../../wiki/Architecture).
 Pushes to `main` build the site and publish it to GitHub Pages via
 `.github/workflows/deploy.yml`. Wiki- and markdown-only commits are skipped.
 
-Three things need doing once, by hand:
+The site lives at **https://rolandostar.github.io/excalidraw-svg/** — a Pages
+*project* page, so it is served from a sub-path, not the domain root.
+
+That sub-path is `base` in `vite.config.ts`, and it is named after the
+repository. **Rename the repo and it has to change with it**, in three places:
+`base`, the `<link rel="canonical">` in `index.html`, and `DEPLOY_BASE` in
+`scripts/verify-font-strip.ts`. Everything in `src/` reads
+`import.meta.env.BASE_URL` instead of hard-coding it, so moving to a custom
+domain or to a user page at the root is just `base: '/'`.
+
+Two things need doing once, by hand:
 
 - **Settings → Pages → Source must be set to "GitHub Actions".** The workflow
   cannot set this itself, and the first deploy fails without it.
-- **`public/CNAME` holds the custom domain**, one line, no protocol. It ships
-  as `REPLACE-ME.example.com`; set the real domain there and in the
-  `<link rel="canonical">` tag in `index.html` before the first deploy. Pages
-  reads the file out of the published artifact, so a stale value re-points the
-  domain on every deploy.
 - **The wiki repository must exist** before `.github/workflows/wiki.yml` can
   push to it. Save any page once in the Wiki tab; the workflow overwrites it
   from `wiki/` on the next push.

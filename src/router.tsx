@@ -6,6 +6,11 @@
  * anything, and `/` has to be indexable as "svg to excalidraw converter".
  *
  * Requires the host to serve index.html for unknown paths (SPA fallback).
+ * `vite/spa-fallback.ts` arranges that on GitHub Pages.
+ *
+ * Routes are written as if the app owned the domain root - `/icons`, not
+ * `/excalidraw-svg/icons`. The deploy base is applied only at the boundary
+ * where a route becomes a real URL, so nothing else has to know about it.
  */
 import {
   createContext,
@@ -46,6 +51,42 @@ export function normalizePath(raw: string): RoutePath {
   return '/';
 }
 
+/**
+ * Where the app is mounted, with no trailing slash: `''` at a domain root,
+ * `'/excalidraw-svg'` on a GitHub Pages project page.
+ *
+ * Optional chaining because this module is bundled by Vite but its pure
+ * helpers are also imported by the unit tests, and `import.meta.env` is not
+ * guaranteed outside a Vite pipeline - the same reason `optionsSchema.ts`
+ * guards its `DEV` check.
+ */
+const BASE = (import.meta.env?.BASE_URL ?? '/').replace(/\/+$/, '');
+
+/**
+ * Removes the deploy base from a real pathname, leaving an app route.
+ *
+ * The boundary check matters: a bare `startsWith` would turn
+ * `/excalidraw-svg-old/icons` into `-old/icons` and quietly route it to the
+ * home page instead of leaving it alone.
+ */
+export function stripBase(pathname: string, base: string): string {
+  if (!base || !pathname.startsWith(base)) return pathname;
+
+  const rest = pathname.slice(base.length);
+  return rest === '' || rest.startsWith('/') ? rest || '/' : pathname;
+}
+
+/** Turns an app route into a real URL for `href` and `pushState`. */
+export function withBase(route: RoutePath, base: string): string {
+  return `${base}${route}`;
+}
+
+/** The current route, with the deploy base removed. */
+function currentRoute(): RoutePath {
+  if (typeof window === 'undefined') return '/';
+  return normalizePath(stripBase(window.location.pathname, BASE));
+}
+
 /** The set id in `/icons/<id>`, or null on any other route. */
 export function iconSetIdFromPath(path: RoutePath): string | null {
   const match = path.match(/^\/icons\/([^/]+)$/);
@@ -64,20 +105,18 @@ interface RouterValue {
 const RouterContext = createContext<RouterValue>({ path: '/', navigate: () => {} });
 
 export function RouterProvider({ children }: { children: ReactNode }) {
-  const [path, setPath] = useState<RoutePath>(() =>
-    normalizePath(typeof window === 'undefined' ? '/' : window.location.pathname)
-  );
+  const [path, setPath] = useState<RoutePath>(currentRoute);
 
   useEffect(() => {
-    const onPop = () => setPath(normalizePath(window.location.pathname));
+    const onPop = () => setPath(currentRoute());
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
   const navigate = useCallback((to: RoutePath) => {
     const next = normalizePath(to);
-    if (next === normalizePath(window.location.pathname)) return;
-    window.history.pushState({}, '', next);
+    if (next === currentRoute()) return;
+    window.history.pushState({}, '', withBase(next, BASE));
     setPath(next);
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
@@ -104,7 +143,7 @@ export function Link({ to, onClick, children, ...rest }: LinkProps) {
 
   return (
     <a
-      href={to}
+      href={withBase(to, BASE)}
       onClick={event => {
         onClick?.(event);
         if (event.defaultPrevented) return;

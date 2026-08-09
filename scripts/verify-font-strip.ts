@@ -62,10 +62,21 @@ const MIME: Record<string, string> = {
   '.png': 'image/png',
 };
 
+/**
+ * The sub-path the built site expects to be served from. Must track `base` in
+ * `vite.config.ts`: the build writes asset URLs with this prefix, and without
+ * stripping it here every request would miss, fall through to the SPA
+ * fallback, and be answered with `index.html` under a JavaScript MIME type.
+ * The page would render blank and this check would compare two blank images -
+ * passing for entirely the wrong reason.
+ */
+const DEPLOY_BASE = '/excalidraw-svg';
+
 function serve(dir: string, port: number): Server {
   const server = createServer((req, res) => {
     const url = (req.url ?? '/').split('?')[0];
-    let file = path.join(dir, url);
+    const rooted = url.startsWith(DEPLOY_BASE) ? url.slice(DEPLOY_BASE.length) || '/' : url;
+    let file = path.join(dir, rooted);
     if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) {
       file = path.join(dir, 'index.html'); // SPA fallback
     }
@@ -102,7 +113,7 @@ async function renderAll(port: number): Promise<Record<string, Buffer>> {
   const out: Record<string, Buffer> = {};
 
   for (const sample of SAMPLES) {
-    await page.goto(`http://localhost:${port}/`, { waitUntil: 'networkidle' });
+    await page.goto(`http://localhost:${port}${DEPLOY_BASE}/`, { waitUntil: 'networkidle' });
     await page.setInputFiles('input[type=file]', path.join(ROOT, sample));
     await page.waitForSelector('.excalidraw-preview-host svg', { timeout: 30_000 });
     await page.waitForTimeout(300);
