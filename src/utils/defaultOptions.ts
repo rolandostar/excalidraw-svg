@@ -1,4 +1,4 @@
-import { ExcalidrawOptions, LabelFontFamily } from '../types';
+import { ExcalidrawOptions, GCP_BLUE, LabelFontFamily } from '../types';
 
 /**
  * Edge length in Excalidraw canvas units of an icon at `iconScale: 1`.
@@ -35,7 +35,7 @@ export const DEFAULT_EXCALIDRAW_OPTIONS: ExcalidrawOptions = {
   cardStrokeWidth: 1,
   cardFillStyle: 'solid',
   cardBgColor: 'transparent',
-  cardStrokeColor: '#4285f4',
+  cardStrokeColor: GCP_BLUE,
   cardRoughness: 0,
   padding: 8,
   /*
@@ -98,7 +98,7 @@ export function normaliseOptions(options: ExcalidrawOptions): ExcalidrawOptions 
   // Stroke and fill both invisible is indistinguishable from the frame toggle
   // being broken.
   if (next.showCard && next.cardStrokeColor === 'transparent' && next.cardBgColor === 'transparent') {
-    next = { ...next, cardStrokeColor: '#4285f4' };
+    next = { ...next, cardStrokeColor: GCP_BLUE };
   }
 
   // Rough.js hatches the *fill*, so hachure and cross-hatch draw nothing at

@@ -6,6 +6,8 @@
  * without scrolling past ninety lines of hex.
  */
 
+import { GCP_BLUE } from '../../types/options';
+
 export const BG_COLORS = [
   'rgba(30, 41, 59, 0.8)',
   '#0f172a',
@@ -20,7 +22,7 @@ export const BG_COLORS = [
 ];
 
 export const STROKE_COLORS = [
-  '#4285f4',
+  GCP_BLUE,
   '#34a853',
   '#fbbc05',
   '#ea4335',
@@ -37,7 +39,7 @@ export const TEXT_COLORS = [
   '#cbd5e1',
   '#94a3b8',
   '#64748b',
-  '#4285f4',
+  GCP_BLUE,
   '#34a853',
   '#fbbc05',
   '#ea4335',
@@ -70,7 +72,7 @@ export const COLOR_NAMES: Record<string, string> = {
   '#fef7e0': 'Yellow tint',
   '#fce8e6': 'Red tint',
   '#f3e8fd': 'Purple tint',
-  '#4285f4': 'Blue',
+  [GCP_BLUE]: 'Blue',
   '#34a853': 'Green',
   '#fbbc05': 'Yellow',
   '#ea4335': 'Red',

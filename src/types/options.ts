@@ -85,6 +85,17 @@ export type LabelPosition = (typeof LABEL_POSITIONS)[number];
 export const FONT_FAMILIES = [5, 6, 7, 8, 9] as const;
 export type LabelFontFamily = (typeof FONT_FAMILIES)[number];
 
+/**
+ * The accent every fallback reaches for, and the one colour literal that is
+ * allowed to appear in more than one module.
+ *
+ * Lowercase, and every colour entering the options object is lowercased to
+ * match, because presets are compared by value: `sameOptions` is a `===` over
+ * the fields, so a set declaring `#4285F4` against a default of `#4285f4`
+ * describes the same colour and never matches.
+ */
+export const GCP_BLUE = '#4285f4';
+
 export interface ExcalidrawOptions {
   // --- frame ---
   showCard: boolean;

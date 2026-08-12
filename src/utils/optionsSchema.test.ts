@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { sanitizeOptionsPatch } from './optionsSchema';
+import { GCP_BLUE } from '../types/options';
 
 /** Every rejection warns, and the warning is the whole point of rejecting. */
 const sanitize = (raw: unknown) => {
@@ -47,6 +48,20 @@ describe('sanitizeOptionsPatch', () => {
 
   it('rejects a string that is not a colour', () => {
     expect(sanitize({ cardBgColor: 'blueish' }).out).toEqual({});
+  });
+
+  /**
+   * Presets are matched by `sameOptions`, a `===` over the fields, so a
+   * manifest declaring `#4285F4` has to arrive as the same string the
+   * defaults and the palettes use or it can never match its own preset.
+   */
+  it('lowercases colours so preset matching can use ===', () => {
+    expect(sanitize({ cardStrokeColor: '  #4285F4 ' }).out).toEqual({
+      cardStrokeColor: GCP_BLUE,
+    });
+    expect(sanitize({ cardBgColor: 'RGBA(30, 41, 59, 0.8)' }).out).toEqual({
+      cardBgColor: 'rgba(30, 41, 59, 0.8)',
+    });
   });
 
   it('returns an empty patch for a non-object', () => {

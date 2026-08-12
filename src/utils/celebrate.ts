@@ -12,7 +12,7 @@ import confetti from 'canvas-confetti';
  * motion with no informational content, so a user who has asked for less of it
  * gets none: the toast still fires, which is what actually reports the result.
  */
-const GCP_COLORS = ['#4285F4', '#34A853', '#FBBC05', '#EA4335'];
+const GCP_COLORS = ['#4285f4', '#34a853', '#fbbc05', '#ea4335'];
 
 function prefersReducedMotion(): boolean {
   return (

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Check, Plus } from 'lucide-react';
-import { isColor } from '../../utils/optionsSchema';
+import { isColor, normaliseColor } from '../../utils/optionsSchema';
+import { GCP_BLUE } from '../../types/options';
 import { COLOR_NAMES, isLightColor, withCurrent } from './palette';
 
 /**
@@ -40,7 +41,7 @@ function Swatch({
 
 /** `#rrggbb` for the native picker, which cannot represent anything else. */
 function toPickerValue(color: string): string {
-  return /^#[0-9a-f]{6}$/i.test(color) ? color : '#4285f4';
+  return /^#[0-9a-f]{6}$/i.test(color) ? color : GCP_BLUE;
 }
 
 /**
@@ -76,8 +77,10 @@ export function ColorField({
   // without this the text field would keep showing the previous value.
   React.useEffect(() => setDraft(value), [value]);
 
+  // Normalised on the way out for the same reason `asColor` normalises
+  // `set.json`: a typed `#4285F4` must be the same option value as a swatch.
   const commit = () => {
-    const next = draft.trim();
+    const next = normaliseColor(draft);
     if (next === value) return;
     if (isColor(next)) onChange(next);
     else setDraft(value);
@@ -123,7 +126,7 @@ export function ColorField({
         value={draft}
         spellCheck={false}
         autoComplete="off"
-        placeholder="#4285f4"
+        placeholder={GCP_BLUE}
         aria-label={`${label}: hex or CSS colour`}
         aria-invalid={draft.trim() !== value && !isColor(draft.trim())}
         onChange={e => setDraft(e.target.value)}

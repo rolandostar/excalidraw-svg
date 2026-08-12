@@ -1,4 +1,4 @@
-import type { ExcalidrawOptions } from '../../types';
+import { GCP_BLUE, type ExcalidrawOptions } from '../../types';
 
 /**
  * Owns the presets a set gets when it declares none. Pure data.
@@ -35,7 +35,7 @@ export const FALLBACK_PRESETS: {
       // A tint rather than the accent itself: at full saturation the hatch
       // swamps both the artwork and the label.
       cardBgColor: '#e8f0fe',
-      cardStrokeColor: '#4285f4',
+      cardStrokeColor: GCP_BLUE,
       cardRoughness: 2,
       iconRoughness: 1,
       padding: 12,
@@ -51,7 +51,7 @@ export const FALLBACK_PRESETS: {
       cardStrokeWidth: 1,
       cardFillStyle: 'solid',
       cardBgColor: 'rgba(30, 41, 59, 0.8)',
-      cardStrokeColor: '#4285f4',
+      cardStrokeColor: GCP_BLUE,
       cardRoughness: 0,
       labelColor: '#f8fafc',
       padding: 12,
@@ -83,7 +83,7 @@ export const FALLBACK_PRESETS: {
       cardStrokeWidth: 2,
       cardFillStyle: 'solid',
       cardBgColor: 'transparent',
-      cardStrokeColor: '#4285f4',
+      cardStrokeColor: GCP_BLUE,
       cardRoughness: 0,
       padding: 12,
     },

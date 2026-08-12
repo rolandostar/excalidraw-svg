@@ -6,6 +6,7 @@ import type {
   IconSetSummary,
   ResolvedPreset,
 } from '../../types';
+import { GCP_BLUE } from '../../types/options';
 import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from '../defaultOptions';
 import { sanitizeOptionsPatch } from '../optionsSchema';
 import { IMPLICIT_CATEGORY, formatTitle } from '../categorizer';
@@ -21,8 +22,6 @@ import { toDataUrl, type Discovered } from './discovery';
  * defaulted, or run through `sanitizeOptionsPatch` before anything downstream
  * is allowed to see it.
  */
-
-const DEFAULT_ACCENT = '#4285F4';
 
 /** Sets without an explicit `order` sort after every set that has one. */
 const UNORDERED = 1_000;
@@ -104,7 +103,7 @@ export function summarise(entry: Discovered): IconSetSummary {
     source: manifest.source,
     sourceUrl: manifest.sourceUrl,
     license: manifest.license,
-    accent: manifest.accent || DEFAULT_ACCENT,
+    accent: manifest.accent || GCP_BLUE,
     order: typeof manifest.order === 'number' ? manifest.order : UNORDERED,
     count: entry.files.length,
     defaults,

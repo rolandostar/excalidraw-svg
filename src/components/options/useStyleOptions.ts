@@ -1,5 +1,5 @@
 import React from 'react';
-import type { CardFillStyle, ExcalidrawOptions } from '../../types';
+import { GCP_BLUE, type CardFillStyle, type ExcalidrawOptions } from '../../types';
 import { normaliseOptions } from '../../utils/defaultOptions';
 
 /**
@@ -47,7 +47,7 @@ export function useStyleOptions(
             fillStyle !== 'solid' && prev.cardBgColor === 'transparent'
               ? prev.cardStrokeColor !== 'transparent'
                 ? prev.cardStrokeColor
-                : '#4285f4'
+                : GCP_BLUE
               : prev.cardBgColor,
         })
       );

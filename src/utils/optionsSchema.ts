@@ -53,7 +53,18 @@ const COLOR_PATTERN =
 export const isColor = (v: unknown): v is string =>
   typeof v === 'string' && COLOR_PATTERN.test(v.trim());
 
-const asColor: Validator = v => (isColor(v) ? v.trim() : undefined);
+/**
+ * The single point where a colour becomes an option value.
+ *
+ * Lowercased because `sameOptions` compares options with `===`: a `set.json`
+ * declaring `#4285F4` names the same colour as a default of `#4285f4` and
+ * would otherwise never match the preset it belongs to. Safe over the whole
+ * grammar `COLOR_PATTERN` accepts - hex, `rgb()`/`hsl()` and `transparent`
+ * are all case-insensitive.
+ */
+export const normaliseColor = (value: string): string => value.trim().toLowerCase();
+
+const asColor: Validator = v => (isColor(v) ? normaliseColor(v) : undefined);
 
 const oneOf =
   <T>(allowed: readonly T[]): Validator =>
