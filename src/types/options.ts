@@ -85,6 +85,19 @@ export type LabelPosition = (typeof LABEL_POSITIONS)[number];
 export const FONT_FAMILIES = [5, 6, 7, 8, 9] as const;
 export type LabelFontFamily = (typeof FONT_FAMILIES)[number];
 
+/*
+ * The three numeric ranges, stated once for the validator and the slider that
+ * has to be able to reach every value it accepts.
+ *
+ * `ICON_SCALES` is an enumeration rather than a range because the readout
+ * names a pixel size, and a continuous slider would offer sizes like 91.2px.
+ * The slider derives its min, max and step from the array, so the two cannot
+ * describe different sets of values.
+ */
+export const FONT_SIZE = { min: 10, max: 28 };
+export const PADDING = { min: 0, max: 32 };
+export const ICON_SCALES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
 /**
  * The accent every fallback reaches for, and the one colour literal that is
  * allowed to appear in more than one module.

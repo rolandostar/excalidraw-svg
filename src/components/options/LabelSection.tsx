@@ -1,9 +1,9 @@
 import { Type } from 'lucide-react';
-import type { LabelPosition } from '../../types/options';
+import { FONT_SIZE, LABEL_POSITIONS } from '../../types/options';
 import { Field, Segments, Slider, Switch } from './controls';
 import { ColorField } from './ColorField';
 import { TEXT_COLORS } from './palette';
-import { FONT_NAMES, FONT_VALUES } from './labels';
+import { FONT_NAMES, FONT_VALUES, POSITION_LABELS } from './labels';
 import type { SectionProps } from './useStyleOptions';
 
 /**
@@ -32,9 +32,9 @@ export function LabelSection({ options, style }: SectionProps) {
         <>
           <Segments
             label="Position"
-            values={['bottom', 'right', 'top'] as const satisfies readonly LabelPosition[]}
+            values={LABEL_POSITIONS}
             current={options.labelPosition}
-            render={p => p.charAt(0).toUpperCase() + p.slice(1)}
+            render={p => POSITION_LABELS[p]}
             onSelect={p => style.updateOption('labelPosition', p)}
           />
 
@@ -59,8 +59,8 @@ export function LabelSection({ options, style }: SectionProps) {
             label="Size"
             value={options.labelFontSize}
             display={`${options.labelFontSize}px`}
-            min={10}
-            max={28}
+            min={FONT_SIZE.min}
+            max={FONT_SIZE.max}
             step={1}
             ariaLabel="Label font size"
             onChange={v => style.updateOption('labelFontSize', v)}

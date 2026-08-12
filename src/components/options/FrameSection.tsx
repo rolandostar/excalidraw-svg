@@ -1,9 +1,15 @@
 import { Frame } from 'lucide-react';
-import type { CardCorners, CardFillStyle, CardStrokeWidth } from '../../types/options';
+import { CARD_CORNERS, CARD_FILL_STYLES, CARD_STROKE_WIDTHS, PADDING } from '../../types/options';
 import { Segments, Slider, Switch } from './controls';
 import { ColorField } from './ColorField';
 import { BG_COLORS, STROKE_COLORS } from './palette';
-import { ROUGHNESS_LABELS, ROUGHNESS_VALUES } from './labels';
+import {
+  CORNER_LABELS,
+  FILL_LABELS,
+  ROUGHNESS_LABELS,
+  ROUGHNESS_VALUES,
+  STROKE_WIDTH_LABELS,
+} from './labels';
 import type { SectionProps } from './useStyleOptions';
 
 /**
@@ -28,25 +34,25 @@ export function FrameSection({ options, style }: SectionProps) {
         <>
           <Segments
             label="Corners"
-            values={['rounded', 'square'] as const satisfies readonly CardCorners[]}
+            values={CARD_CORNERS}
             current={options.cardCorners}
-            render={c => (c === 'rounded' ? 'Rounded' : 'Square')}
+            render={c => CORNER_LABELS[c]}
             onSelect={c => style.updateOption('cardCorners', c)}
           />
 
           <Segments
             label="Stroke width"
-            values={[1, 2, 4] as const satisfies readonly CardStrokeWidth[]}
+            values={CARD_STROKE_WIDTHS}
             current={options.cardStrokeWidth}
-            render={w => (w === 1 ? 'Thin' : w === 2 ? 'Bold' : 'Extra')}
+            render={w => STROKE_WIDTH_LABELS[w]}
             onSelect={w => style.updateOption('cardStrokeWidth', w)}
           />
 
           <Segments
             label="Fill"
-            values={['solid', 'hachure', 'cross-hatch'] as const satisfies readonly CardFillStyle[]}
+            values={CARD_FILL_STYLES}
             current={options.cardFillStyle}
-            render={f => (f === 'solid' ? 'Solid' : f === 'hachure' ? 'Hachure' : 'Cross')}
+            render={f => FILL_LABELS[f]}
             onSelect={style.setFillStyle}
             hint={
               options.cardFillStyle !== 'solid'
@@ -81,8 +87,8 @@ export function FrameSection({ options, style }: SectionProps) {
             label="Padding"
             value={options.padding}
             display={`${options.padding}px`}
-            min={0}
-            max={32}
+            min={PADDING.min}
+            max={PADDING.max}
             step={2}
             ariaLabel="Inner padding"
             onChange={v => style.updateOption('padding', v)}

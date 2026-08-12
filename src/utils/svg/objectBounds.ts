@@ -11,7 +11,7 @@
 import { Point, rectRegion } from '../regions/primitives';
 import type { MultiPolygon } from '../regions/boolean';
 import { applyMatrix, getCombinedTransformMatrixUntil } from './matrix';
-import { boundsOfRings, shapeBoundsPoints } from './geometry';
+import { DRAWABLE_SHAPES, boundsOfRings, shapeBoundsPoints } from './geometry';
 
 export interface BoundingBox {
   x: number;
@@ -50,12 +50,10 @@ export function localBoundingBox(node: Element, tolerance: number): BoundingBox 
     }
   };
 
-  // `shapeBoundsPoints`, not `shapeToRings`: a `<line>` belongs in a bounding
-  // box even though it encloses no area, and this selector has always
-  // included it.
-  const selector = 'path, polygon, polyline, line, rect, circle, ellipse';
-  if (node.matches?.(selector)) consider(node);
-  node.querySelectorAll(selector).forEach(consider);
+  // `DRAWABLE_SHAPES` and `shapeBoundsPoints`, not the area pair: a `<line>`
+  // belongs in a bounding box even though it encloses no area.
+  if (node.matches?.(DRAWABLE_SHAPES)) consider(node);
+  node.querySelectorAll(DRAWABLE_SHAPES).forEach(consider);
 
   const { minX, minY, maxX, maxY } = boundsOfRings(rings);
   if (minX === Infinity) return null;

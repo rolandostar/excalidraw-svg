@@ -346,9 +346,6 @@ export const SHAPE_CONVERTERS: Record<string, ShapeConverter> = {
   ellipse: convertEllipse,
 };
 
-/** Selector matching exactly the tags in `SHAPE_CONVERTERS`, in source order. */
-export const DRAWABLE_SHAPES = 'path, polygon, polyline, line, rect, circle, ellipse';
-
 /**
  * Converts one source element, returning why it drew nothing, or `null`.
  *

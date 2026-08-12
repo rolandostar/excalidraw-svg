@@ -1,4 +1,4 @@
-import { Point, signedArea } from './regions/primitives';
+import { EPSILON, Point, signedArea } from './regions/primitives';
 import {
   MultiPolygon,
   differenceMultiPolygons,
@@ -39,8 +39,6 @@ export interface StrokeStyle {
   /** Tolerance for tessellating round caps/joins, in the same units as the points. */
   tolerance: number;
 }
-
-const EPSILON = 1e-9;
 
 function dedupe(points: Point[]): Point[] {
   const out: Point[] = [];

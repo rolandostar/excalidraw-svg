@@ -3,7 +3,10 @@ import {
   CARD_FILL_STYLES,
   CARD_STROKE_WIDTHS,
   FONT_FAMILIES,
+  FONT_SIZE,
+  ICON_SCALES,
   LABEL_POSITIONS,
+  PADDING,
   ROUGHNESS,
   type ExcalidrawOptions,
 } from '../types/options';
@@ -24,11 +27,6 @@ import {
  * is derived from it, so a new value cannot be added to one and missed in the
  * other. The prose explaining each one lives with the array.
  */
-
-/** Bounds match the sidebar sliders, so every accepted value is reachable in the UI. */
-const FONT_SIZE = { min: 10, max: 28 };
-const PADDING = { min: 0, max: 32 };
-const ICON_SCALES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
 type Validator = (value: unknown) => unknown | undefined;
 

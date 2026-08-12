@@ -17,6 +17,18 @@
 import type { Point } from '../regions/primitives';
 import { getPointsOnPath } from './pathFlatten';
 
+/**
+ * The two shape selectors, next to the two functions they select for.
+ *
+ * They differ by `<line>` and only by `<line>`, which is the whole reason
+ * they are stated together: a line has a bounding box but encloses no area,
+ * so it belongs to `shapeBoundsPoints` and not to `shapeToRings`. Written out
+ * separately at three call sites, the pair agreed by coincidence and a new
+ * tag would have reached some of them and not others.
+ */
+export const AREA_SHAPES = 'path, polygon, polyline, rect, circle, ellipse';
+export const DRAWABLE_SHAPES = 'path, polygon, polyline, line, rect, circle, ellipse';
+
 /** Axis-aligned extent, in whatever space the points were given in. */
 export interface XYBounds {
   minX: number;

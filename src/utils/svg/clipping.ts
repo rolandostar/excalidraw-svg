@@ -25,13 +25,9 @@ import {
   getCombinedTransformMatrixUntil,
   multiplyMatrix,
 } from './matrix';
-import { boundsOf } from './geometry';
-import { shapeToRings } from './geometry';
+import { AREA_SHAPES, boundsOf, shapeToRings } from './geometry';
 import { BoundingBox, explicitRegionRect, localBoundingBox } from './objectBounds';
 import { FILL_RULES, getInheritedFillRule, inheritedEnum, paintLuminance, refId } from './paint';
-
-/** Selector for every element type `shapeToRings` can turn into an area. */
-const AREA_SHAPES = 'path, polygon, polyline, rect, circle, ellipse';
 
 /** The region a single `<clipPath>` defines, in the referencing element's space. */
 export function resolveClipPathRegion(

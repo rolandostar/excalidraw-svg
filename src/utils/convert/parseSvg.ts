@@ -10,13 +10,9 @@ import type { ExcalidrawElement } from '../../types/excalidraw';
 import { parseCssStylesheet } from '../svg/stylesheet';
 import { toleranceFor } from '../svg/pathFlatten';
 import { readViewBox } from '../svg/viewBox';
+import { DRAWABLE_SHAPES } from '../svg/geometry';
 import { ConversionDiagnostics, DiagnosticsSink } from './diagnostics';
-import {
-  type ConvertContext,
-  DRAWABLE_SHAPES,
-  RawShapeSink,
-  convertShapeElement,
-} from './shapeConverters';
+import { type ConvertContext, RawShapeSink, convertShapeElement } from './shapeConverters';
 import { dedupeRawShapes } from './rawShape';
 import { dropBackgroundPlate } from './backgroundPlate';
 import { rawShapesToElements } from './emit';

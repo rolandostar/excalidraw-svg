@@ -1,4 +1,5 @@
 import { Sliders } from 'lucide-react';
+import { ICON_SCALES } from '../../types/options';
 import { ICON_BASE_SIZE } from '../../utils/defaultOptions';
 import { Segments, Slider } from './controls';
 import { ROUGHNESS_LABELS, ROUGHNESS_VALUES } from './labels';
@@ -25,9 +26,9 @@ export function ArtworkSection({ options, style }: SectionProps) {
         label="Icon scale"
         value={options.iconScale}
         display={`${Math.round(ICON_BASE_SIZE * options.iconScale)}px · ${options.iconScale}x`}
-        min={0.5}
-        max={2.0}
-        step={0.25}
+        min={ICON_SCALES[0]}
+        max={ICON_SCALES[ICON_SCALES.length - 1]}
+        step={ICON_SCALES[1] - ICON_SCALES[0]}
         ariaLabel="Icon scale"
         onChange={v => style.updateOption('iconScale', v)}
       />
