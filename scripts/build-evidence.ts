@@ -28,6 +28,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readExpectedFailures } from './fidelity/config';
 import { isFailing } from './lib/thresholds';
 import { renderClaimsBlock, writeClaimsBlock } from './lib/claims';
 import type { Summary } from './lib/thresholds';
@@ -142,19 +143,6 @@ function readTrap(id: string): string | undefined {
 }
 
 const stripOrderPrefix = (title: string) => title.replace(/^\d+[-\s]+/, '');
-
-/**
- * The reasons a case is allowed to fail, straight from the file the gate reads.
- *
- * The website used to keep its own copy of this list. Two copies of the same
- * four explanations drift, and the one on the page is the one nobody runs.
- */
-function readExpectedFailures(suite: string): Record<string, string> {
-  const file = path.resolve(process.cwd(), 'tests/baselines', `${suite}.expected-failures.json`);
-  return fs.existsSync(file)
-    ? (JSON.parse(fs.readFileSync(file, 'utf-8')) as Record<string, string>)
-    : {};
-}
 
 function publish(
   suite: string,

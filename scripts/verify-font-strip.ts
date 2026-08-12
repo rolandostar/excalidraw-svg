@@ -20,6 +20,7 @@ import { createServer, type Server } from 'node:http';
 import { chromium } from 'playwright-core';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+import { DEPLOY_BASE, findChrome } from './lib/env';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -28,19 +29,6 @@ const SAMPLES = [
   'tests/torture-svg/07-stroke-caps-joins.svg',
   'svg/legacy-gcp/Cloud-Run.svg',
 ];
-
-function findChrome(): string {
-  const candidates = [
-    process.env.CHROME_PATH,
-    `${process.env.USERPROFILE ?? process.env.HOME}/.agent-browser/browsers/chrome-151.0.7922.76/chrome.exe`,
-    'C:/Program Files/Google/Chrome/Application/chrome.exe',
-    '/usr/bin/google-chrome',
-  ].filter(Boolean) as string[];
-
-  const found = candidates.find(c => fs.existsSync(c));
-  if (!found) throw new Error('No Chrome found. Set CHROME_PATH.');
-  return found;
-}
 
 function build(outDir: string, strip: boolean) {
   console.log(`  building ${strip ? 'stripped' : 'unstripped'} -> ${path.relative(ROOT, outDir)}`);
@@ -61,16 +49,6 @@ const MIME: Record<string, string> = {
   '.json': 'application/json',
   '.png': 'image/png',
 };
-
-/**
- * The sub-path the built site expects to be served from. Must track `base` in
- * `vite.config.ts`: the build writes asset URLs with this prefix, and without
- * stripping it here every request would miss, fall through to the SPA
- * fallback, and be answered with `index.html` under a JavaScript MIME type.
- * The page would render blank and this check would compare two blank images -
- * passing for entirely the wrong reason.
- */
-const DEPLOY_BASE = '/excalidraw-svg';
 
 function serve(dir: string, port: number): Server {
   const server = createServer((req, res) => {

@@ -1,4 +1,4 @@
-import { boundsOfRings, closeRing } from '../svg/geometry';
+import { boundsOfRings, closeRing, ringGap } from '../svg/geometry';
 import type { MultiPolygon } from './boolean';
 
 /**
@@ -53,10 +53,7 @@ export const EPSILON = 1e-9;
  */
 export function normaliseRing(points: Point[]): Ring {
   if (points.length < 2) return points.slice();
-  const first = points[0];
-  const last = points[points.length - 1];
-  const isDuplicate = Math.hypot(first[0] - last[0], first[1] - last[1]) <= EPSILON;
-  return isDuplicate ? points.slice(0, -1) : points.slice();
+  return ringGap(points) <= EPSILON ? points.slice(0, -1) : points.slice();
 }
 
 /**

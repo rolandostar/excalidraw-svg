@@ -5,7 +5,7 @@ import {
   normaliseRegion,
   robustUnion,
 } from './regions/boolean';
-import { arcSegmentCount, closeRing } from './svg/geometry';
+import { arcSegmentCount, closeRing, ringGap } from './svg/geometry';
 
 /**
  * Converts a stroked polyline into the filled region that stroke covers.
@@ -174,13 +174,9 @@ function outlinePolyline(points: Point[], closed: boolean, style: StrokeStyle): 
   // A subpath terminated by `Z` arrives with its start point repeated. That
   // makes it closed regardless of what the caller assumed, and its seam needs
   // a join rather than two caps.
-  if (pts.length > 2) {
-    const first = pts[0];
-    const last = pts[pts.length - 1];
-    if (Math.hypot(first[0] - last[0], first[1] - last[1]) <= EPSILON) {
-      pts = pts.slice(0, -1);
-      closed = true;
-    }
+  if (pts.length > 2 && ringGap(pts) <= EPSILON) {
+    pts = pts.slice(0, -1);
+    closed = true;
   }
 
   if (pts.length === 0) return [];

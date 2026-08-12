@@ -10,7 +10,19 @@ import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from '../defaultOptions'
 import { sanitizeOptionsPatch } from '../optionsSchema';
 import { IMPLICIT_CATEGORY, formatTitle } from '../categorizer';
 import { FALLBACK_PRESETS } from './fallbackPresets';
-import { type Discovered, toDataUrl } from './discovery';
+import type { Discovered } from './discovery';
+
+/**
+ * Encodes an SVG for use in `src`. Quotes are escaped, everything else is not.
+ *
+ * Here rather than in `discovery.ts` so the fidelity harness can call it:
+ * `discovery.ts` runs `import.meta.glob` at module scope and cannot be loaded
+ * outside Vite, and the harness was carrying its own copy of the escaping.
+ */
+export function toDataUrl(svg: string): string {
+  const encoded = encodeURIComponent(svg).replace(/'/g, '%27').replace(/"/g, '%22');
+  return `data:image/svg+xml,${encoded}`;
+}
 
 /**
  * Owns the turn from an untrusted `set.json` into a fully resolved, validated

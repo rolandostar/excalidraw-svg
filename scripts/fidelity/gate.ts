@@ -14,7 +14,7 @@ import path from 'node:path';
 
 import { DEFAULT_THRESHOLDS, isFailing } from '../lib/thresholds';
 import type { IconMetrics, Summary } from '../lib/thresholds';
-import type { Config } from './config';
+import { readExpectedFailures as readSuiteExpectedFailures, type Config } from './config';
 import type { ScoredFile } from './score';
 
 export interface GateResult {
@@ -63,9 +63,7 @@ export function readBaseline(config: Config): Record<string, number> | null {
  * a diff, and the website reads the same reasons rather than repeating them.
  */
 export function readExpectedFailures(config: Config): Record<string, string> {
-  return fs.existsSync(config.expectedFailuresFile)
-    ? (JSON.parse(fs.readFileSync(config.expectedFailuresFile, 'utf-8')) as Record<string, string>)
-    : {};
+  return readSuiteExpectedFailures(config.suite);
 }
 
 /**

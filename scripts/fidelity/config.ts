@@ -10,8 +10,10 @@
  * This module must stay free of any import that touches the DOM - it is read
  * before `setupDom` has necessarily done its work in every entry point.
  */
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { flag as readFlag } from '../lib/env';
 
 // Type-only: this module must not drag the native rasteriser (or anything
 // else) into a process that only wants to read a flag.
@@ -70,11 +72,25 @@ export interface Config {
 /** Name of the env var a parent uses to tell a child where to write its results. */
 export const WORKER_OUT_ENV = 'FIDELITY_WORKER_OUT';
 
+/** Path of the expected-failures file for a suite. Shared with build-evidence. */
+export const expectedFailuresPath = (suite: string): string =>
+  path.resolve(process.cwd(), 'tests/baselines', `${suite}.expected-failures.json`);
+
+/**
+ * The reasons a case is allowed to fail, straight from the file the gate reads.
+ *
+ * The website used to keep its own copy of this list. Two copies of the same
+ * four explanations drift, and the one on the page is the one nobody runs.
+ */
+export function readExpectedFailures(suite: string): Record<string, string> {
+  const file = expectedFailuresPath(suite);
+  return fs.existsSync(file)
+    ? (JSON.parse(fs.readFileSync(file, 'utf-8')) as Record<string, string>)
+    : {};
+}
+
 export function parseConfig(argv = process.argv.slice(2)): Config {
-  const flag = (name: string): string | null => {
-    const found = argv.find(a => a.startsWith(`--${name}=`));
-    return found ? found.slice(name.length + 3) : null;
-  };
+  const flag = (name: string) => readFlag(name, argv);
 
   const inputDir = path.resolve(process.cwd(), flag('input') ?? 'svg');
   const suite = flag('name') ?? path.basename(inputDir).replace(/-svg$/, '');
@@ -93,11 +109,7 @@ export function parseConfig(argv = process.argv.slice(2)): Config {
     resultsDir,
     comparisonsDir: path.join(resultsDir, 'comparisons'),
     baselineFile: path.resolve(process.cwd(), 'tests/baselines', `${suite}.json`),
-    expectedFailuresFile: path.resolve(
-      process.cwd(),
-      'tests/baselines',
-      `${suite}.expected-failures.json`
-    ),
+    expectedFailuresFile: expectedFailuresPath(suite),
     comparisons,
     updateBaseline: argv.includes('--update-baseline'),
     only: flag('only')?.toLowerCase() ?? null,

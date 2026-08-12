@@ -18,12 +18,6 @@ import { ICON_SETS } from 'virtual:icon-sets';
  */
 const LOOSE_SVGS = import.meta.glob('../../../svg/*.svg', { eager: false });
 
-/** Encodes an SVG for use in `src`. Quotes are escaped, everything else is not. */
-export function toDataUrl(svg: string): string {
-  const encoded = encodeURIComponent(svg).replace(/'/g, '%27').replace(/"/g, '%22');
-  return `data:image/svg+xml,${encoded}`;
-}
-
 /**
  * Nominal size of a set icon. 48 rather than the converter's 24 or the upload
  * path's 100: these are curated square marks, and 48 is what the gallery draws

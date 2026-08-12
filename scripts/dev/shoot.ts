@@ -18,43 +18,21 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium, type Browser, type Page } from 'playwright-core';
+import { DEPLOY_BASE, findChrome, flag } from '../lib/env';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const OUT = path.join(ROOT, '.screenshots');
 
-const CHROME_CANDIDATES = [
-  process.env.CHROME_PATH,
-  path.join(
-    process.env.USERPROFILE ?? process.env.HOME ?? '',
-    '.agent-browser/browsers/chrome-151.0.7922.76/chrome.exe'
-  ),
-  'C:/Program Files/Google/Chrome/Application/chrome.exe',
-  '/usr/bin/google-chrome',
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-].filter(Boolean) as string[];
-
-function findChrome(): string {
-  for (const candidate of CHROME_CANDIDATES) {
-    if (fs.existsSync(candidate)) return candidate;
-  }
-  throw new Error(
-    `No Chrome found. Set CHROME_PATH.\nTried:\n  ${CHROME_CANDIDATES.join('\n  ')}`
-  );
-}
-
-const arg = (name: string, fallback: string) =>
-  process.argv.find(a => a.startsWith(`--${name}=`))?.split('=').slice(1).join('=') ?? fallback;
-
 /**
  * `vite preview`'s default port, plus the deploy sub-path - `vite.config.ts`
- * sets `base` for the dev and preview servers too, so without the prefix every
- * shot captures the 404 page. Keep in step with `base` there.
+ * sets `base` for the dev and preview servers too, so without the prefix
+ * every shot captures the 404 page.
  *
  * Preview rather than dev, so the screenshots are of the built bundle. Pass
  * `--url` for anything else; `pnpm dev` serves on port 3000.
  */
-const BASE = arg('url', 'http://localhost:4173/excalidraw-svg');
-const ONLY = arg('only', '');
+const BASE = flag('url') ?? `http://localhost:4173${DEPLOY_BASE}`;
+const ONLY = flag('only') ?? '';
 
 type Theme = 'light' | 'dark';
 

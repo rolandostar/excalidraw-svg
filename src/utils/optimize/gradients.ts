@@ -1,4 +1,4 @@
-import { averageHexColors } from './color';
+import { averageHexColors } from '../color';
 
 /**
  * Owns gradient flattening: every `<linearGradient>`/`<radialGradient>` is

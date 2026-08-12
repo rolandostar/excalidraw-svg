@@ -1,4 +1,4 @@
-import { parseHexColor } from './color';
+import { parseHexColor } from '../color';
 
 /**
  * Owns the two tidying passes that must run last, after every pass that can

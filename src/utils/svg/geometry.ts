@@ -114,10 +114,25 @@ export function arcSegments(rx: number, ry: number, tolerance: number): number {
  */
 export function closeRing<T extends Point>(points: T[], epsilon: number): T[] {
   if (points.length < 2) return points.slice();
+  if (ringGap(points) <= epsilon) return points.slice();
+  const first = points[0];
+  return [...points, [first[0], first[1]] as T];
+}
+
+/**
+ * Distance from a ring's first point to its last: zero for a ring that is
+ * already closed, and the width of the gap for one that is not.
+ *
+ * The predicate every caller wants is `ringGap(pts) <= tolerance`, but the
+ * tolerance differs by three orders of magnitude between them - see
+ * `closeRing` above - so the comparison stays at the call site and only the
+ * measurement is shared.
+ */
+export function ringGap(points: readonly Point[]): number {
+  if (points.length < 2) return 0;
   const first = points[0];
   const last = points[points.length - 1];
-  if (Math.hypot(first[0] - last[0], first[1] - last[1]) <= epsilon) return points.slice();
-  return [...points, [first[0], first[1]] as T];
+  return Math.hypot(first[0] - last[0], first[1] - last[1]);
 }
 
 /** Axis-aligned rectangle geometry, after the per-spec rx/ry clamping. */

@@ -7,6 +7,7 @@ import path from 'node:path';
 
 import { optimizeSvgString } from '../../src/utils/svgOptimizer';
 import { IMPLICIT_CATEGORY, categorizeByRules, formatTitle } from '../../src/utils/categorizer';
+import { toDataUrl } from '../../src/utils/iconSets/resolve';
 import type { IconAsset, IconSetManifest } from '../../src/types/icons';
 
 import { readViewBox } from '../lib/raster';
@@ -110,7 +111,6 @@ export function buildIcon(candidate: Candidate, rawSvg: string): IconAsset {
   const override = manifest.overrides?.[candidate.name] ?? {};
   const categories = manifest.categories?.length ? manifest.categories : [IMPLICIT_CATEGORY];
   const title = override.title?.trim() || formatTitle(candidate.name);
-  const encoded = encodeURIComponent(optimizedSvg).replace(/'/g, '%27').replace(/"/g, '%22');
 
   return {
     id: candidate.id,
@@ -121,7 +121,7 @@ export function buildIcon(candidate: Candidate, rawSvg: string): IconAsset {
       override.category || categorizeByRules(candidate.name, manifest.rules ?? [], categories),
     tags: [],
     rawSvg: optimizedSvg,
-    dataUrl: `data:image/svg+xml,${encoded}`,
+    dataUrl: toDataUrl(optimizedSvg),
     width: viewBox.width,
     height: viewBox.height,
   };

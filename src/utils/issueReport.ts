@@ -16,7 +16,7 @@ import type { ConversionResult } from './convertSvg';
 /** GitHub starts failing on very long URLs; stay well inside that. */
 const MAX_URL_LENGTH = 6000;
 
-function describeWarnings(result: ConversionResult): string {
+function warningBullets(result: ConversionResult): string {
   if (result.warnings.length === 0) return '_none detected_';
   return result.warnings
     .map(w => `- \`${w.feature}\` x${w.count} — **${w.severity}** — ${w.detail}`)
@@ -73,7 +73,7 @@ was filled in automatically.
 
 ### Features the converter flagged
 
-${describeWarnings(result)}
+${warningBullets(result)}
 
 ### Source shapes that produced no output
 

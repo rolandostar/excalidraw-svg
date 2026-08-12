@@ -1,6 +1,7 @@
 import type { IconAsset, IconSet, IconSetSummary } from '../types/icons';
 import { categorizeByRules, expandSynonyms, formatTitle } from './categorizer';
-import { discover, readIntrinsicSize, toDataUrl } from './iconSets/discovery';
+import { discover, readIntrinsicSize } from './iconSets/discovery';
+import { toDataUrl } from './iconSets/resolve';
 import { resolveRules, summarise } from './iconSets/resolve';
 
 /**

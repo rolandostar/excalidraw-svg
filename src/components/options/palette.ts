@@ -7,6 +7,7 @@
  */
 
 import { GCP_BLUE } from '../../types/options';
+import { hexChannels, relativeLuminance } from '../../utils/color';
 
 export const BG_COLORS = [
   'rgba(30, 41, 59, 0.8)',
@@ -95,13 +96,6 @@ export const COLOR_NAMES: Record<string, string> = {
  * its own attribute.
  */
 export function isLightColor(color: string): boolean {
-  const hex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color)?.[1];
-  if (!hex) return false;
-
-  const full = hex.length === 3 ? hex.replace(/./g, c => c + c) : hex;
-  const r = parseInt(full.slice(0, 2), 16) / 255;
-  const g = parseInt(full.slice(2, 4), 16) / 255;
-  const b = parseInt(full.slice(4, 6), 16) / 255;
-
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.7;
+  const channels = hexChannels(color);
+  return channels !== null && relativeLuminance(...channels) > 0.7;
 }

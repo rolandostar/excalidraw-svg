@@ -205,9 +205,7 @@ export function expectedBounds(
   sourceViewBox: Box,
   target: { x: number; y: number; width: number; height: number }
 ): Box {
-  const scale = Math.min(target.width / sourceViewBox.width, target.height / sourceViewBox.height);
-  const offsetX = target.x + (target.width - sourceViewBox.width * scale) / 2 - sourceViewBox.x * scale;
-  const offsetY = target.y + (target.height - sourceViewBox.height * scale) / 2 - sourceViewBox.y * scale;
+  const { scale, offsetX, offsetY } = sourceToSceneTransform(sourceViewBox, target);
 
   return {
     x: offsetX + sourceInk.x * scale,

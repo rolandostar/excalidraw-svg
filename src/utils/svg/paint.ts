@@ -11,6 +11,7 @@
 import type { FillRule } from '../regions/primitives';
 import type { LineCap, LineJoin } from '../strokeOutline';
 import type { StyleMap } from './stylesheet';
+import { hexChannels, relativeLuminance } from '../color';
 
 /** The SVG initial value of the `fill` property. Undeclared is *not* `none`. */
 export const DEFAULT_FILL = '#000000';
@@ -314,23 +315,12 @@ export function paintLuminance(value: string | null): number {
   if (paint === 'white' || paint === '#fff' || paint === '#ffffff') return 1;
   if (paint === 'black' || paint === '#000' || paint === '#000000') return 0;
 
-  let r = 0;
-  let g = 0;
-  let b = 0;
+  const hex = hexChannels(paint);
+  if (hex) return relativeLuminance(...hex);
 
-  const hex = paint.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/);
-  if (hex) {
-    const digits = hex[1].length === 3 ? hex[1].split('').map(c => c + c).join('') : hex[1];
-    r = parseInt(digits.slice(0, 2), 16);
-    g = parseInt(digits.slice(2, 4), 16);
-    b = parseInt(digits.slice(4, 6), 16);
-  } else {
-    const rgb = paint.match(/rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/);
-    if (!rgb) return 1; // unknown named colour: assume it reveals
-    r = parseFloat(rgb[1]);
-    g = parseFloat(rgb[2]);
-    b = parseFloat(rgb[3]);
-  }
-
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  // `rgba()` as well as `rgb()`, and space- or comma-separated, which is why
+  // this is not `parseHexColor`.
+  const rgb = paint.match(/rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/);
+  if (!rgb) return 1; // unknown named colour: assume it reveals
+  return relativeLuminance(+rgb[1], +rgb[2], +rgb[3]);
 }
