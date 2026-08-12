@@ -26,20 +26,14 @@ pnpm test:fidelity       # score every icon in svg/ against a real renderer
 pnpm test:torture        # score the edge-case SVGs
 ```
 
-`pnpm test:fidelity` covers **every** SVG in `svg/`, not one set — it walks the
-directory, so all three sets are scored and all three are baselined. It
-rasterises each icon, pixel-diffs it against the source, and fails on any
-regression versus the committed baseline. Run it before and after every change
-to conversion code.
+`pnpm test:fidelity` covers **every** SVG in `svg/`, rasterises each icon,
+pixel-diffs it against the source and fails on any regression versus the
+committed baseline — including any file that has no baseline entry yet. Run it
+before and after every change to conversion code.
 
-A file with no baseline entry fails the run too. Adding a set has to be a
-deliberate act of accepting its numbers, or a whole set could ship with nothing
-checking it.
-
-It fans out across `min(8, cores - 1)` processes and caches the half of each
-comparison that cannot change — 261 icons in ~22 s warm, ~44 s cold. Pass
-`--jobs=1` for a serial run or `--no-cache` to re-render everything; the
-results are identical either way. `--help` lists every flag.
+261 icons in ~22 s warm. `--help` lists every flag;
+[Testing](../../wiki/Testing) explains the caching, the worker pool and how to
+read a failure.
 
 ## Current fidelity
 
@@ -104,23 +98,17 @@ wiki/                        the GitHub wiki, published by CI
 
 Drop a folder of `.svg` files into `svg/`. The folder name becomes the URL, so
 `svg/my-set/` is served at `/icons/my-set`, and every file in it becomes an
-icon titled from its filename. Nothing has to be registered.
-
-`svg/<folder>/set.json` is optional — add it to name the set, group icons into
-categories, declare search aliases, or set the styling it opens with.
+icon titled from its filename. Nothing has to be registered. `set.json` is
+optional and names the set, its categories, its search aliases and the styling
+it opens with.
 
 Full schema, and how to get a new set gated by the test suite:
 [Submit an icon set](../../wiki/Submit-an-icon-set).
 
 ## Read this before changing conversion code
 
-Two wiki pages, both short:
-
-- **[Architecture](../../wiki/Architecture)** — the pipeline, the invariants
-  that must not be broken, and the reasoning behind the non-obvious decisions.
-  Several of these look wrong until you know why.
-- **[Testing](../../wiki/Testing)** — how the harness measures fidelity, how to
-  read a failure, and how to add a suite or a regression test.
+[Architecture](../../wiki/Architecture) indexes the invariants and points at
+the module stating each one. Several look wrong until you know why.
 
 Run the suite before and after, and read the regression list rather than the
 mean. More than one change here looked like a clear visual improvement and
