@@ -7,9 +7,8 @@ import path from 'node:path';
 
 // Type-only, so this module stays a leaf of the import graph: `corpus.ts`
 // imports it, and it must not import anything back.
-import type { IconMetrics, Summary } from '../lib/thresholds';
+import type { GateResult, IconMetrics, Summary } from './report';
 import type { Config } from './config';
-import type { GateResult } from './gate';
 
 const USAGE = `Conversion fidelity harness.
 

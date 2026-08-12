@@ -16,17 +16,16 @@ import { collectUnsupportedFeatures, describeWarnings } from '../../src/utils/sv
 import type { IconAsset } from '../../src/types/icons';
 
 import { renderExcalidrawSceneInWindow, auditSceneFidelity } from '../excalidrawRenderer';
-import { composeTriptych, inkBox, readViewBox } from '../lib/raster';
-import {
+import { composeTriptych, inkBox, readViewBox ,
   compareRasterInFrame,
   comparePlacement,
   expectedBounds,
   rasteriseSource,
   sceneWindowToSourceWindow,
   unionBounds,
-} from '../lib/fidelity';
+} from '../lib/raster';
 import { cacheVersion, readSource, writeSource } from '../lib/sourceCache';
-import { IconMetrics } from '../lib/thresholds';
+import { IconMetrics } from './report';
 
 import { Config, PANEL_SIZE, SCENE_WINDOW, TARGET } from './config';
 import { Candidate, buildIcon } from './corpus';

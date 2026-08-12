@@ -4,7 +4,7 @@ import {
   expectedBounds,
   sceneWindowToSourceWindow,
   sourceToSceneTransform,
-} from './fidelity';
+} from './raster';
 
 const TARGET = { x: 0, y: 0, width: 48, height: 48 };
 const SQUARE = { x: 0, y: 0, width: 24, height: 24 };

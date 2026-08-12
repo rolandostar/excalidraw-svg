@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_THRESHOLDS, isFailing } from './thresholds';
-import type { IconMetrics } from './thresholds';
+import { DEFAULT_THRESHOLDS, isFailing, type IconMetrics } from './report';
 
 const icon = (patch: Partial<IconMetrics> = {}): IconMetrics =>
   ({

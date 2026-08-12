@@ -29,9 +29,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readExpectedFailures } from './fidelity/config';
-import { isFailing } from './lib/thresholds';
+import { isFailing, type Summary } from './fidelity/report';
 import { renderClaimsBlock, writeClaimsBlock } from './lib/claims';
-import type { Summary } from './lib/thresholds';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RESULTS = path.join(ROOT, 'tests', 'results');

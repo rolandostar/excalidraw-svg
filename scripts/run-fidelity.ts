@@ -15,17 +15,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { pruneCache } from './lib/sourceCache';
-import { buildHtmlReport } from './lib/html';
-import * as say from './fidelity/console';
-import { Config, parseConfig } from './fidelity/config';
-import { collectSvgFiles } from './fidelity/corpus';
-import {
+import { buildHtmlReport ,
   applyGate,
   corpusIssues,
   readBaseline,
   readExpectedFailures,
   summarise,
-} from './fidelity/gate';
+} from './fidelity/report';
+import * as say from './fidelity/console';
+import { Config, parseConfig } from './fidelity/config';
+import { collectSvgFiles } from './fidelity/corpus';
 import { plannedJobs, runWorker, scoreAll } from './fidelity/pool';
 import { CACHE_VERSION } from './fidelity/score';
 
