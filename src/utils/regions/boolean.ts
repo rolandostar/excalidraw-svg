@@ -52,9 +52,8 @@ function snapMultiPolygon(region: MultiPolygon): MultiPolygon {
  * that subtree's simplification - the geometry is still all there, just as
  * separate polygons.
  *
- * This is also the union `clipping.ts` wants - a `<clipPath>` with several
- * children, and a `<mask>` accumulating light shapes - which used to reach it
- * through a one-line `unionMultiPolygons` alias.
+ * Also the union `clipping.ts` wants, for a `<clipPath>` with several children
+ * and for a `<mask>` accumulating light shapes.
  */
 export function robustUnion(regions: MultiPolygon[]): MultiPolygon {
   const usable = regions.filter(r => r.length > 0).map(snapMultiPolygon);

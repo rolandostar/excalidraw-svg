@@ -20,8 +20,7 @@ export interface IconAsset {
   tags: string[];
   /**
    * The markup the converter reads. Already optimised - that runs in Node at
-   * build time, so there is no second "raw" form to keep alongside it. There
-   * used to be an `optimizedSvg` field holding the identical string.
+   * build time, so there is no second "raw" form to keep alongside it.
    */
   rawSvg: string;
   dataUrl: string;
@@ -117,7 +116,7 @@ export interface IconSetManifest {
   overrides?: Record<string, { title?: string; category?: string; tags?: string[] }>;
 }
 
-/** A discovered set before its icons have been optimised. */
+/** A set's identity and styling, without the icons themselves. */
 export interface IconSetSummary {
   id: string;
   name: string;

@@ -32,11 +32,9 @@ export const BACKGROUND_PLATE_SOLIDITY = 0.75;
  *
  * Two conditions, and both are necessary.
  *
- * The bounds test is expressed as a fraction of the *actual* viewBox. It used
- * to be the literal constants `0.5` and `23.5`, hard-coded for a 24x24
- * artboard and compared against root user-space coordinates - so on a
- * `viewBox="0 0 32 32"` file, `23.5` sat at 73% of the width and any shape
- * reaching that far was treated as a background.
+ * The bounds test is a fraction of the *actual* viewBox, not a constant: a
+ * margin hard-coded for a 24x24 artboard sits at 73% of the width of a 32x32
+ * one, and every shape reaching that far reads as a background.
  *
  * The solidity test is what stops the filter from eating artwork. Spanning the
  * artboard does not make something a background: a silhouette logo spans it

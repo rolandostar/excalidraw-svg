@@ -23,10 +23,7 @@
  * so Excalidraw centres the glyph run inside whatever width we declare. Being
  * slightly off mis-sizes the *card*, never the text's position on it.
  *
- * `lineHeight` is copied rather than measured. It is not a metric we are free
- * to choose - Excalidraw multiplies `fontSize` by it to lay out the line, so
- * it has to be byte-identical to that font's entry in Excalidraw's
- * `FONT_METADATA` or the text sits off-centre in its own box.
+ * `lineHeight` is copied, not chosen - see `lineHeightFor`.
  */
 import type { LabelFontFamily } from '../types/options';
 import { FIRST_CHAR, FONT_METRICS, LAST_CHAR, NORMALISED_UPEM } from './fontMetrics.generated';

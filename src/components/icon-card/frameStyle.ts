@@ -31,12 +31,13 @@ function hatchGradient(color: string, crossed: boolean): string {
 /**
  * CSS approximation of the exported frame rectangle.
  *
- * One thing CSS still cannot do is Excalidraw's roughness, so a sketchy
- * frame only looks sketchy once pasted. Everything else now tracks the
- * export: the rectangle is positioned and sized by `measureExcalidrawItem`,
- * including under `fitFrame`, and hachure and cross-hatch are approximated
- * with repeating gradients over the fill. The previous mock drew those as a
- * dashed *border*, which described the wrong edge of the shape entirely.
+ * Tracks the export: the rectangle is positioned and sized by
+ * `measureExcalidrawItem`, including under `fitFrame`, and hachure and
+ * cross-hatch are repeating gradients over the *fill* - they hatch the
+ * interior, not the border.
+ *
+ * Roughness is the one thing CSS cannot do, so a sketchy frame only looks
+ * sketchy once pasted.
  */
 export function useFrameStyle(options: ExcalidrawOptions): React.CSSProperties {
   return React.useMemo((): React.CSSProperties => {
@@ -50,8 +51,8 @@ export function useFrameStyle(options: ExcalidrawOptions): React.CSSProperties {
         : undefined;
 
     return {
-      // Applied unconditionally, matching the export. The old `outline` style
-      // forced this to transparent, so the background swatch did nothing.
+      // Applied unconditionally, matching the export, so the background
+      // swatch always does something.
       backgroundColor: hatch ? 'transparent' : options.cardBgColor,
       backgroundImage: hatch,
       borderWidth: `${options.cardStrokeWidth}px`,

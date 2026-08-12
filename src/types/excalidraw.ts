@@ -15,12 +15,9 @@
  * `sceneAudit` has to re-check at runtime what a union would have made
  * unrepresentable.
  *
- * Not done yet because it is not a type-only change. Every construction site
- * in `convert/emit.ts` and `layout/` currently spreads a shared base object
- * and adds the type-specific fields afterwards, which a union rejects, and
- * `sceneAudit`/`sceneFrame` iterate mixed arrays and would each need
- * narrowing. That is a real refactor with real fallout, and it wants its own
- * change with the fidelity harness green on either side of it.
+ * Not a type-only change: the emitters spread a shared base object, which a
+ * union rejects, so it wants its own commit with the harness green either
+ * side.
  */
 export interface ExcalidrawElement {
   id: string;

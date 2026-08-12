@@ -29,10 +29,10 @@ export const STAGE_HEIGHT_PX = 140;
  * Column width minus stage width: `.icon-card`'s horizontal padding *and* its
  * border.
  *
- * 0.5rem of padding each side plus a 1px transparent border each side. The
- * border is easy to forget - it is transparent until the card is hovered - and
- * leaving it out made every card two pixels wider than the box it was being
- * scaled into, clipping a hairline off both edges.
+ * 0.5rem of padding each side plus a 1px border each side. The border is easy
+ * to miss - it is transparent until hover - and omitting it makes every card
+ * two pixels wider than the box it is scaled into, clipping a hairline off
+ * both edges.
  */
 export const CARD_PADDING_X = 18;
 
@@ -140,7 +140,6 @@ export function columnCountFor(containerWidth: number, trackPx: number): number 
   return Math.max(1, Math.floor((containerWidth + GRID_GAP_PX) / (trackPx + GRID_GAP_PX)));
 }
 
-/** Exact width of one column once `columns` share `containerWidth`. */
 export function columnWidthFor(containerWidth: number, columns: number): number {
   if (!(containerWidth > 0) || columns < 1) return MIN_TRACK_PX;
   return (containerWidth - GRID_GAP_PX * (columns - 1)) / columns;

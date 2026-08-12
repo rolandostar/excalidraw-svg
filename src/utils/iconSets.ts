@@ -1,8 +1,7 @@
 import type { IconAsset, IconSet, IconSetSummary } from '../types/icons';
 import { categorizeByRules, expandSynonyms, formatTitle } from './categorizer';
 import { discover, readIntrinsicSize } from './iconSets/discovery';
-import { toDataUrl } from './iconSets/resolve';
-import { resolveRules, summarise } from './iconSets/resolve';
+import { resolveRules, summarise, toDataUrl } from './iconSets/resolve';
 
 /**
  * Icon sets are folders.
@@ -21,21 +20,15 @@ import { resolveRules, summarise } from './iconSets/resolve';
  * build time; see `vite/icon-sets.ts` for why.
  *
  * This file is the public surface - four getters and the memo that backs the
- * heaviest of them. The work is in `iconSets/`:
- *
- *   discovery.ts        the virtual module, and what is read off raw markup
- *   resolve.ts          untrusted `set.json` -> validated `IconSetSummary`
- *   fallbackPresets.ts  what a set with no presets of its own gets
+ * heaviest of them. The work is in `iconSets/`.
  */
 
 /**
- * KNOWN GAP - three module-level caches, no invalidation. `discovered` in
- * `iconSets/discovery.ts`, `summaries` in `iconSets/resolve.ts`, and
- * `materialised` below are all populated once and never cleared. Under Vite
- * HMR the `virtual:icon-sets` module can rebuild while this module instance
- * survives, so edits to `svg/` show up in the virtual module and not on the
- * page until a full reload. Harmless in a production build, where the virtual
- * module is frozen at build time; a real papercut in dev.
+ * Populated once and never invalidated, as are `discovered` in `discovery.ts`
+ * and `summaries` in `resolve.ts`. Safe because nothing can change under them
+ * without the module being torn down: the virtual module is frozen at build
+ * time, and in dev the plugin answers any edit under `svg/` with a
+ * `full-reload`.
  */
 const materialised = new Map<string, IconSet>();
 

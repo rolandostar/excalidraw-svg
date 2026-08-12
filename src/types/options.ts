@@ -8,28 +8,18 @@
  * membership in.
  *
  * **The arrays are the source of truth; the unions are derived from them.**
- * It used to be the other way round - the unions here, six matching arrays
- * over in `optionsSchema.ts` - with nothing linking the two, so adding a value
- * meant remembering to edit both files and the compiler could not tell you if
- * you forgot. Adding a member to an array below now widens the type and the
- * validator in one edit.
+ * Adding a member to an array below widens the type, the validator and the
+ * control that offers it in one edit, and fails the build at the label table
+ * in `options/labels.ts` until it is named.
  */
 
 /**
  * The frame is described by the properties Excalidraw actually has, not by
- * named looks.
+ * named looks, so every combination of them is reachable.
  *
- * There used to be a `CardStyle` union - `soft-card` / `sketch-box` /
- * `outline` - and it conflated three independent things: corner radius,
- * stroke weight and fill style. That made some combinations unreachable (a
- * rounded hachure card, an outline with a background) and one combination a
- * lie: `outline` hardcoded `backgroundColor: 'transparent'`, so the background
- * swatch silently did nothing whenever it was selected.
- *
- * Splitting them also removed a whole class of dead style: `badge` was dropped
- * earlier because Excalidraw's `getCornerRadius` returns `shorterSide * 0.25`
- * for both PROPORTIONAL_RADIUS and ADAPTIVE_RADIUS below 128 units, making it
- * byte-identical to `soft-card`.
+ * Two radii only: Excalidraw's `getCornerRadius` returns `shorterSide * 0.25`
+ * for both PROPORTIONAL_RADIUS and ADAPTIVE_RADIUS below 128 units, so a
+ * third "badge" rounding would be byte-identical to `rounded`.
  */
 export const CARD_CORNERS = ['rounded', 'square'] as const;
 export type CardCorners = (typeof CARD_CORNERS)[number];
@@ -55,12 +45,7 @@ export type CardStrokeWidth = (typeof CARD_STROKE_WIDTHS)[number];
 export const ROUGHNESS = [0, 1, 2] as const;
 export type Roughness = (typeof ROUGHNESS)[number];
 
-/**
- * `inside` was removed. It claimed to place the label over the artwork but
- * only changed the icon-to-label gap from 8 units to 4, so it was
- * indistinguishable from `bottom` in every export. A stored `'inside'`
- * migrates to `'bottom'`.
- */
+/** A stored `'inside'` migrates to `'bottom'`; see `migrateOptionsV1`. */
 export const LABEL_POSITIONS = ['bottom', 'right', 'top'] as const;
 export type LabelPosition = (typeof LABEL_POSITIONS)[number];
 
@@ -70,12 +55,8 @@ export type LabelPosition = (typeof LABEL_POSITIONS)[number];
  *   Virgil 1, Helvetica 2, Cascadia 3, (4 unused),
  *   Excalifont 5, Nunito 6, Lilita One 7, Comic Shanns 8, Liberation Sans 9
  *
- * This used to be `1 | 2 | 3 | 4 | 5` with its own private meanings, which is
- * why "Lilita One" never worked: id 4 is permanently unused - Excalidraw's
- * comment says it was Assistant and before that a custom Obsidian font - so
- * `getFontFamilyString` found no match and returned the Windows emoji
- * fallback. Id 5 meant Nunito here and Excalifont there, so that one rendered
- * as the wrong font rather than no font.
+ * Id 4 is permanently unused, so `getFontFamilyString` finds no match for it
+ * and returns the Windows emoji fallback.
  *
  * Only the five non-deprecated faces are offered. Virgil, Helvetica and
  * Cascadia are all flagged `deprecated: true` in Excalidraw's `FONT_METADATA`,
@@ -130,12 +111,7 @@ export interface ExcalidrawOptions {
   fitFrame: boolean;
 
   // --- artwork ---
-  /**
-   * Separate from `cardRoughness`. One shared value used to drive both, while
-   * the only control for it was nested inside the frame section - so the
-   * artwork's roughness could not be changed without a frame, and could not be
-   * left clean when the frame was sketchy.
-   */
+  /** Separate from `cardRoughness`: sketchy artwork must not require a frame. */
   iconRoughness: Roughness;
   iconScale: number; // multiplier on ICON_BASE_SIZE: 1.0 = 96px, 2.0 = 192px
 

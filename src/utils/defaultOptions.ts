@@ -3,13 +3,9 @@ import { type ExcalidrawOptions, GCP_BLUE, type LabelFontFamily } from '../types
 /**
  * Edge length in Excalidraw canvas units of an icon at `iconScale: 1`.
  *
- * 48 was too small in practice: pasted next to default 20px Excalidraw text an
- * icon read as a bullet point rather than a diagram node, and every user's
- * first action was to scale it up. 96 is the size people were choosing anyway,
- * so it is now what 1x means.
- *
- * Everything downstream is derived from this - card sizing, grid pitch and the
- * sidebar readout - so changing it here changes them together.
+ * Sized against Excalidraw's default 20px text: below about 96 a pasted icon
+ * reads as a bullet point rather than a diagram node. Card sizing, grid pitch
+ * and the sidebar readout are all derived from it.
  */
 export const ICON_BASE_SIZE = 96;
 
@@ -25,11 +21,8 @@ export const DEFAULT_EXCALIDRAW_OPTIONS: ExcalidrawOptions = {
   /*
    * Inert while `showCard` is false - `createExcalidrawItem` emits no
    * rectangle at all - but they are what you get the instant you switch the
-   * frame on, so they have to be values that draw something.
-   *
-   * The colours used to default to two `transparent`s, which meant enabling
-   * the frame produced a rectangle with no stroke and no fill: the control
-   * appeared to do nothing, and so did every style button behind it.
+   * frame on, so they have to be values that draw something. Two
+   * `transparent`s here make the frame toggle look broken.
    */
   cardCorners: 'rounded',
   cardStrokeWidth: 1,
@@ -87,10 +80,8 @@ export const LINE_CONFIRM_THRESHOLD = 8;
 
 /**
  * Repairs option objects that are structurally valid but describe a frame
- * nobody can see.
- *
- * Every one of these has been reported as "the control does nothing", because
- * from the outside an invisible result and an ignored setting look identical.
+ * nobody can see. From the outside an invisible result and an ignored setting
+ * look identical, so each of these reads as "the control does nothing".
  */
 export function normaliseOptions(options: ExcalidrawOptions): ExcalidrawOptions {
   let next = options;
@@ -102,8 +93,7 @@ export function normaliseOptions(options: ExcalidrawOptions): ExcalidrawOptions 
   }
 
   // Rough.js hatches the *fill*, so hachure and cross-hatch draw nothing at
-  // all over a transparent background. Every shipped "Sketch" preset had this
-  // exact pairing and had therefore never once rendered a hatch.
+  // all over a transparent background.
   if (next.cardFillStyle !== 'solid' && next.cardBgColor === 'transparent') {
     next = { ...next, cardFillStyle: 'solid' };
   }
@@ -128,8 +118,8 @@ const V1_CARD_STYLES: Record<string, Pick<ExcalidrawOptions, 'cardCorners' | 'ca
   'soft-card': { cardCorners: 'rounded', cardStrokeWidth: 1, cardFillStyle: 'solid' },
   'sketch-box': { cardCorners: 'square', cardStrokeWidth: 1, cardFillStyle: 'hachure' },
   outline: { cardCorners: 'square', cardStrokeWidth: 2, cardFillStyle: 'solid' },
-  // `none` suppressed the rectangle while `showCard` was true, which made the
-  // toggle look broken; `badge` was removed for being identical to soft-card.
+  // `none` suppressed the rectangle while `showCard` was true; `badge` was
+  // identical to soft-card. Both now resolve to soft-card.
   none: { cardCorners: 'rounded', cardStrokeWidth: 1, cardFillStyle: 'solid' },
   badge: { cardCorners: 'rounded', cardStrokeWidth: 1, cardFillStyle: 'solid' },
 };
@@ -137,11 +127,9 @@ const V1_CARD_STYLES: Record<string, Pick<ExcalidrawOptions, 'cardCorners' | 'ca
 /**
  * v1 font id -> the real Excalidraw id it was trying to name.
  *
- * v1's ids were invented locally and only three of them happened to be right.
- * `4` resolved to nothing at all (Excalidraw leaves 4 permanently unused), and
- * `2` named Helvetica, which is deprecated and `local: true` - Liberation Sans
- * is Excalidraw's current bundled normal-sans and is metric-compatible with
- * Arial, so it is the honest replacement.
+ * v1's ids were invented locally. Helvetica has no v2 equivalent worth
+ * offering - deprecated and `local: true` - so it maps to Liberation Sans,
+ * which is Excalidraw's bundled normal-sans and metric-compatible with Arial.
  */
 const V1_FONTS: Record<number, LabelFontFamily> = {
   1: 5, // Excalifont, via the deprecated Virgil alias

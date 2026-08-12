@@ -3,15 +3,12 @@ import type { IconCategory, IconCategoryRule } from '../types/icons';
 /**
  * Category and search-alias resolution.
  *
- * The rules themselves are no longer hardcoded here. They are declared per set
- * in `svg/<set-id>/set.json`, because the keyword list that used to live in
- * this file was specific to Google Cloud filenames and would produce confident
- * nonsense for any other icon pack. What remains here is the matching *engine*
- * plus `formatTitle`, which is vendor-neutral.
+ * The matching *engine* only. Rules are declared per set in
+ * `svg/<set-id>/set.json`, because a keyword list tuned for Google Cloud
+ * filenames produces confident nonsense for any other icon pack.
  *
- * See `svg/legacy-gcp/set.json` for the GCP rules this file used to contain -
- * they were moved verbatim, including their order, because the matcher is
- * first-wins and reordering them would silently reclassify icons.
+ * The matcher is first-wins, so the order rules appear in a `set.json` is
+ * part of their meaning.
  */
 
 /** The bucket a set gets when it declares no categories of its own. */
@@ -122,11 +119,9 @@ const ACRONYMS: Record<string, string> = {
 /**
  * A run of two or more dashes means a literal dash in the title.
  *
- * It is held aside while single dashes become spaces, because doing the two
- * replacements in sequence destroys the result: ` - ` contains a dash, so the
- * next pass turns it straight back into a space. That was the behaviour until
- * a unit test caught it, and it silently dropped the dash from
- * "Cloud Optimization AI - Fleet Routing API".
+ * Held aside while single dashes become spaces: done in sequence, the second
+ * pass turns the ` - ` the first pass produced straight back into a space,
+ * which drops the dash from "Cloud Optimization AI - Fleet Routing API".
  */
 const DASH_MARK = '\u0000';
 

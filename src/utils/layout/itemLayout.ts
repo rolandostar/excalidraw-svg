@@ -67,15 +67,15 @@ export function elementsBounds(elements: ExcalidrawElement[]): Bounds | null {
 /**
  * Size and internal offsets of one item, independent of where it is placed.
  *
- * Split out of `createExcalidrawItem` so the grid packers can ask how big an
- * item is *before* choosing its position. They used to assume a fixed 160/180
- * unit pitch, which silently overlapped neighbours as soon as a card grew -
- * long service names and any `iconScale` above 1 both did it.
+ * Split out of `createExcalidrawItem` so a caller can ask how big an item is
+ * *before* choosing its position. A fixed pitch overlaps neighbours as soon
+ * as a card grows, which long service names and any `iconScale` above 1 both
+ * do.
  *
- * `artworkSize` overrides the nominal `ICON_BASE_SIZE * iconScale` square, and
+ * `artworkSize` overrides the nominal `ICON_BASE_SIZE * iconScale` square and
  * is how `fitFrame` works: the caller converts first, measures the real ink,
- * and passes it back in. Left out, the result is the nominal layout - which is
- * what `gridPitch` wants, and what keeps this callable from a filename alone.
+ * and passes it back in. Left out, the result is the nominal layout, which is
+ * computable from a filename alone.
  */
 export function measureExcalidrawItem(
   icon: IconAsset,
@@ -87,9 +87,7 @@ export function measureExcalidrawItem(
   const iconHeight = artworkSize ? artworkSize.height : nominal;
   const padding = options.showCard ? options.padding : 0;
 
-  // Measured against the real font's advance widths rather than estimated from
-  // the character count. Excalidraw does not re-measure pasted text, so the
-  // number written here is the one the card is sized around forever.
+  // Exact advance widths, not a character-count estimate: see textMetrics.ts.
   const label = options.showLabel
     ? measureLabel(icon.title, options.labelFontFamily, options.labelFontSize)
     : { width: 0, height: 0 };
@@ -181,7 +179,6 @@ export function inkBoxFor(
   return snapOutward(elementsBounds(elements));
 }
 
-/** Shifts elements in place. */
 export function translateElements(
   elements: ExcalidrawElement[],
   dx: number,

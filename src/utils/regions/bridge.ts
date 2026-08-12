@@ -92,10 +92,9 @@ function orientedAsHole(hole: Ring, outer: Ring): Ring {
  * Rough.js all use `evenodd` for polygon fills, so that is the path actually
  * taken - the winding is insurance for anything else that reads the output.
  *
- * Every corridor anchors on a vertex of the **original** outer ring. The old
- * implementation stitched holes into an accumulating ring, so the second hole
- * could attach to the first hole's boundary and drive its corridor straight
- * through the first hole's interior.
+ * Every corridor anchors on a vertex of the **original** outer ring, never on
+ * an accumulating one: a corridor anchored on a previous hole's boundary runs
+ * straight through that hole's interior.
  */
 export function bridgeHoles(polygon: PolygonWithHoles): Ring {
   const { outer, holes } = polygon;
