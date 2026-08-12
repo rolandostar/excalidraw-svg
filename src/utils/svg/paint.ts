@@ -15,6 +15,16 @@ import type { StyleMap } from './stylesheet';
 /** The SVG initial value of the `fill` property. Undeclared is *not* `none`. */
 export const DEFAULT_FILL = '#000000';
 
+/**
+ * The id inside a `url(#foo)` / `url('#foo')` reference, or null.
+ *
+ * The character class has to exclude `)` and whitespace as well as the
+ * quotes: `url(#grad)` against a quotes-only class captures `grad)`, which
+ * then matches no element and silently drops the paint.
+ */
+export const refId = (value: string | null | undefined): string | null =>
+  value?.match(/#([^'")\s]+)/)?.[1] ?? null;
+
 export const toPercent = (value: number): number =>
   Math.min(Math.max(Math.round(value * 100), 0), 100);
 
@@ -239,21 +249,16 @@ export function getShapeStyle(el: Element, styleMap: StyleMap, doc: Document): S
   if (ownStyle.strokeWidth) strokeWidthStr = ownStyle.strokeWidth;
   if (ownStyle.opacity) groupOpacity = readOpacity(ownStyle.opacity);
 
-  // Handle gradient URL resolution
-  if (fill && fill.startsWith('url(')) {
-    const gradIdMatch = fill.match(/#([^'"]+)/);
-    if (gradIdMatch) {
-      const gradEl = doc.querySelector(`[id="${gradIdMatch[1]}"]`);
-      if (gradEl) {
-        const stopEls = gradEl.querySelectorAll('stop');
-        if (stopEls.length > 0) {
-          const midStop = stopEls[Math.floor(stopEls.length / 2)];
-          const midStyle = midStop.getAttribute('style') || '';
-          const styleMatch = midStyle.match(/stop-color\s*:\s*([^;\}]+)/i);
-          const stopColor = midStop.getAttribute('stop-color') || (styleMatch ? styleMatch[1] : null);
-          if (stopColor) fill = stopColor.trim();
-        }
-      }
+  // Approximate a gradient by its middle stop. Build-time artwork has already
+  // had `flattenGradients` run over it; this is the upload path.
+  const gradId = fill?.startsWith('url(') ? refId(fill) : null;
+  if (gradId) {
+    const stopEls = doc.querySelector(`[id="${gradId}"]`)?.querySelectorAll('stop');
+    if (stopEls?.length) {
+      const midStop = stopEls[Math.floor(stopEls.length / 2)];
+      const styleMatch = (midStop.getAttribute('style') || '').match(/stop-color\s*:\s*([^;}]+)/i);
+      const stopColor = midStop.getAttribute('stop-color') || styleMatch?.[1];
+      if (stopColor) fill = stopColor.trim();
     }
   }
 

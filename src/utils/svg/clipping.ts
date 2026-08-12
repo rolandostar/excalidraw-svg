@@ -29,7 +29,7 @@ import {
 import { boundsOf } from './geometry';
 import { shapeToRings } from './geometry';
 import { BoundingBox, explicitRegionRect, localBoundingBox } from './objectBounds';
-import { FILL_RULES, getInheritedFillRule, inheritedEnum, paintLuminance } from './paint';
+import { FILL_RULES, getInheritedFillRule, inheritedEnum, paintLuminance, refId } from './paint';
 
 /** Selector for every element type `shapeToRings` can turn into an area. */
 const AREA_SHAPES = 'path, polygon, polyline, rect, circle, ellipse';
@@ -105,9 +105,9 @@ export function resolveMaskRegion(
   maskEl.querySelectorAll(AREA_SHAPES).forEach(shape => {
     const matrix = multiplyMatrix(contentMatrix, getCombinedTransformMatrixUntil(shape, maskEl));
 
-    const filterRef = shape.getAttribute('filter')?.match(/#([^'")\s]+)/);
+    const filterRef = refId(shape.getAttribute('filter'));
     if (filterRef) {
-      const filterEl = doc.querySelector(`filter[id="${filterRef[1]}"]`);
+      const filterEl = doc.querySelector(`filter[id="${filterRef}"]`);
       const flood = filterEl?.querySelector('feFlood');
       if (filterEl && flood && paintLuminance(flood.getAttribute('flood-color')) >= 0.5) {
         // A filter region is relative to the element the *filter* is applied
@@ -180,8 +180,8 @@ export function getVisibilityRegion(el: Element, doc: Document, tolerance: numbe
   let node: Element | null = el;
 
   while (node && node.tagName.toLowerCase() !== 'svg') {
-    const clipRef = node.getAttribute('clip-path')?.match(/#([^'")\s]+)/);
-    const maskRef = node.getAttribute('mask')?.match(/#([^'")\s]+)/);
+    const clipRef = refId(node.getAttribute('clip-path'));
+    const maskRef = refId(node.getAttribute('mask'));
 
     if (clipRef || maskRef) {
       const referenceMatrix = getCombinedTransformMatrixUntil(node);
@@ -192,7 +192,7 @@ export function getVisibilityRegion(el: Element, doc: Document, tolerance: numbe
       const boxFor = () => (box === undefined ? (box = localBoundingBox(reference, tolerance)) : box);
 
       if (clipRef) {
-        const clipEl = doc.querySelector(`clipPath[id="${clipRef[1]}"]`);
+        const clipEl = doc.querySelector(`clipPath[id="${clipRef}"]`);
         if (!clipEl) {
           confident = false;
         } else {
@@ -203,7 +203,7 @@ export function getVisibilityRegion(el: Element, doc: Document, tolerance: numbe
       }
 
       if (maskRef) {
-        const maskEl = doc.querySelector(`mask[id="${maskRef[1]}"]`);
+        const maskEl = doc.querySelector(`mask[id="${maskRef}"]`);
         if (!maskEl) {
           confident = false;
         } else {
