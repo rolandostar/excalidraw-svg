@@ -69,8 +69,28 @@ export function SiteHeader() {
     <header className="site-header">
       <Link to="/" className="site-brand" aria-label="Home">
         <span className="site-brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 17 L10 5 L14 13 L17 9 L20 17" />
+          {/*
+            A diagram node with the corner overshoot Rough.js draws, wired on
+            both sides. The overshoot is what makes it read as hand-drawn
+            rather than as a checkbox, and the two leads are what make it read
+            as a diagram rather than as a square. Symmetric so it centres in
+            the badge, and it still resolves at the 16px favicon size.
+          */}
+          <svg
+            viewBox="0 0 24 24"
+            width="19"
+            height="19"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M7 6.4C9.6 6 14.4 6.4 17.2 6.1" />
+            <path d="M16.9 7.6c.4 2.4 0 6.4.2 8.8" />
+            <path d="M15.4 16.2c-2.6.3-7.4-.1-9.8.1" />
+            <path d="M5.9 15.2c-.4-2.6.1-6.6-.2-9" />
+            <path d="M1.8 11.2h3.8M17.4 11.2h3.8" />
           </svg>
         </span>
         <span className="site-brand-text">

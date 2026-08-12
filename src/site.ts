@@ -41,6 +41,7 @@ export const STATS = {
   iconSets: headline.icons.sets,
   iconMeanError: headline.icons.meanShapeScore,
   iconWorstError: headline.icons.worstShapeScore,
+  iconWorstPlacementPx: headline.icons.worstPlacementErrorPx,
   iconFailures: headline.icons.failing,
   tortureCount: headline.torture.total,
   /**

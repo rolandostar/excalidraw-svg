@@ -135,3 +135,191 @@ code.trap-mistake {
     gap: 0.25rem;
   }
 }
+
+/* --- Scoring pipeline diagram ------------------------------------------- */
+
+.flow {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.flow-node rect {
+  fill: var(--bg-card);
+  stroke: var(--border-color);
+  stroke-width: 1;
+}
+
+.flow-node text {
+  fill: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.flow-node .flow-sub {
+  fill: var(--text-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.flow-node.is-accent rect {
+  stroke: var(--gcp-blue);
+  background: transparent;
+}
+
+.flow-node.is-accent text {
+  fill: var(--gcp-blue);
+}
+
+.flow-node.is-accent .flow-sub {
+  fill: var(--text-muted);
+}
+
+/* The end of the pipeline is the number itself, in the accent colour. */
+.flow-node.is-score rect {
+  stroke: color-mix(in srgb, var(--gcp-blue) 45%, transparent);
+  fill: color-mix(in srgb, var(--gcp-blue) 8%, transparent);
+}
+
+.flow-score {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--gcp-blue);
+}
+
+.flow-edges path {
+  fill: none;
+  stroke: var(--border-color);
+  stroke-width: 1.5;
+}
+
+.flow-arrowhead {
+  fill: var(--border-color);
+}
+
+@media (max-width: 720px) {
+  /* Six nodes across does not survive a phone; the ordered list under it
+     carries the same three points in prose. */
+  .flow {
+    display: none;
+  }
+}
+
+/* --- Numbered notes ------------------------------------------------------ */
+
+.note-list {
+  counter-reset: note;
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.1rem;
+  max-width: 72ch;
+}
+
+.note-list li {
+  counter-increment: note;
+  display: grid;
+  grid-template-columns: 1.65rem 1fr;
+  gap: 0.85rem;
+}
+
+.note-list li::before {
+  content: counter(note);
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gcp-blue);
+  border: 1px solid color-mix(in srgb, var(--gcp-blue) 40%, transparent);
+  border-radius: var(--radius-full);
+}
+
+.note-list h3,
+.note-list p {
+  grid-column: 2;
+}
+
+.note-list h3 {
+  margin: 0.15rem 0 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.note-list p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* --- Threshold gauges ---------------------------------------------------- */
+
+.gauge-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0 1.75rem;
+}
+
+.gauge-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.gauge-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.gauge-value {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--success-text, var(--gcp-blue));
+}
+
+.gauge-track {
+  position: relative;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--text-muted) 22%, transparent);
+  overflow: hidden;
+}
+
+.gauge-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gcp-blue);
+}
+
+.gauge-limit {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* --- Evidence grid ------------------------------------------------------- */
+
+/*
+ * Cards size to their own content. Stretching them to the tallest in the row
+ * left a card with a one-line caption sitting under a column of empty panel,
+ * because one neighbour carries a long explanation.
+ */
+.case-grid {
+  align-items: start;
+}

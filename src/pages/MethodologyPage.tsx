@@ -121,6 +121,116 @@ function SupportSection() {
   );
 }
 
+/**
+ * The scoring pipeline as a picture.
+ *
+ * The section under it used to be three paragraphs, and the shape of the
+ * thing - one file, rendered by two independent renderers, differenced -
+ * is the part a reader needs before any of the prose means anything.
+ *
+ * Inline SVG rather than an asset: it is three rectangles and four lines, it
+ * has to recolour with the theme, and a committed PNG would be one more
+ * generated artefact to keep in step.
+ */
+function ScoreFlow({ score }: { score: string }) {
+  return (
+    <svg
+      className="flow"
+      viewBox="0 0 760 176"
+      role="img"
+      aria-label="One SVG is rendered twice - once by resvg from the source, once by Excalidraw's own exporter from the converted elements - and pixelmatch compares the two to produce the score."
+    >
+      <defs>
+        <marker
+          id="flow-arrow"
+          viewBox="0 0 8 8"
+          refX="7"
+          refY="4"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto"
+        >
+          <path d="M0 0 L8 4 L0 8 z" className="flow-arrowhead" />
+        </marker>
+      </defs>
+
+      <g className="flow-edges" markerEnd="url(#flow-arrow)">
+        <path d="M132 88 h34 q10 0 10 -10 v-24 q0 -10 10 -10 h26" />
+        <path d="M132 88 h34 q10 0 10 10 v24 q0 10 10 10 h26" />
+        <path d="M396 44 h34 q10 0 10 10 v24 q0 10 10 10 h24" />
+        <path d="M396 132 h34 q10 0 10 -10 v-24 q0 -10 10 -10 h24" />
+        <path d="M604 88 h30" />
+      </g>
+
+      <g className="flow-node">
+        <rect x="14" y="62" width="118" height="52" rx="10" />
+        <text x="73" y="84">source</text>
+        <text x="73" y="102" className="flow-sub">.svg</text>
+      </g>
+
+      <g className="flow-node">
+        <rect x="218" y="18" width="178" height="52" rx="10" />
+        <text x="307" y="40">resvg</text>
+        <text x="307" y="58" className="flow-sub">renders the original</text>
+      </g>
+
+      <g className="flow-node">
+        <rect x="218" y="106" width="178" height="52" rx="10" />
+        <text x="307" y="128">Excalidraw exporter</text>
+        <text x="307" y="146" className="flow-sub">renders the conversion</text>
+      </g>
+
+      <g className="flow-node is-accent">
+        <rect x="480" y="62" width="124" height="52" rx="10" />
+        <text x="542" y="84">pixelmatch</text>
+        <text x="542" y="102" className="flow-sub">per pixel</text>
+      </g>
+
+      <g className="flow-node is-score">
+        <rect x="644" y="62" width="102" height="52" rx="10" />
+        <text x="695" y="86" className="flow-score">{score}</text>
+        <text x="695" y="103" className="flow-sub">mean error</text>
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * How far the measured figure sits under the limit that would fail the build.
+ *
+ * A number next to a threshold is two numbers; a bar is a ratio, which is the
+ * thing worth showing. The fill is clamped to a visible minimum because the
+ * honest width for 0.001% against 2% is a fiftieth of a pixel.
+ */
+function Gauge({
+  label,
+  value,
+  limit,
+  format,
+}: {
+  label: string;
+  value: number;
+  limit: number;
+  format: (n: number) => string;
+}) {
+  const share = (value / limit) * 100;
+  // A floor so a very good number is still visible, but zero stays empty.
+  const pct = value === 0 ? 0 : Math.max(1.5, Math.min(100, share));
+
+  return (
+    <div className="gauge">
+      <div className="gauge-head">
+        <span className="gauge-label">{label}</span>
+        <span className="gauge-value">{format(value)}</span>
+      </div>
+      <div className="gauge-track" role="img" aria-label={`${format(value)} against a limit of ${format(limit)}`}>
+        <span className="gauge-fill" style={{ width: `${pct}%` }} />
+      </div>
+      <span className="gauge-limit">fails above {format(limit)}</span>
+    </div>
+  );
+}
+
 export function MethodologyPage() {
   const [manifest, setManifest] = useState<EvidenceManifest | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -195,35 +305,75 @@ export function MethodologyPage() {
       <section className="doc-section">
         <h2>How a conversion is scored</h2>
         <p className="doc-body">
-          Each SVG is rendered by <strong>resvg</strong> from the source, and again by{' '}
-          <strong>Excalidraw's own exporter</strong> from the converted elements. The two
-          images go through pixelmatch, and the score is mismatched pixels divided by{' '}
-          <em>inked</em> pixels — not canvas area, so a small glyph does not get flattered by
-          the empty space around it.
+          Nothing here is an expected output written by hand. The same file is drawn by two
+          independent renderers and the pictures are subtracted.
         </p>
-        <p className="doc-body">
-          Both sides are framed on the same window. Cropping each one to its own ink box
-          sounds reasonable and was the worst mistake in this project: it hides translation
-          error completely, and it made every real number look ten times better than it was.
-          A transparent marker spanning the artboard forces the shared frame, and the run
-          stops if any content escapes it.
-        </p>
-        <p className="doc-body">
-          A second pass catches what pixels cannot: shapes Excalidraw will refuse to draw as
-          intended — an unclosed path carrying a fill, a zero-sized ellipse, an image pointing
-          at a missing file. It runs on every export path, and it is the same code that warns
-          you on the convert page.
-        </p>
+
+        <ScoreFlow score={formatPct(STATS.iconMeanError)} />
+
+        <ol className="note-list">
+          <li>
+            <h3>The score is a share of ink, not of canvas</h3>
+            <p>
+              Mismatched pixels are divided by <em>inked</em> pixels. Divide by canvas area
+              instead and a small glyph is flattered by all the empty space around it.
+            </p>
+          </li>
+          <li>
+            <h3>Both sides are framed on the same window</h3>
+            <p>
+              Cropping each side to its own ink box sounds reasonable and was the worst
+              mistake in this project: it hides translation error completely and made every
+              real number look ten times better than it was. A transparent marker spanning
+              the artboard forces the shared frame, and the run stops if anything escapes it.
+            </p>
+          </li>
+          <li>
+            <h3>A second pass catches what pixels cannot</h3>
+            <p>
+              Shapes Excalidraw will refuse to draw as intended — an unclosed path carrying a
+              fill, a zero-sized ellipse, an image pointing at a missing file. It runs on
+              every export path, and it is the same code that warns you on the convert page.
+            </p>
+          </li>
+        </ol>
       </section>
 
       <section className="doc-section">
         <h2>What stops a bad change from shipping</h2>
         <p className="doc-body">
-          Every score is committed to a baseline file. An icon that gets worse than its
-          baseline by more than {formatPct(regressionSlack, 1)} fails the build, as does any
-          shape error above {formatPct(STATS.shapeThreshold, 0)} or placement error above{' '}
-          {formatPx(STATS.placementThresholdPx)}.
+          Two limits fail the build outright. Here is where the library actually sits against
+          them — the bar is the measured figure as a share of the limit.
         </p>
+
+        <div className="gauge-row">
+          <Gauge
+            label="Mean shape error"
+            value={STATS.iconMeanError}
+            limit={STATS.shapeThreshold}
+            format={n => formatPct(n, n < 0.01 ? 3 : 0)}
+          />
+          <Gauge
+            label="Worst single icon"
+            value={STATS.iconWorstError}
+            limit={STATS.shapeThreshold}
+            format={n => formatPct(n, n < 0.01 ? 3 : 0)}
+          />
+          <Gauge
+            label="Worst placement"
+            value={STATS.iconWorstPlacementPx}
+            limit={STATS.placementThresholdPx}
+            format={formatPx}
+          />
+        </div>
+
+        <p className="doc-body">
+          A third limit is relative rather than absolute: every score is committed to a
+          baseline file, and an icon that gets worse than its own baseline by more than{' '}
+          {formatPct(regressionSlack, 1)} fails even if it is still under the limits above.
+          That is what catches a change that is bad but not yet visible.
+        </p>
+
         <p className="doc-body">
           The check is verified to actually fail. Editing one baseline entry by hand produces{' '}
           <code>Kuberun: 0.00% -&gt; 91.89%</code> and a non-zero exit code. A check that

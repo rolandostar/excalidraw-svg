@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!--
+    The site mark: a wired diagram node drawn with the corner overshoot
+    Rough.js produces. Kept in step with `.site-brand-mark` in SiteHeader.tsx.
+
+    Strokes are heavier than the header copy (2.6 vs 2) because a favicon is
+    rasterised at 16px and a 2px stroke on a 24-unit viewBox disappears there.
+  -->
+  <rect width="32" height="32" rx="7" fill="#1a73e8" />
+  <g
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="2.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    transform="translate(4 4) scale(1)"
+  >
+    <path d="M7 6.4C9.6 6 14.4 6.4 17.2 6.1" />
+    <path d="M16.9 7.6c.4 2.4 0 6.4.2 8.8" />
+    <path d="M15.4 16.2c-2.6.3-7.4-.1-9.8.1" />
+    <path d="M5.9 15.2c-.4-2.6.1-6.6-.2-9" />
+    <path d="M1.8 11.2h3.8M17.4 11.2h3.8" />
+  </g>
+</svg>
