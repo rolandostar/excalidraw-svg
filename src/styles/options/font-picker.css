@@ -27,7 +27,7 @@
 
 /*
  * Keyed by Excalidraw's real FONT_FAMILY ids, and kept in sync with
- * FONT_STACKS in src/utils/textMetrics.ts.
+ * FONT_STACKS in src/scene/text.ts.
  *
  * Only Lilita One and Nunito are the genuine article. Liberation Sans is
  * metric-compatible with Arial, so that substitution is exact in width.

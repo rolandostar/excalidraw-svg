@@ -18,7 +18,7 @@ export default tseslint.config(
       'node_modules/**',
       '.verify/**', // built bundles, written by verify:fonts
       'tests/**',
-      'src/utils/fontMetrics.generated.ts',
+      'src/scene/fontMetrics.generated.ts',
     ],
   },
 

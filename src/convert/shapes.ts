@@ -46,9 +46,8 @@ import type { DropReason } from './parseSvg';
  * rather than a type error.
  *
  * There is deliberately no stroke here. Every stroke a source declares is
- * emitted as the *area* it covers (see `shapeConverters.ts`), so a raw shape
- * is always fill-only; `stroke`/`strokeWidth` fields
- * were written as `'transparent'`/`0` at all six push sites and read nowhere.
+ * emitted as the *area* it covers - see `pushStroke` below - so a raw shape
+ * is always fill-only.
  */
 
 interface RawLine {
@@ -222,7 +221,7 @@ export class RawShapeSink {
 
   /**
    * Emits a stroke as the *area* it covers rather than as an Excalidraw
-   * stroke. See `strokeOutline.ts`: Excalidraw's stroke width is a style
+   * stroke. See `strokes.ts`: Excalidraw's stroke width is a style
    * property that does not scale with the element, so a stroked icon is only
    * correct at the size it was generated for.
    */

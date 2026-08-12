@@ -22,10 +22,9 @@ import { hexChannels, relativeLuminance } from './color';
  * The `<style>` element, reduced to the three properties this converter can
  * act on.
  *
- * Split from `paint.ts` because it is the only part of the cascade that reads
- * the *document* rather than an element: it runs once per file and produces a
- * lookup table everything else consumes. Keeping it apart also keeps
- * `paint.ts` about precedence rather than about regexes.
+ * The only part of the cascade that reads the *document* rather than an
+ * element: it runs once per file and produces a lookup table everything else
+ * consumes.
  *
  * Deliberately not a real CSS parser. Only class selectors are supported,
  * which is what design tools emit; anything else is ignored rather than
@@ -85,8 +84,7 @@ export function parseCssStylesheet(doc: Document): StyleMap {
  * else: presentation attributes, `<style>` rules, inline `style`, inheritance
  * up the tree, gradient stop approximation and opacity compositing. Keeping it
  * in one module is what makes the ordering readable in one pass instead of
- * being rediscovered at each call site. Parsing the stylesheet itself is
- * `stylesheet.ts`.
+ * being rediscovered at each call site.
  */
 
 // ---------------------------------------------------------------------------
@@ -150,7 +148,7 @@ export function inheritedEnum<T extends string>(
  * Recognised values of `fill-rule`, and of `clip-rule`, which mirrors it for
  * the shapes inside a `<clipPath>`. There is no `getInheritedClipRule`: it was
  * a byte-for-byte copy of `getInheritedFillRule` with one attribute name
- * changed, so `clipping.ts` calls `inheritedEnum` with these directly.
+ * changed, so `visibility.ts` calls `inheritedEnum` with these directly.
  */
 export const FILL_RULES = ['evenodd', 'nonzero'] as const;
 

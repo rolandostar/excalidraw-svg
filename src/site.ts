@@ -43,6 +43,16 @@ export const STATS = {
   iconWorstError: headline.icons.worstShapeScore,
   iconFailures: headline.icons.failing,
   tortureCount: headline.torture.total,
+  /**
+   * The count the pages describe as "fail on purpose", so it has to be the
+   * *expected* failures, not the observed ones.
+   *
+   * They are equal whenever the build is green - the gate exits non-zero on
+   * any failure that is not listed - so reading `failing` was right by
+   * coincidence rather than by construction, and would have started lying on
+   * the first unplanned failure.
+   */
+  tortureExpectedFailures: headline.torture.expectedFailures,
   tortureFailures: headline.torture.failing,
   shapeThreshold: headline.thresholds.shapeScore,
   placementThresholdPx: headline.thresholds.placementErrorPx,

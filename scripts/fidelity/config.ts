@@ -50,7 +50,7 @@ export interface Config {
   readonly baselineFile: string;
   /**
    * Cases that are meant to fail, and why. Optional; most suites have none.
-   * See `readExpectedFailures` in ./gate.ts.
+   * See `readExpectedFailures` above.
    */
   readonly expectedFailuresFile: string;
   /**

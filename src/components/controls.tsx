@@ -326,8 +326,7 @@ export const FONT_VALUES = FONT_FAMILIES;
  * field, all editing one colour.
  *
  * Owns the draft state for the text input and the rules about when a typed
- * value is committed. The palettes themselves live in `palette.ts`; this file
- * is only about the interaction.
+ * value is committed; the palettes themselves are above.
  */
 
 /** A labelled swatch. A `div` with an `onClick` could not be reached by keyboard. */

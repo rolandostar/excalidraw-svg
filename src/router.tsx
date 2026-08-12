@@ -57,7 +57,7 @@ export function normalizePath(raw: string): RoutePath {
  *
  * Optional chaining because this module is bundled by Vite but its pure
  * helpers are also imported by the unit tests, and `import.meta.env` is not
- * guaranteed outside a Vite pipeline - the same reason `optionsSchema.ts`
+ * guaranteed outside a Vite pipeline - the same reason `scene/options.ts`
  * guards its `DEV` check.
  */
 const BASE = (import.meta.env?.BASE_URL ?? '/').replace(/\/+$/, '');

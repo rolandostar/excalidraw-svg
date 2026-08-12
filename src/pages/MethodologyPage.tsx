@@ -189,7 +189,7 @@ export function MethodologyPage() {
         </Stat>
         <Stat value={formatPct(STATS.iconWorstError, 2)}>worst single icon</Stat>
         <Stat value={STATS.tortureCount}>edge cases built to break it</Stat>
-        <Stat value={STATS.tortureFailures}>that fail on purpose</Stat>
+        <Stat value={STATS.tortureExpectedFailures}>that fail on purpose</Stat>
       </div>
 
       <section className="doc-section">

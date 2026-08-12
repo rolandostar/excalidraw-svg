@@ -337,8 +337,9 @@ function useIconSetData(setId: string): {
   const [set, setSet] = useState<IconSet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Materialising a set runs SVGO over every file in it, so it happens after
-  // the first paint rather than blocking it.
+  // Deferred past first paint. Materialising is string work, not SVGO - the
+  // optimiser ran at build time - but it still builds a tag index over every
+  // file in the set, which is 216 of them for legacy-gcp.
   useEffect(() => {
     setIsLoading(true);
     const id = window.setTimeout(() => {
@@ -425,7 +426,7 @@ export function IconsPage({ setId }: IconsPageProps) {
 
           {isLoading ? (
             <p className="doc-body" role="status">
-              Loading and optimising icons…
+              Loading icons…
             </p>
           ) : (
             <div

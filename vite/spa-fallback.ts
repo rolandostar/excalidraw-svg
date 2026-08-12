@@ -7,7 +7,7 @@ import type { Plugin } from 'vite';
  *
  * The three static ones mirror `STATIC_ROUTES` in `src/router.tsx`; the rest
  * are the icon sets, whose route id is just the folder name under `svg/`
- * (see `src/utils/iconSets/discovery.ts`). `/` is the real `index.html` and
+ * (see `src/library/discovery.ts`). `/` is the real `index.html` and
  * needs no copy.
  */
 function knownRoutes(root: string): string[] {

@@ -1,5 +1,6 @@
 /**
- * Browser environment shim for running the browser-oriented `src/utils/*` code
+ * Browser environment shim for running the browser-oriented `src/convert`,
+ * `src/scene` and `src/library` code
  * AND the real `@excalidraw/utils` renderer inside Node.
  *
  * IMPORTANT: this module must be imported *first* (before anything that touches

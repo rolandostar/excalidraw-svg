@@ -32,7 +32,7 @@ export function renderClaimsBlock(headline: EvidenceHeadline): string {
     `| icons | ${icons.total} | **${pct(icons.meanShapeScore, 3)}** | ${pct(icons.worstShapeScore, 2)} | ` +
       `${icons.worstPlacementErrorPx.toFixed(3)} px | **${icons.failing}** |`,
     `| torture | ${torture.total} | ${pct(torture.meanShapeScore, 2)} | ${pct(torture.worstShapeScore, 0)} | ` +
-      `— | ${torture.failing} (expected) |`,
+      `— | ${torture.failing} of ${torture.expectedFailures} expected |`,
     '',
     `That is every set: ${sets}. ${icons.perfect} of the ${icons.total} icons are a`,
     'pixel-exact match; the rest differ by a few pixels along a curved edge, and all',
@@ -56,4 +56,31 @@ export function writeClaimsBlock(markdown: string, block: string): string {
   }
 
   return markdown.slice(0, start) + block + markdown.slice(end + CLAIMS_END.length);
+}
+
+/**
+ * The icon count in `index.html`'s social and search metadata.
+ *
+ * Those two tags are the only place the corpus size is quoted outside the
+ * generated pipeline, and nothing renders them - a search result or a shared
+ * link is the one surface where a stale number is seen by someone who cannot
+ * check it. Matched by the phrase rather than by a marker comment, because a
+ * marker inside a `content` attribute would be served to crawlers.
+ */
+const ICON_COUNT = /(\d[\d,]*) Google Cloud icons/g;
+
+export function writeIconCount(html: string, total: number): string {
+  if (!ICON_COUNT.test(html)) {
+    throw new Error(
+      'index.html no longer says "<n> Google Cloud icons", so the corpus size ' +
+        'cannot be kept current. Restore the phrase or drop this check.'
+    );
+  }
+  ICON_COUNT.lastIndex = 0;
+  return html.replace(ICON_COUNT, `${total} Google Cloud icons`);
+}
+
+/** Every icon count `index.html` claims. */
+export function readIconCounts(html: string): number[] {
+  return [...html.matchAll(ICON_COUNT)].map(m => Number(m[1].replace(/,/g, '')));
 }

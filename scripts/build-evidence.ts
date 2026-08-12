@@ -30,7 +30,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readExpectedFailures } from './fidelity/config';
 import { isFailing, type Summary } from './fidelity/report';
-import { renderClaimsBlock, writeClaimsBlock } from './lib/claims';
+import { renderClaimsBlock, writeClaimsBlock, writeIconCount } from './lib/claims';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RESULTS = path.join(ROOT, 'tests', 'results');
@@ -278,6 +278,15 @@ function run() {
   fs.writeFileSync(
     readmeFile,
     writeClaimsBlock(fs.readFileSync(readmeFile, 'utf-8'), renderClaimsBlock(headline)),
+    'utf-8'
+  );
+
+  // Same contract for the two meta tags in index.html that quote the corpus
+  // size; `claims.test.ts` fails if this was not re-run.
+  const indexFile = path.join(ROOT, 'index.html');
+  fs.writeFileSync(
+    indexFile,
+    writeIconCount(fs.readFileSync(indexFile, 'utf-8'), headline.icons.total),
     'utf-8'
   );
 

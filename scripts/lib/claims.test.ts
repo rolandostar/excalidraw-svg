@@ -2,11 +2,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { CLAIMS_END, CLAIMS_START, renderClaimsBlock, writeClaimsBlock } from './claims';
+import {
+  CLAIMS_END,
+  CLAIMS_START,
+  readIconCounts,
+  renderClaimsBlock,
+  writeClaimsBlock,
+  writeIconCount,
+} from './claims';
 import headline from '../../src/generated/evidence-headline.json';
 import type { EvidenceHeadline } from '../build-evidence';
 
 const README = fs.readFileSync(path.resolve(process.cwd(), 'README.md'), 'utf-8');
+const INDEX_HTML = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf-8');
 const current = headline as EvidenceHeadline;
 
 /**
@@ -32,6 +40,18 @@ describe('README fidelity claims', () => {
   it('account for every icon in the per-set breakdown', () => {
     const summed = current.icons.sets.reduce((n, s) => n + s.count, 0);
     expect(summed).toBe(current.icons.total);
+  });
+});
+
+describe('index.html corpus size', () => {
+  it('quotes the generated icon total', () => {
+    const counts = readIconCounts(INDEX_HTML);
+    expect(counts.length, 'index.html no longer quotes an icon count').toBeGreaterThan(0);
+    for (const n of counts) expect(n).toBe(current.icons.total);
+  });
+
+  it('refuses to guess when the phrase is gone', () => {
+    expect(() => writeIconCount('<meta content="nothing here" />', 261)).toThrow(/index\.html/);
   });
 });
 

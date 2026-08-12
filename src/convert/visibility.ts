@@ -44,9 +44,8 @@ import { FILL_RULES, getInheritedFillRule, inheritedEnum, paintLuminance, refId 
  * `clipPath`, `mask` and `filter` can all express their coordinates either in
  * user units or as fractions of the referencing element's geometry box, and
  * they do not agree on which is the default. That one idea - measure a box,
- * then read lengths as fractions of it - is what this module owns, and it is
- * separate from `clipping.ts` so that the clip and mask logic can be read
- * without it and so that `matrix.ts` can depend on `BoundingBox` alone.
+ * then read lengths as fractions of it - is what the first half of this
+ * module owns.
  */
 
 /**

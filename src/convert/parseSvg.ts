@@ -213,7 +213,14 @@ export function parseSvgToExcalidrawElements(
       roughness: opts.roughness,
     });
   } catch (err) {
+    /*
+     * Recorded, not just logged. Returning `[]` silently sends the caller
+     * down its "nothing convertible" branch, so a hard crash in here reads to
+     * the user as an empty file rather than as a failure - and the console is
+     * not where they are looking.
+     */
     console.error('Vector parsing error:', err);
+    drops.note('parse-error', 'svg', err instanceof Error ? err.message : String(err));
     return [];
   }
 }

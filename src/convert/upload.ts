@@ -54,7 +54,7 @@ export class SvgConversionError extends Error {
 /**
  * Intrinsic size of an SVG, preferring the viewBox.
  *
- * The reading itself lives in `svg/viewBox.ts`, shared with the converter and
+ * The reading itself lives in `style.ts`, shared with the converter and
  * the icon-set loader; only the "there must be an `<svg>`" precondition and
  * the 100x100 fallback are specific to the upload path.
  */

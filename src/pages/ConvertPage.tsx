@@ -41,7 +41,7 @@ export function ConvertPage() {
         <NextCard to="/methodology" icon={FlaskConical} title="Wondering if it's accurate?">
           {STATS.tortureCount} edge cases built to break it, each one compared pixel by pixel
           against a real renderer. All the results are here, including the{' '}
-          {STATS.tortureFailures} that fail on purpose.
+          {STATS.tortureExpectedFailures} that fail on purpose.
         </NextCard>
       </section>
 
@@ -50,7 +50,7 @@ export function ConvertPage() {
           mean shape error across every icon in every set
         </Stat>
         <Stat value={STATS.tortureCount}>edge cases in the test suite</Stat>
-        <Stat value={STATS.tortureFailures}>
+        <Stat value={STATS.tortureExpectedFailures}>
           that fail on purpose, to hold a known limit in place
         </Stat>
       </section>

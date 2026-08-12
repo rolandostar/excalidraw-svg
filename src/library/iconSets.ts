@@ -222,8 +222,8 @@ function summarise(entry: Discovered): IconSetSummary {
 
 
 /**
- * Populated once and never invalidated, as are `discovered` in `discovery.ts`
- * and `summaries` in `resolve.ts`. Safe because nothing can change under them
+ * Populated once and never invalidated, as is `discovered` in
+ * `discovery.ts`. Safe because nothing can change under them
  * without the module being torn down: the virtual module is frozen at build
  * time, and in dev the plugin answers any edit under `svg/` with a
  * `full-reload`.

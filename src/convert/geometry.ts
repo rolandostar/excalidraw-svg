@@ -178,12 +178,9 @@ export function boundingBoxMatrix(box: BoundingBox): Matrix2D {
  * Turning SVG shape elements into plain polygon rings, plus the small
  * numeric primitives that job needs.
  *
- * `closeRing`, `boundsOf` and `arcSegmentCount` live here rather than in a
- * module of their own because they existed in three, six and four
- * near-identical copies respectively across this codebase, and every copy had
- * drifted. They are shared by `pathRegions.ts` and `strokeOutline.ts` too;
- * the numeric parameters that differ between callers are arguments, so
- * each caller keeps exactly the behaviour it had.
+ * `closeRing`, `boundsOf` and `arcSegmentCount` are shared with `regions.ts`
+ * and `strokes.ts`. The numeric parameters that differ between callers are
+ * arguments, so no caller has to accept another's tolerance.
  */
 
 // ---------------------------------------------------------------------------
@@ -490,7 +487,7 @@ export function shapeToRings(el: Element, tolerance: number): Point[][] {
  * Only the *upload* path can reach this with a real `<line>`, which is why
  * there is no torture fixture for it - the harness runs SVGO first, and
  * SVGO's `convertShapeToPath` rewrites every `<line>` as a `<path>` before the
- * converter sees it. `geometry.test.ts` and `objectBounds.test.ts` cover it
+ * converter sees it. `geometry.test.ts` and `visibility.test.ts` cover it
  * directly instead.
  */
 export function shapeBoundsPoints(el: Element, tolerance: number): Point[][] {
