@@ -12,7 +12,11 @@
  *
  * Every shot is written to .screenshots/ (gitignored). Existing files are
  * overwritten, and the console prints a byte count per file - identical sizes
- * across runs are a signal that a page did not actually change.
+ * across runs mean a page did not change.
+ *
+ * Except `icons-sketch`: roughness goes through `generateRandomSeed`, which
+ * is `Math.random`, so that one shot differs by a few hundred bytes every
+ * run and its size proves nothing.
  */
 import fs from 'node:fs';
 import path from 'node:path';

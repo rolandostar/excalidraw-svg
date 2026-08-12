@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
 import { NEW_ISSUE_URL, WIKI_URL, STATS, formatPct, formatPx } from '../site';
 import { TrapTable, type TrapRow } from '../components/TrapTable';
+import { ExternalA, Stat } from '../components/ui';
 import { plural } from '../utils/plural';
 import { listIconSets } from '../utils/iconSets';
 import { listSupportRules } from '../utils/svgSupport';
@@ -184,24 +185,12 @@ export function MethodologyPage() {
       </header>
 
       <div className="doc-stats">
-        <div className="stat">
-          <span className="stat-value">{formatPct(STATS.iconMeanError)}</span>
-          <span className="stat-label">
-            mean shape error, all {STATS.iconCount} icons in {plural(setCount, 'set')}
-          </span>
-        </div>
-        <div className="stat">
-          <span className="stat-value">{formatPct(STATS.iconWorstError, 2)}</span>
-          <span className="stat-label">worst single icon</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value">{STATS.tortureCount}</span>
-          <span className="stat-label">edge cases built to break it</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value">{STATS.tortureFailures}</span>
-          <span className="stat-label">that fail on purpose</span>
-        </div>
+        <Stat value={formatPct(STATS.iconMeanError)}>
+          mean shape error, all {STATS.iconCount} icons in {plural(setCount, 'set')}
+        </Stat>
+        <Stat value={formatPct(STATS.iconWorstError, 2)}>worst single icon</Stat>
+        <Stat value={STATS.tortureCount}>edge cases built to break it</Stat>
+        <Stat value={STATS.tortureFailures}>that fail on purpose</Stat>
       </div>
 
       <section className="doc-section">
@@ -322,18 +311,13 @@ export function MethodologyPage() {
           permanent fixtures, so the same failure cannot come back unnoticed.
         </p>
         <div className="doc-cta-actions">
-          <a className="btn btn-primary" href={NEW_ISSUE_URL} target="_blank" rel="noreferrer noopener">
+          <ExternalA className="btn btn-primary" href={NEW_ISSUE_URL}>
             <ExternalLink size={16} />
             Submit an edge case
-          </a>
-          <a
-            className="btn btn-secondary"
-            href={`${WIKI_URL}/Testing`}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
+          </ExternalA>
+          <ExternalA className="btn btn-secondary" href={`${WIKI_URL}/Testing`}>
             How the tests work
-          </a>
+          </ExternalA>
         </div>
       </section>
     </main>

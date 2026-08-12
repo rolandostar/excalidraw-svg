@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { ArrowRight, ExternalLink, FolderPlus } from 'lucide-react';
+import { ArrowRight, FolderPlus } from 'lucide-react';
 import { Link, iconSetPath } from '../router';
 import { WIKI_URL } from '../site';
+import { ExternalA, NextCard } from '../components/ui';
 import { listIconSets, totalIconCount } from '../utils/iconSets';
 import { plural } from '../utils/plural';
 
@@ -78,9 +79,7 @@ export function IconSetsPage() {
               {(set.sourceUrl || set.source) && (
                 <p className="set-card-source">
                   {set.sourceUrl ? (
-                    <a href={set.sourceUrl} target="_blank" rel="noreferrer noopener">
-                      {set.source ?? set.sourceUrl}
-                    </a>
+                    <ExternalA href={set.sourceUrl}>{set.source ?? set.sourceUrl}</ExternalA>
                   ) : (
                     set.source
                   )}
@@ -99,26 +98,15 @@ export function IconSetsPage() {
         types - and the three had already started to drift. The wiki page is
         the one copy, and it is the one a contributor can edit.
       */}
-      <a
-        className="next-card"
+      <NextCard
         href={`${WIKI_URL}/Submit-an-icon-set`}
-        target="_blank"
-        rel="noreferrer noopener"
+        icon={FolderPlus}
+        title="Add your own set"
       >
-        <span className="next-card-icon">
-          <FolderPlus size={18} aria-hidden="true" />
-        </span>
-        <span className="next-card-body">
-          <span className="next-card-title">
-            Add your own set <ExternalLink size={14} aria-hidden="true" />
-          </span>
-          <span className="next-card-text">
-            Drop a folder of SVGs into <code>svg/</code> and it appears here. The folder name
-            becomes the URL. Naming, categories and search aliases are optional — the guide
-            covers all of it.
-          </span>
-        </span>
-      </a>
+        Drop a folder of SVGs into <code>svg/</code> and it appears here. The folder name
+        becomes the URL. Naming, categories and search aliases are optional — the guide
+        covers all of it.
+      </NextCard>
     </main>
   );
 }

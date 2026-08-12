@@ -1,6 +1,7 @@
 import { Github, Monitor, Moon, Sun } from 'lucide-react';
 import { Link, useRouter, type RoutePath } from '../router';
 import { REPO_URL } from '../site';
+import { ExternalA } from './ui';
 import { useTheme, type ThemePreference } from '../hooks/useTheme';
 
 const OPTIONS: { value: ThemePreference; label: string; Icon: typeof Sun }[] = [
@@ -92,15 +93,10 @@ export function SiteHeader() {
 
       <div className="site-header-end">
         <ThemeToggle />
-        <a
-          className="site-nav-link site-nav-external"
-          href={REPO_URL}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
+        <ExternalA className="site-nav-link site-nav-external" href={REPO_URL}>
           <Github size={15} aria-hidden="true" />
           <span className="site-nav-external-label">GitHub</span>
-        </a>
+        </ExternalA>
       </div>
     </header>
   );

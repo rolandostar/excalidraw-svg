@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Check, Copy, Download, ExternalLink } from 'lucide-react';
 import { ExcalidrawPreview } from './ExcalidrawPreview';
-import { Notice, WarningList } from './Notice';
+import { ExternalA, Notice, WarningList } from './ui';
 import { convertSvg, SvgConversionError } from '../utils/convertSvg';
 import { DROP_REASON_LABELS, type ConversionDiagnostics } from '../utils/convert/diagnostics';
 import { buildIssueUrl } from '../utils/issueReport';
@@ -214,15 +214,10 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
             back unnoticed. The issue is already filled in with what the converter detected
             — just attach the SVG and say what looks wrong.
           </p>
-          <a
-            className="btn btn-primary"
-            href={buildIssueUrl(input.name, result)}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
+          <ExternalA className="btn btn-primary" href={buildIssueUrl(input.name, result)}>
             <ExternalLink size={16} />
             Open a prefilled issue
-          </a>
+          </ExternalA>
         </div>
       )}
     </section>

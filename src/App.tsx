@@ -1,5 +1,6 @@
 import { REPO_URL } from './site';
 import { SiteHeader } from './components/SiteHeader';
+import { ExternalA } from './components/ui';
 import { ConvertPage } from './pages/ConvertPage';
 import { IconSetsPage } from './pages/IconSetsPage';
 import { IconsPage } from './pages/IconsPage';
@@ -26,9 +27,9 @@ function SiteFooter() {
           <Link to="/methodology" className="text-link">
             How it is tested
           </Link>
-          <a className="text-link" href={REPO_URL} target="_blank" rel="noreferrer noopener">
+          <ExternalA className="text-link" href={REPO_URL}>
             Source
-          </a>
+          </ExternalA>
         </p>
       </div>
     </footer>
