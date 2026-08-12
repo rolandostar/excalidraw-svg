@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { simplifyClosedRing } from './simplify';
+import { simplifyClosedRing } from './emit';
 import type { Point } from '../regions/regions';
 
 /** A closed ring: first point repeated as last, as the emitter produces. */

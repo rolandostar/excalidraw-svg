@@ -5,9 +5,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { optimizeSvgString } from '../../src/utils/svgOptimizer';
+import { optimizeSvgString, toDataUrl } from '../../src/utils/svgMarkup';
 import { IMPLICIT_CATEGORY, categorizeByRules, formatTitle } from '../../src/utils/categorizer';
-import { toDataUrl } from '../../src/utils/iconSets/resolve';
+
 import type { IconAsset, IconSetManifest } from '../../src/types/icons';
 
 import { readViewBox } from '../lib/raster';

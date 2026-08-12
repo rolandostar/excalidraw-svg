@@ -12,7 +12,7 @@
  * indistinguishable from "your wordmark was dropped".
  */
 import { parseSvgToExcalidrawElements } from './convert/parseSvg';
-import { type ConversionDiagnostics, emptyDiagnostics } from './convert/diagnostics';
+import { type ConversionDiagnostics, emptyDiagnostics } from './convert/parseSvg';
 import { type ViewBox, readViewBox } from './svg/style';
 import { type SvgFeatureWarning, collectUnsupportedFeatures } from './svgSupport';
 import { type FidelityIssue, auditSceneFidelity } from './sceneAudit';

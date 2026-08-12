@@ -1,3 +1,102 @@
+import { MultiPolygon, Point, resolveFilledRegions, signedArea } from '../regions/regions';
+import { bridgeHoles, regionToBridgedRings } from '../regions/booleans';
+import { strokeToRegion } from '../strokeOutline';
+import {
+  EllipseAttrs,
+  Matrix2D,
+  applyMatrix,
+  boundsOf,
+  ellipseRing,
+  getCombinedTransformMatrixUntil,
+  getPointsOnPath,
+  matrixScale,
+  readEllipseAttrs,
+  readPointsAttr,
+  readRectAttrs,
+  rectangleRing,
+} from '../svg/geometry';
+import { ShapeStyle, getShapeStyle } from '../svg/style';
+import { applyClip, getVisibilityRegion, resolveVisibility } from '../svg/visibility';
+import type { ViewBox , StyleMap } from '../svg/style';
+import type { DropReason } from './parseSvg';
+
+/**
+ * Turning SVG shape elements into the converter's intermediate form.
+ *
+ *   raw shapes   the intermediate type, and de-duplication
+ *   converters   one per tag, dispatched from a lookup table
+ *   plate        dropping a background rectangle that spans the artboard
+ *
+ * The dispatch is a table rather than an if-chain so that adding a tag is a
+ * map entry, and so that "which tags are handled" is one readable line.
+ */
+
+// ---------------------------------------------------------------------------
+// The intermediate shape
+// ---------------------------------------------------------------------------
+
+/**
+ * The intermediate the converter produces before anything is scaled or
+ * positioned: absolute-user-space geometry plus a fill.
+ *
+ * Modelled as a discriminated union rather than one optional-everything
+ * interface. The old shape carried `absPoints?`, `cx?`, `cy?`, `rx?`, `ry?`
+ * together, so every consumer re-proved which half was populated with a
+ * four-clause `!== undefined` guard, and a wrong guess was a runtime `NaN`
+ * rather than a type error.
+ *
+ * There is deliberately no stroke here. Every stroke a source declares is
+ * emitted as the *area* it covers (see `shapeConverters.ts`), so a raw shape
+ * is always fill-only; the `stroke`/`strokeWidth` fields this used to carry
+ * were written as `'transparent'`/`0` at all six push sites and read nowhere.
+ */
+
+interface RawLine {
+  type: 'line';
+  /** Closed ring in root user space. */
+  absPoints: [number, number][];
+  fill: string;
+  opacity: number;
+}
+
+interface RawEllipse {
+  type: 'ellipse';
+  cx: number;
+  cy: number;
+  rx: number;
+  ry: number;
+  fill: string;
+  opacity: number;
+}
+
+export type RawShape = RawLine | RawEllipse;
+
+/**
+ * Drops unpainted shapes and exact duplicates.
+ *
+ * Design tools stack identical geometry routinely - a shape and its own
+ * `<use>`, or the same path in two layers - and every duplicate is a full
+ * Excalidraw element that renders on top of an identical one.
+ */
+export function dedupeRawShapes(shapes: RawShape[]): RawShape[] {
+  const seen = new Set<string>();
+  const unique: RawShape[] = [];
+
+  for (const shape of shapes) {
+    if (shape.fill === 'transparent') continue;
+    const geometry =
+      shape.type === 'line'
+        ? JSON.stringify(shape.absPoints)
+        : JSON.stringify([shape.cx, shape.cy, shape.rx, shape.ry]);
+    const key = `${shape.type}_${shape.fill}_${geometry}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(shape);
+  }
+
+  return unique;
+}
+
 /**
  * One converter per SVG tag, plus the sink they all write into.
  *
@@ -9,26 +108,6 @@
  * The dispatch is a lookup table rather than a chain so that adding a tag is a
  * map entry, and so that "which tags are handled" is one readable line.
  */
-import { MultiPolygon, Point, resolveFilledRegions, signedArea } from '../regions/regions';
-import { bridgeHoles, regionToBridgedRings } from '../regions/booleans';
-import { strokeToRegion } from '../strokeOutline';
-import {
-  Matrix2D,
-  applyMatrix,
-  getCombinedTransformMatrixUntil,
-  matrixScale,
-
-  EllipseAttrs,
-  ellipseRing,
-  readEllipseAttrs,
-  readPointsAttr,
-  readRectAttrs,
-  rectangleRing, getPointsOnPath } from '../svg/geometry';
-import { ShapeStyle, getShapeStyle } from '../svg/style';
-import type { StyleMap } from '../svg/style';
-import { applyClip, getVisibilityRegion, resolveVisibility } from '../svg/visibility';
-import type { DropReason } from './diagnostics';
-import type { RawShape } from './rawShape';
 
 /**
  * Did clipping take anything away?
@@ -381,4 +460,87 @@ export function convertShapeElement(el: Element, ctx: ConvertContext): DropReaso
     return clipRegion ? 'clipped-away' : 'degenerate';
   }
   return null;
+}
+
+/**
+ * The full-artboard background plate filter.
+ *
+ * Its own module because it is the only step in the pipeline that deletes
+ * artwork on a heuristic, and the two constants it turns on are the whole
+ * decision. Both are load-bearing and both have been wrong before; keeping
+ * them next to the test they parameterise is what makes that reviewable.
+ */
+
+/**
+ * How close to the artboard edge a shape must reach, as a fraction of the
+ * viewBox, before it is a background-plate candidate. Half a unit on the 24x24
+ * artboard these icons are authored against.
+ */
+const ARTBOARD_MARGIN_FRACTION = 0.5 / 24;
+
+/**
+ * Fraction of its own bounding box a shape must ink to count as a background
+ * plate rather than artwork. A rectangle is 1.0 and a full ellipse is pi/4;
+ * anything with real internal structure is far below both.
+ */
+const BACKGROUND_PLATE_SOLIDITY = 0.75;
+
+/**
+ * Drops a full-artboard background plate, which design tools emit on almost
+ * every export and which would otherwise paste as an opaque slab over whatever
+ * the user already had on the canvas.
+ *
+ * Two conditions, and both are necessary.
+ *
+ * The bounds test is a fraction of the *actual* viewBox, not a constant: a
+ * margin hard-coded for a 24x24 artboard sits at 73% of the width of a 32x32
+ * one, and every shape reaching that far reads as a background.
+ *
+ * The solidity test is what stops the filter from eating artwork. Spanning the
+ * artboard does not make something a background: a silhouette logo spans it
+ * too. A background *plate* is solid - it fills essentially all of its own
+ * bounding box - whereas real artwork does not. The reported squirrel line-art
+ * measured 0.245 here, a rectangle measures 1.0, and a full-artboard ellipse
+ * measures pi/4 = 0.785.
+ *
+ * Never returns an empty list: a file that is *only* a plate keeps its plate.
+ */
+export function dropBackgroundPlate(shapes: RawShape[], viewBox: ViewBox): RawShape[] {
+  if (shapes.length <= 1) return shapes;
+
+  const marginX = viewBox.width * ARTBOARD_MARGIN_FRACTION;
+  const marginY = viewBox.height * ARTBOARD_MARGIN_FRACTION;
+
+  const measure = (shape: RawShape) => {
+    if (shape.type !== 'line') {
+      const { cx, cy, rx, ry } = shape;
+      return {
+        minX: cx - rx,
+        minY: cy - ry,
+        maxX: cx + rx,
+        maxY: cy + ry,
+        solidity: Math.PI / 4,
+      };
+    }
+    const box = boundsOf(shape.absPoints);
+    const boxArea = (box.maxX - box.minX) * (box.maxY - box.minY);
+    return {
+      ...box,
+      solidity: boxArea > 0 ? Math.abs(signedArea(shape.absPoints)) / boxArea : 0,
+    };
+  };
+
+  const content = shapes.filter(shape => {
+    const { minX: sMinX, minY: sMinY, maxX: sMaxX, maxY: sMaxY, solidity } = measure(shape);
+
+    const spansArtboard =
+      sMinX <= viewBox.x + marginX &&
+      sMinY <= viewBox.y + marginY &&
+      sMaxX >= viewBox.x + viewBox.width - marginX &&
+      sMaxY >= viewBox.y + viewBox.height - marginY;
+
+    return !(spansArtboard && solidity >= BACKGROUND_PLATE_SOLIDITY);
+  });
+
+  return content.length > 0 ? content : shapes;
 }

@@ -3,7 +3,7 @@ import { Check, Copy, Download, ExternalLink } from 'lucide-react';
 import { ExcalidrawPreview } from './ExcalidrawPreview';
 import { ExternalA, Notice, WarningList } from './ui';
 import { convertSvg, SvgConversionError } from '../utils/convertSvg';
-import { DROP_REASON_LABELS, type ConversionDiagnostics } from '../utils/convert/diagnostics';
+import { DROP_REASON_LABELS, type ConversionDiagnostics } from '../utils/convert/parseSvg';
 import { buildIssueUrl } from '../utils/issueReport';
 import { downloadJson } from '../utils/download';
 import { plural } from '../utils/plural';

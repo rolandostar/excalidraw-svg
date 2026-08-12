@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { RawShapeSink, convertShapeElement, type ConvertContext } from './shapeConverters';
+import { RawShapeSink, convertShapeElement, type ConvertContext , RawShape } from './shapes';
 import { boundsOf } from '../svg/geometry';
-import type { RawShape } from './rawShape';
 
 const TOLERANCE = 0.05;
 
