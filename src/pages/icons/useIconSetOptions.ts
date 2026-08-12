@@ -6,7 +6,7 @@ import {
   OPTIONS_STORAGE_VERSION,
   normaliseOptions,
 } from '../../utils/defaultOptions';
-import { asPartialOf, usePersistentState } from '../../hooks/usePersistentState';
+import { asPartialOf, usePersistentState } from '../../hooks';
 import { readLegacyOptions } from './legacyOptions';
 
 /**

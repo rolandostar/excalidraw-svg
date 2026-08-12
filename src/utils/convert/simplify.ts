@@ -7,7 +7,7 @@
  * an output-size knob. This is: it only ever removes points from a finished
  * ring, and cannot change any topology decision that has already been made.
  */
-import type { Point } from '../regions/primitives';
+import type { Point } from '../regions/regions';
 
 /**
  * How far a simplified ring may deviate from the flattened one, in output

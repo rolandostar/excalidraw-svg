@@ -5,7 +5,7 @@ import {
   asString,
   asStringArray,
   usePersistentState,
-} from '../../hooks/usePersistentState';
+} from '../../hooks';
 import type { IconFilters, IconSelection } from '../../components/IconsToolbar';
 
 /**

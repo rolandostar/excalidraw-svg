@@ -10,7 +10,7 @@ import path from 'node:path';
 
 import { DEFAULT_EXCALIDRAW_OPTIONS } from '../../src/utils/defaultOptions';
 import { parseSvgToExcalidrawElements } from '../../src/utils/convert/parseSvg';
-import { createExcalidrawItem } from '../../src/utils/layout/buildItem';
+import { createExcalidrawItem } from '../../src/utils/layout';
 import { formatTitle } from '../../src/utils/categorizer';
 import { collectUnsupportedFeatures, describeWarnings } from '../../src/utils/svgSupport';
 import type { IconAsset } from '../../src/types/icons';

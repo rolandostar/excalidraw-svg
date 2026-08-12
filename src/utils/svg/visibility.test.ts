@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { localBoundingBox } from './objectBounds';
+import { localBoundingBox } from './visibility';
 import { shapeBoundsPoints, shapeToRings } from './geometry';
 
 const parse = (body: string): Element => {

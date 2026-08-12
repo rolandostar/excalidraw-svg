@@ -11,7 +11,7 @@
  */
 import { PNG } from 'pngjs';
 import { Resvg } from '@resvg/resvg-js';
-import { readViewBoxFromMarkup } from '../../src/utils/svg/viewBox';
+import { readViewBoxFromMarkup } from '../../src/utils/svg/style';
 
 export interface Box {
   x: number;

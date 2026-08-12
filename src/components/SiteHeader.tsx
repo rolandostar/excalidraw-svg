@@ -2,7 +2,7 @@ import { Github, Monitor, Moon, Sun } from 'lucide-react';
 import { Link, useRouter, type RoutePath } from '../router';
 import { REPO_URL } from '../site';
 import { ExternalA } from './ui';
-import { useTheme, type ThemePreference } from '../hooks/useTheme';
+import { useTheme, type ThemePreference } from '../hooks';
 
 const OPTIONS: { value: ThemePreference; label: string; Icon: typeof Sun }[] = [
   { value: 'system', label: 'Follow system', Icon: Monitor },

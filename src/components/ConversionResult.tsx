@@ -7,7 +7,7 @@ import { DROP_REASON_LABELS, type ConversionDiagnostics } from '../utils/convert
 import { buildIssueUrl } from '../utils/issueReport';
 import { downloadJson } from '../utils/download';
 import { plural } from '../utils/plural';
-import { useClipboardCopy } from '../hooks/useClipboardCopy';
+import { useClipboardCopy } from '../hooks';
 import type { SvgInput } from './SvgDropzone';
 
 /**

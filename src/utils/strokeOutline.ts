@@ -1,10 +1,9 @@
-import { EPSILON, Point, signedArea } from './regions/primitives';
+import { EPSILON, MultiPolygon, Point, signedArea } from './regions/regions';
 import {
-  MultiPolygon,
   differenceMultiPolygons,
   normaliseRegion,
   robustUnion,
-} from './regions/boolean';
+} from './regions/booleans';
 import { arcSegmentCount, closeRing, ringGap } from './svg/geometry';
 
 /**

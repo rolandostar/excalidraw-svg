@@ -1,3 +1,191 @@
+import * as pointsOnPathModule from 'points-on-path';
+import type { Point } from '../regions/regions';
+
+/**
+ * Reading shapes out of an SVG document as plain numbers: curve flattening,
+ * affine transforms, and the geometry of every shape element.
+ *
+ * One module because they are one question - "where is this shape, in what
+ * coordinates" - and because every consumer of any of them needs at least two.
+ *
+ *   flattening   the `points-on-path` dependency and the tolerance policy
+ *   transforms   parsing `transform`, composing up the tree, applying
+ *   shapes       rects, ellipses, polylines and paths as rings
+ */
+
+// ---------------------------------------------------------------------------
+// Curve flattening
+// ---------------------------------------------------------------------------
+
+/**
+ * Curve flattening: turning a `d` attribute into polylines, and choosing how
+ * finely to do it.
+ *
+ * Separate from the geometry module because it owns the one third-party
+ * dependency in the conversion pipeline (`points-on-path`) and the interop
+ * shim that dependency needs. Everything downstream sees plain point arrays.
+ */
+
+/**
+ * `points-on-path` ships CJS, ESM and bundler entry points that disagree about
+ * where the function lives, so it is resolved defensively rather than imported
+ * by name.
+ */
+export function getPointsOnPath(path: string, tolerance?: number): [number, number][][] {
+  const mod = pointsOnPathModule as unknown as Record<string, unknown> & {
+    default?: Record<string, unknown>;
+  };
+  const fn =
+    (mod.pointsOnPath as unknown) ||
+    (mod.default?.pointsOnPath as unknown) ||
+    (mod.default as unknown) ||
+    (mod as unknown);
+  if (typeof fn === 'function') {
+    return (fn as (p: string, t?: number) => [number, number][][])(path, tolerance);
+  }
+  return [];
+}
+
+/**
+ * Target curve-flattening error at the default 48px icon size, in user units
+ * of a nominal 1x fit. Divided by the actual viewBox->target scale so the
+ * error stays constant in output pixels as `iconScale` grows.
+ *
+ * Empirically 0.002 puts a 9-unit circle at ~0.003 user units of sagitta -
+ * under a hundredth of a pixel at 48px - for ~130 points.
+ */
+const CURVE_TOLERANCE_USER_UNITS_AT_1X = 0.002;
+
+/**
+ * Curve flattening tolerance, in *user units*, derived from the output size so
+ * that the error is constant in pixels no matter what `iconScale` the caller
+ * asked for. The old value was a hard-coded 0.05 plus a Ramer-Douglas-Peucker
+ * pass at 0.2 user units - 0.8% of a 24-unit artboard - which visibly
+ * polygonised every circle and got 2x worse each time the icon was scaled up.
+ */
+export function toleranceFor(scale: number): number {
+  return Math.min(Math.max(CURVE_TOLERANCE_USER_UNITS_AT_1X / scale, 1e-5), 0.05);
+}
+
+/**
+ * 2D affine transforms: parsing SVG `transform` attributes, composing them up
+ * the element tree, and applying them to points.
+ *
+ * Its own module because every other part of the converter needs it and none
+ * of them needs anything else from each other - clip paths, masks, bounding
+ * boxes, stroke outlining and the artwork pipeline all resolve coordinates
+ * through exactly these six functions.
+ */
+
+// ---------------------------------------------------------------------------
+// Affine transforms
+// ---------------------------------------------------------------------------
+
+/** An axis-aligned box in some element's user space. */
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/** 2D Affine Matrix transformation representation: [a, b, c, d, e, f] */
+export type Matrix2D = [number, number, number, number, number, number];
+
+export function multiplyMatrix(m1: Matrix2D, m2: Matrix2D): Matrix2D {
+  const [a1, b1, c1, d1, e1, f1] = m1;
+  const [a2, b2, c2, d2, e2, f2] = m2;
+  return [
+    a1 * a2 + c1 * b2,
+    b1 * a2 + d1 * b2,
+    a1 * c2 + c1 * d2,
+    b1 * c2 + d1 * d2,
+    a1 * e2 + c1 * f2 + e1,
+    b1 * e2 + d1 * f2 + f1,
+  ];
+}
+
+export function applyMatrix(m: Matrix2D, p: [number, number]): [number, number] {
+  return [m[0] * p[0] + m[2] * p[1] + m[4], m[1] * p[0] + m[3] * p[1] + m[5]];
+}
+
+/**
+ * Uniform scale factor a transform applies to stroke width.
+ *
+ * SVG defines this as sqrt(|det|) for a non-uniform matrix, which is the
+ * geometric mean of the two axis scales - the same value a browser uses.
+ */
+export function matrixScale(m: Matrix2D): number {
+  const determinant = Math.abs(m[0] * m[3] - m[1] * m[2]);
+  return determinant > 0 ? Math.sqrt(determinant) : 1;
+}
+
+export function parseTransformMatrix(transformStr: string | null): Matrix2D {
+  let m: Matrix2D = [1, 0, 0, 1, 0, 0];
+  if (!transformStr) return m;
+
+  const commands = transformStr.match(/\w+\([^)]+\)/g) || [];
+  commands.forEach(cmd => {
+    const typeMatch = cmd.match(/^(\w+)\(([^)]+)\)/);
+    if (!typeMatch) return;
+    const name = typeMatch[1].toLowerCase();
+    const args = typeMatch[2].trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+
+    if (name === 'matrix' && args.length >= 6) {
+      m = multiplyMatrix(m, [args[0], args[1], args[2], args[3], args[4], args[5]]);
+    } else if (name === 'translate') {
+      const dx = args[0] || 0;
+      const dy = args[1] !== undefined ? args[1] : 0;
+      m = multiplyMatrix(m, [1, 0, 0, 1, dx, dy]);
+    } else if (name === 'scale') {
+      const sx = args[0] || 1;
+      const sy = args[1] !== undefined ? args[1] : sx;
+      m = multiplyMatrix(m, [sx, 0, 0, sy, 0, 0]);
+    } else if (name === 'rotate') {
+      const rad = ((args[0] || 0) * Math.PI) / 180;
+      const cos = Math.cos(rad);
+      const sin = Math.sin(rad);
+      if (args.length >= 3) {
+        const cx = args[1];
+        const cy = args[2];
+        m = multiplyMatrix(m, [1, 0, 0, 1, cx, cy]);
+        m = multiplyMatrix(m, [cos, sin, -sin, cos, 0, 0]);
+        m = multiplyMatrix(m, [1, 0, 0, 1, -cx, -cy]);
+      } else {
+        m = multiplyMatrix(m, [cos, sin, -sin, cos, 0, 0]);
+      }
+    }
+  });
+
+  return m;
+}
+
+/**
+ * Accumulated transform from `el` up to (but excluding) `stopAt`, or up to the
+ * root `<svg>` when `stopAt` is omitted.
+ */
+export function getCombinedTransformMatrixUntil(el: Element, stopAt?: Element): Matrix2D {
+  let current: Element | null = el;
+  const matrices: Matrix2D[] = [];
+  while (current && current !== stopAt && current.tagName.toLowerCase() !== 'svg') {
+    const transformAttr = current.getAttribute('transform');
+    if (transformAttr) {
+      matrices.unshift(parseTransformMatrix(transformAttr));
+    }
+    current = current.parentElement;
+  }
+  let combined: Matrix2D = [1, 0, 0, 1, 0, 0];
+  matrices.forEach(mat => {
+    combined = multiplyMatrix(combined, mat);
+  });
+  return combined;
+}
+
+/** Maps the unit square onto a bounding box - the `objectBoundingBox` transform. */
+export function boundingBoxMatrix(box: BoundingBox): Matrix2D {
+  return [box.width, 0, 0, box.height, box.x, box.y];
+}
+
 /**
  * Turning SVG shape elements into plain polygon rings, plus the small
  * numeric primitives that job needs.
@@ -14,8 +202,10 @@
  * the numeric parameters that used to differ between copies are arguments, so
  * each caller keeps exactly the behaviour it had.
  */
-import type { Point } from '../regions/primitives';
-import { getPointsOnPath } from './pathFlatten';
+
+// ---------------------------------------------------------------------------
+// Shape geometry
+// ---------------------------------------------------------------------------
 
 /**
  * The two shape selectors, next to the two functions they select for.

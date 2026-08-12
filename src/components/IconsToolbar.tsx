@@ -5,11 +5,11 @@ import type { ExcalidrawOptions } from '../types/options';
 import {
   buildExcalidrawClipboardData,
   buildExcalidrawLibraryPackage,
-} from '../utils/layout/packGrid';
+} from '../utils/layout';
 import { celebrate } from '../utils/celebrate';
 import { downloadJson } from '../utils/download';
 import { plural } from '../utils/plural';
-import { useClipboardCopy } from '../hooks/useClipboardCopy';
+import { useClipboardCopy } from '../hooks';
 import { useToast } from './Toast';
 
 /**

@@ -4,7 +4,7 @@ import {
   looksLikeV1Options,
   migrateOptionsV1,
 } from '../../utils/defaultOptions';
-import { asPartialOf, storageKey } from '../../hooks/usePersistentState';
+import { asPartialOf, storageKey } from '../../hooks';
 
 /**
  * Reading the pre-v2 styling key out of localStorage.

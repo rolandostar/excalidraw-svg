@@ -7,10 +7,8 @@
  * to read the *order* things happen in and nothing else.
  */
 import type { ExcalidrawElement } from '../../types/excalidraw';
-import { parseCssStylesheet } from '../svg/stylesheet';
-import { toleranceFor } from '../svg/pathFlatten';
-import { readViewBox } from '../svg/viewBox';
-import { DRAWABLE_SHAPES } from '../svg/geometry';
+import { parseCssStylesheet , readViewBox } from '../svg/style';
+import { toleranceFor , DRAWABLE_SHAPES } from '../svg/geometry';
 import { ConversionDiagnostics, DiagnosticsSink } from './diagnostics';
 import { type ConvertContext, RawShapeSink, convertShapeElement } from './shapeConverters';
 import { dedupeRawShapes } from './rawShape';

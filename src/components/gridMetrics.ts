@@ -1,6 +1,6 @@
 import type { IconAsset } from '../types/icons';
 import type { ExcalidrawOptions } from '../types/options';
-import { measureExcalidrawItem } from '../utils/layout/itemLayout';
+import { measureExcalidrawItem } from '../utils/layout';
 
 /**
  * Sizing shared by the icon grid and the cards inside it.

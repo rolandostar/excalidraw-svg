@@ -6,9 +6,9 @@
  * decision. Both are load-bearing and both have been wrong before; keeping
  * them next to the test they parameterise is what makes that reviewable.
  */
-import { signedArea } from '../regions/primitives';
+import { signedArea } from '../regions/regions';
 import { boundsOf } from '../svg/geometry';
-import type { ViewBox } from '../svg/viewBox';
+import type { ViewBox } from '../svg/style';
 import type { RawShape } from './rawShape';
 
 /**

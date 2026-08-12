@@ -9,29 +9,24 @@
  * The dispatch is a lookup table rather than a chain so that adding a tag is a
  * map entry, and so that "which tags are handled" is one readable line.
  */
-import { Point, signedArea } from '../regions/primitives';
-import { resolveFilledRegions } from '../regions/fillRule';
-import type { MultiPolygon } from '../regions/boolean';
-import { bridgeHoles, regionToBridgedRings } from '../regions/bridge';
+import { MultiPolygon, Point, resolveFilledRegions, signedArea } from '../regions/regions';
+import { bridgeHoles, regionToBridgedRings } from '../regions/booleans';
 import { strokeToRegion } from '../strokeOutline';
 import {
   Matrix2D,
   applyMatrix,
   getCombinedTransformMatrixUntil,
   matrixScale,
-} from '../svg/matrix';
-import {
+
   EllipseAttrs,
   ellipseRing,
   readEllipseAttrs,
   readPointsAttr,
   readRectAttrs,
-  rectangleRing,
-} from '../svg/geometry';
-import { getPointsOnPath } from '../svg/pathFlatten';
-import { ShapeStyle, getShapeStyle } from '../svg/paint';
-import type { StyleMap } from '../svg/stylesheet';
-import { applyClip, getVisibilityRegion, resolveVisibility } from '../svg/clipping';
+  rectangleRing, getPointsOnPath } from '../svg/geometry';
+import { ShapeStyle, getShapeStyle } from '../svg/style';
+import type { StyleMap } from '../svg/style';
+import { applyClip, getVisibilityRegion, resolveVisibility } from '../svg/visibility';
 import type { DropReason } from './diagnostics';
 import type { RawShape } from './rawShape';
 

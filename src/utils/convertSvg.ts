@@ -13,7 +13,7 @@
  */
 import { parseSvgToExcalidrawElements } from './convert/parseSvg';
 import { type ConversionDiagnostics, emptyDiagnostics } from './convert/diagnostics';
-import { type ViewBox, readViewBox } from './svg/viewBox';
+import { type ViewBox, readViewBox } from './svg/style';
 import { type SvgFeatureWarning, collectUnsupportedFeatures } from './svgSupport';
 import { type FidelityIssue, auditSceneFidelity } from './sceneAudit';
 import type { ExcalidrawElement } from '../types/excalidraw';

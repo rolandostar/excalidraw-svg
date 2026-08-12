@@ -1,3 +1,83 @@
+import type { FillRule } from '../regions/regions';
+import type { LineCap, LineJoin } from '../strokeOutline';
+import { hexChannels, relativeLuminance } from '../color';
+
+/**
+ * What a shape is painted with, and how big the document is.
+ *
+ * All of the CSS *precedence* this converter models lives here and nowhere
+ * else: presentation attributes, `<style>` rules, inline `style`, inheritance
+ * up the tree, gradient stop approximation and opacity compositing.
+ *
+ *   stylesheet   parsing a `<style>` block into class rules
+ *   paint        resolving fill, stroke, opacity and the stroke geometry enums
+ *   viewBox      the document's intrinsic size and user-space window
+ */
+
+// ---------------------------------------------------------------------------
+// Stylesheet
+// ---------------------------------------------------------------------------
+
+/**
+ * The `<style>` element, reduced to the three properties this converter can
+ * act on.
+ *
+ * Split from `paint.ts` because it is the only part of the cascade that reads
+ * the *document* rather than an element: it runs once per file and produces a
+ * lookup table everything else consumes. Keeping it apart also keeps
+ * `paint.ts` about precedence rather than about regexes.
+ *
+ * Deliberately not a real CSS parser. Only class selectors are supported,
+ * which is what design tools emit; anything else is ignored rather than
+ * mis-applied.
+ */
+
+/** One `<style>` rule, reduced to the properties this converter models. */
+interface CssPaintRule {
+  fill?: string;
+  stroke?: string;
+  opacity?: number;
+}
+
+/** Class name (without the leading dot) -> merged declarations. */
+export type StyleMap = Record<string, CssPaintRule>;
+
+/** Extracts CSS stylesheet rules from <style> elements inside SVG DOM */
+export function parseCssStylesheet(doc: Document): StyleMap {
+  const styleMap: StyleMap = {};
+  doc.querySelectorAll('style').forEach(styleEl => {
+    const text = styleEl.textContent || '';
+    const ruleBlocks = text.match(/([^{]+)\{([^}]+)\}/g) || [];
+    ruleBlocks.forEach(block => {
+      const parts = block.split('{');
+      if (parts.length < 2) return;
+      const selectors = parts[0].split(',').map(s => s.trim().replace(/^\./, ''));
+      const declsStr = parts[1];
+
+      let fill: string | undefined;
+      let stroke: string | undefined;
+      let opacity: number | undefined;
+
+      const fillMatch = declsStr.match(/fill\s*:\s*([^;}]+)/i);
+      if (fillMatch && fillMatch[1].trim() !== 'none') fill = fillMatch[1].trim();
+
+      const strokeMatch = declsStr.match(/stroke\s*:\s*([^;}]+)/i);
+      if (strokeMatch && strokeMatch[1].trim() !== 'none') stroke = strokeMatch[1].trim();
+
+      const opacityMatch = declsStr.match(/opacity\s*:\s*([^;}]+)/i);
+      if (opacityMatch) opacity = parseFloat(opacityMatch[1]);
+
+      selectors.forEach(sel => {
+        if (!styleMap[sel]) styleMap[sel] = {};
+        if (fill) styleMap[sel].fill = fill;
+        if (stroke) styleMap[sel].stroke = stroke;
+        if (opacity !== undefined) styleMap[sel].opacity = opacity;
+      });
+    });
+  });
+  return styleMap;
+}
+
 /**
  * Resolving what colour a shape is painted, and how opaque.
  *
@@ -8,10 +88,10 @@
  * being rediscovered at each call site. Parsing the stylesheet itself is
  * `stylesheet.ts`.
  */
-import type { FillRule } from '../regions/primitives';
-import type { LineCap, LineJoin } from '../strokeOutline';
-import type { StyleMap } from './stylesheet';
-import { hexChannels, relativeLuminance } from '../color';
+
+// ---------------------------------------------------------------------------
+// Paint
+// ---------------------------------------------------------------------------
 
 /** The SVG initial value of the `fill` property. Undeclared is *not* `none`. */
 const DEFAULT_FILL = '#000000';
@@ -323,4 +403,99 @@ export function paintLuminance(value: string | null): number {
   const rgb = paint.match(/rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/);
   if (!rgb) return 1; // unknown named colour: assume it reveals
   return relativeLuminance(+rgb[1], +rgb[2], +rgb[3]);
+}
+
+/**
+ * The one place that answers "how big is this SVG, and in what coordinates".
+ *
+ * There used to be three: the converter (fallback 24), the upload path
+ * (fallback 100) and the icon-set loader (fallback 48, regex-based). They
+ * disagreed about more than the fallback - whether a comma-separated viewBox
+ * parses, whether a zero extent falls through to `width`/`height` - which is
+ * exactly the kind of divergence nobody notices until one file renders at the
+ * wrong scale on one page.
+ *
+ * The fallback stays a caller-supplied argument: 24, 100 and 48 are three
+ * genuinely different guesses about three different kinds of input, and
+ * collapsing them would change behaviour.
+ */
+
+// ---------------------------------------------------------------------------
+// viewBox
+// ---------------------------------------------------------------------------
+
+export interface ViewBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Where the numbers came from, so a UI can say so honestly. */
+  source: 'viewBox' | 'width/height' | 'fallback';
+}
+
+/** Size to assume when neither a usable viewBox nor usable dimensions exist. */
+export interface ViewBoxFallback {
+  width: number;
+  height: number;
+}
+
+/** The three attributes that can carry an intrinsic size. */
+interface SizeAttrs {
+  viewBox: string | null;
+  width: string | null;
+  height: string | null;
+}
+
+function parseSizeAttrs(attrs: SizeAttrs, fallback: ViewBoxFallback): ViewBox {
+  if (attrs.viewBox) {
+    const parts = attrs.viewBox.split(/[\s,]+/).map(Number).filter(n => Number.isFinite(n));
+    if (parts.length >= 4 && parts[2] > 0 && parts[3] > 0) {
+      return { x: parts[0], y: parts[1], width: parts[2], height: parts[3], source: 'viewBox' };
+    }
+  }
+
+  // `width`/`height` may carry units (`100mm`, `12em`) or percentages, none of
+  // which mean anything without a containing block, so they are only a
+  // fallback - and `parseFloat` deliberately keeps the leading number.
+  const width = parseFloat(attrs.width ?? '');
+  const height = parseFloat(attrs.height ?? '');
+  if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+    return { x: 0, y: 0, width, height, source: 'width/height' };
+  }
+
+  return { x: 0, y: 0, width: fallback.width, height: fallback.height, source: 'fallback' };
+}
+
+/** Intrinsic size of a parsed `<svg>` element. */
+export function readViewBox(svgEl: Element, fallback: ViewBoxFallback): ViewBox {
+  return parseSizeAttrs(
+    {
+      viewBox: svgEl.getAttribute('viewBox'),
+      width: svgEl.getAttribute('width'),
+      height: svgEl.getAttribute('height'),
+    },
+    fallback
+  );
+}
+
+/**
+ * Intrinsic size read straight out of markup, without a DOM parse.
+ *
+ * The icon-set loader runs this once per file over a few hundred files while
+ * building the gallery, where a full `DOMParser` round-trip per icon is real
+ * time spent for three attributes.
+ */
+export function readViewBoxFromMarkup(svg: string, fallback: ViewBoxFallback): ViewBox {
+  // Only the root start tag, so a child's `width` or a `stroke-width` cannot
+  // be mistaken for the document's own size.
+  const openTag = svg.match(/<svg\b[^>]*>/i)?.[0] ?? '';
+  const attr = (name: string): string | null => {
+    const match = openTag.match(new RegExp(`\\s${name}\\s*=\\s*["']([^"']*)["']`, 'i'));
+    return match ? match[1] : null;
+  };
+
+  return parseSizeAttrs(
+    { viewBox: attr('viewBox'), width: attr('width'), height: attr('height') },
+    fallback
+  );
 }

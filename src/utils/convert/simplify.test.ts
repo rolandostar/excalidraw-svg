@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { simplifyClosedRing } from './simplify';
-import type { Point } from '../regions/primitives';
+import type { Point } from '../regions/regions';
 
 /** A closed ring: first point repeated as last, as the emitter produces. */
 const closed = (pts: Point[]): Point[] => [...pts, pts[0]];
