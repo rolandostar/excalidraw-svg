@@ -1,5 +1,5 @@
 import { Config, optimize } from 'svgo/browser';
-import { averageHexColors, parseHexColor } from './color';
+import { averageHexColors, parseHexColor } from '../convert/color';
 
 /**
  * Operations on SVG markup as a string: optimising it, and encoding it for

@@ -2,9 +2,8 @@ import { useMemo } from 'react';
 import { ArrowRight, FolderPlus } from 'lucide-react';
 import { Link, iconSetPath } from '../router';
 import { WIKI_URL } from '../site';
-import { ExternalA, NextCard } from '../components/ui';
-import { listIconSets, totalIconCount } from '../utils/iconSets';
-import { plural } from '../utils/plural';
+import { ExternalA, NextCard , plural } from '../components/ui';
+import { listIconSets, totalIconCount } from '../library/iconSets';
 
 /**
  * Gallery of every icon set found on disk.

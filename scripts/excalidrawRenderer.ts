@@ -2,10 +2,10 @@ import './setupDom';
 
 import { exportToSvg } from '@excalidraw/utils';
 import type { ExcalidrawElement, ExcalidrawFile } from '../src/types/excalidraw';
-import { exportSceneArgs, withFrame } from '../src/utils/sceneFrame';
+import { exportSceneArgs, withFrame } from '../src/scene/frame';
 
 // The scene audit is pure and shared with the browser, so it lives in `src/`.
-export { auditSceneFidelity } from '../src/utils/sceneAudit';
+export { auditSceneFidelity } from '../src/scene/audit';
 
 export interface RenderedScene {
   svg: string;

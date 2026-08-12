@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { auditSceneFidelity } from './sceneAudit';
+import { auditSceneFidelity } from './audit';
 import type { ExcalidrawElement } from '../types/excalidraw';
 
 /** A closed square, which is the shape every case below starts from. */

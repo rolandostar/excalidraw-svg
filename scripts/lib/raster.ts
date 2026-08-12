@@ -1,7 +1,7 @@
 import { PNG } from 'pngjs';
 import { Resvg } from '@resvg/resvg-js';
 import pixelmatch from 'pixelmatch';
-import { readViewBoxFromMarkup } from '../../src/utils/svg/style';
+import { readViewBoxFromMarkup } from '../../src/convert/style';
 
 /**
  * Deterministic rasterisation and pixel comparison for the fidelity harness.

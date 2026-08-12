@@ -18,8 +18,8 @@ import {
   looksLikeV1Options,
   migrateOptionsV1,
   normaliseOptions,
-} from '../utils/defaultOptions';
-import { findIconSetSummary, loadIconSet } from '../utils/iconSets';
+} from '../scene/options';
+import { findIconSetSummary, loadIconSet } from '../library/iconSets';
 import { IconsToolbar, type IconFilters, type IconSelection } from '../components/IconsToolbar';
 import { SidebarOptions } from '../components/SidebarOptions';
 import { IconGrid } from '../components/IconGrid';

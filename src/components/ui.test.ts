@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { plural } from './plural';
+import { plural } from './ui';
 
 describe('plural', () => {
   it('drops the suffix for exactly one', () => {

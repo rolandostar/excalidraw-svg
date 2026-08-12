@@ -1,5 +1,5 @@
 import * as pointsOnPathModule from 'points-on-path';
-import type { Point } from '../regions/regions';
+import type { Point } from './regions';
 
 /**
  * Reading shapes out of an SVG document as plain numbers: curve flattening,

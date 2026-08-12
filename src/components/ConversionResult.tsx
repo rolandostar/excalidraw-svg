@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Check, Copy, Download, ExternalLink } from 'lucide-react';
 import { ExcalidrawPreview } from './ExcalidrawPreview';
-import { ExternalA, Notice, WarningList } from './ui';
-import { convertSvg, SvgConversionError } from '../utils/convertSvg';
-import { DROP_REASON_LABELS, type ConversionDiagnostics } from '../utils/convert/parseSvg';
-import { buildIssueUrl } from '../utils/issueReport';
-import { downloadJson } from '../utils/download';
-import { plural } from '../utils/plural';
+import { ExternalA, Notice, WarningList, downloadJson, plural } from './ui';
+import { convertSvg, SvgConversionError, type ConversionResult } from '../convert/upload';
+import { DROP_REASON_LABELS, type ConversionDiagnostics } from '../convert/parseSvg';
+import { REPO_URL } from '../site';
 import { useClipboardCopy } from '../hooks';
 import type { SvgInput } from './SvgDropzone';
 
@@ -222,4 +220,110 @@ export function ConversionResultPanel({ input }: ConversionResultProps) {
       )}
     </section>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Prefilled issue report
+// ---------------------------------------------------------------------------
+
+/**
+ * Builds a prefilled "this SVG converted badly" GitHub issue.
+ *
+ * A bare "open an issue" link produces reports with no reproduction case. The
+ * useful part of a report is the file plus what the converter already knew was
+ * risky about it, so all of that is filled in and you only have to attach the
+ * SVG and say what looks wrong.
+ *
+ * The source is deliberately NOT embedded. GitHub truncates long URLs, an SVG
+ * pasted into a URL is unreadable in the issue body, and attaching the actual
+ * file is what makes it usable as a fixture.
+ */
+
+/** GitHub starts failing on very long URLs; stay well inside that. */
+const MAX_URL_LENGTH = 6000;
+
+function warningBullets(result: ConversionResult): string {
+  if (result.warnings.length === 0) return '_none detected_';
+  return result.warnings
+    .map(w => `- \`${w.feature}\` x${w.count} — **${w.severity}** — ${w.detail}`)
+    .join('\n');
+}
+
+function describeAudit(result: ConversionResult): string {
+  if (result.auditIssues.length === 0) return '_none_';
+  return result.auditIssues
+    .slice(0, 10)
+    .map(i => `- element #${i.elementIndex} (${i.elementType}) \`${i.kind}\`: ${i.detail}`)
+    .join('\n');
+}
+
+function describeDrops(result: ConversionResult): string {
+  if (result.diagnostics.skippedTotal === 0) return '_none_';
+  return result.diagnostics.drops
+    .slice(0, 10)
+    .map(d => `- ${d.count} x \`<${d.tag}>\` — \`${d.reason}\` — ${d.detail}`)
+    .join('\n');
+}
+
+function buildIssueUrl(fileName: string, result: ConversionResult): string {
+  const title = `Bad conversion: ${fileName}.svg`;
+
+  const body = `<!--
+Thanks for reporting. Edge cases are how this converter gets better: an
+accepted report becomes a permanent fixture in the torture suite, so the
+same bug can never come back silently.
+
+Please ATTACH THE SVG FILE by dragging it into this box. Everything below
+was filled in automatically.
+-->
+
+## What looks wrong
+
+<!-- e.g. "the inner cutout is filled in", "the logo lost its text",
+     "the whole thing is one solid rectangle" -->
+
+
+## The file
+
+<!-- Drag the .svg in here. Without it this cannot be turned into a test. -->
+
+
+## Automatic detail
+
+| | |
+|---|---|
+| source dimensions | ${result.dimensions.width} x ${result.dimensions.height} (from ${result.dimensions.source}) |
+| converted to | ${result.width} x ${result.height} |
+| elements produced | ${result.counts.total} (${result.counts.lines} line, ${result.counts.ellipses} ellipse) |
+| source shapes dropped | ${result.diagnostics.skippedTotal} |
+
+### Features the converter flagged
+
+${warningBullets(result)}
+
+### Source shapes that produced no output
+
+${describeDrops(result)}
+
+### Scene audit issues
+
+${describeAudit(result)}
+
+---
+<sub>Reported from the web converter. How this is tested: ${REPO_URL}/wiki/Testing</sub>
+`;
+
+  const url = new URL(`${REPO_URL}/issues/new`);
+  url.searchParams.set('title', title);
+  url.searchParams.set('labels', 'edge-case');
+  url.searchParams.set('body', body);
+
+  const full = url.toString();
+  if (full.length <= MAX_URL_LENGTH) return full;
+
+  // Fall back to title-only rather than producing a URL GitHub will reject.
+  const short = new URL(`${REPO_URL}/issues/new`);
+  short.searchParams.set('title', title);
+  short.searchParams.set('labels', 'edge-case');
+  return short.toString();
 }

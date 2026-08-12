@@ -1,7 +1,7 @@
 // Supplied by vite/icon-sets.ts; typed in src/virtual-icon-sets.d.ts.
 import { ICON_SETS } from 'virtual:icon-sets';
-import type { IconSetManifest } from '../../types/icons';
-import { readViewBoxFromMarkup } from '../svg/style';
+import type { IconSetManifest } from '../types/icons';
+import { readViewBoxFromMarkup } from '../convert/style';
 
 /**
  * The boundary with the build, and the only module in `src/` that cannot be

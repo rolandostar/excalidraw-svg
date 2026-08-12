@@ -1,7 +1,7 @@
-import type { ExcalidrawElement } from '../../types/excalidraw';
-import type { Point } from '../regions/regions';
+import type { ExcalidrawElement } from '../types/excalidraw';
+import type { Point } from './regions';
 import type { RawShape } from './shapes';
-import { boundsOf, closeRing } from '../svg/geometry';
+import { boundsOf, closeRing } from './geometry';
 
 /**
  * Turning intermediate shapes into Excalidraw elements.

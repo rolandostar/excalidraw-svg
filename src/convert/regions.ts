@@ -1,5 +1,5 @@
 import polygonClipping from 'polygon-clipping';
-import { boundsOfRings, closeRing, ringGap } from '../svg/geometry';
+import { boundsOfRings, closeRing, ringGap } from './geometry';
 
 /**
  * Rings, and the one question that decides whether artwork survives

@@ -5,10 +5,8 @@ import type { ExcalidrawOptions } from '../types/options';
 import {
   buildExcalidrawClipboardData,
   buildExcalidrawLibraryPackage,
-} from '../utils/layout';
-import { celebrate } from '../utils/celebrate';
-import { downloadJson } from '../utils/download';
-import { plural } from '../utils/plural';
+} from '../scene/layout';
+import { celebrate , downloadJson , plural } from './ui';
 import { useClipboardCopy } from '../hooks';
 import { useToast } from './Toast';
 

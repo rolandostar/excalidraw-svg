@@ -1,10 +1,10 @@
-import { EPSILON, MultiPolygon, Point, signedArea } from './regions/regions';
+import { EPSILON, MultiPolygon, Point, signedArea } from './regions';
 import {
   differenceMultiPolygons,
   normaliseRegion,
   robustUnion,
-} from './regions/booleans';
-import { arcSegmentCount, closeRing, ringGap } from './svg/geometry';
+} from './booleans';
+import { arcSegmentCount, closeRing, ringGap } from './geometry';
 
 /**
  * Converts a stroked polyline into the filled region that stroke covers.

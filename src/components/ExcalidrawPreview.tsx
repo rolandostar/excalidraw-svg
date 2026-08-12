@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import type { ExcalidrawElement, ExcalidrawFile } from '../types/excalidraw';
-import { exportSceneArgs, type FrameWindow, withFrame } from '../utils/sceneFrame';
+import { exportSceneArgs, type FrameWindow, withFrame } from '../scene/frame';
 
 /**
  * Renders elements with **Excalidraw's own exporter**, not a lookalike.

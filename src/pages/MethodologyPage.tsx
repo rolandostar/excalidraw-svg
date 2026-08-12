@@ -2,16 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
 import { NEW_ISSUE_URL, WIKI_URL, STATS, formatPct, formatPx } from '../site';
 import { TrapTable, type TrapRow } from '../components/TrapTable';
-import { ExternalA, Stat } from '../components/ui';
-import { plural } from '../utils/plural';
-import { listIconSets } from '../utils/iconSets';
-import { listSupportRules } from '../utils/svgSupport';
+import { ExternalA, Stat , plural } from '../components/ui';
+import { listIconSets } from '../library/iconSets';
+import { listSupportRules } from '../convert/support';
 import {
   evidenceImageUrl,
   loadEvidence,
   type EvidenceCase,
   type EvidenceManifest,
-} from '../utils/evidence';
+} from '../site';
 
 /**
  * The strip shown next to the introduction.

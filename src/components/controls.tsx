@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check, Plus } from 'lucide-react';
-import { FONT_FAMILIES, GCP_BLUE, ROUGHNESS } from '../../types/options';
+import { FONT_FAMILIES, GCP_BLUE, ROUGHNESS } from '../types/options';
 import type {
   CardCorners,
   CardFillStyle,
@@ -8,9 +8,9 @@ import type {
   LabelFontFamily,
   LabelPosition,
   Roughness,
-} from '../../types/options';
-import { hexChannels, relativeLuminance } from '../../utils/color';
-import { isColor, normaliseColor } from '../../utils/optionsSchema';
+} from '../types/options';
+import { hexChannels, relativeLuminance } from '../convert/color';
+import { isColor, normaliseColor } from '../scene/options';
 
 /**
  * The primitives the styling sidebar is built from.

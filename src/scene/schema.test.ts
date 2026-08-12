@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { sanitizeOptionsPatch } from './optionsSchema';
+import { sanitizeOptionsPatch } from './options';
 import { GCP_BLUE } from '../types/options';
 
 /** Every rejection warns, and the warning is the whole point of rejecting. */

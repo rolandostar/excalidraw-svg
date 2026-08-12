@@ -1,7 +1,22 @@
 import type { ReactNode } from 'react';
 import { AlertTriangle, ArrowRight, ExternalLink, Info, type LucideIcon } from 'lucide-react';
-import type { SvgFeatureWarning } from '../utils/svgSupport';
+import confetti from 'canvas-confetti';
+import type { SvgFeatureWarning } from '../convert/support';
 import { Link, type RoutePath } from '../router';
+
+/**
+ * The small pieces more than one page needs: shared markup, and three
+ * one-function helpers that have no better home.
+ *
+ * Each component here replaced a set of hand-written copies that had already
+ * begun to disagree - two glyph sizes on the same card, a `rel` present on
+ * five external links and absent on the sixth. Pairing the parts that must
+ * agree is the point; none of them is here to save lines.
+ */
+
+// ---------------------------------------------------------------------------
+// Markup
+// ---------------------------------------------------------------------------
 
 /**
  * The small pieces of markup that more than one page renders.
@@ -151,4 +166,69 @@ export function NextCard({
       {body}
     </ExternalA>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * English pluralisation for counted nouns in UI copy.
+ *
+ * The literal `${n} item${n === 1 ? '' : 's'}` had been written out eight
+ * times across the toolbar, the conversion panel and three pages. Each copy
+ * was a fresh chance to get the boundary wrong, and two of them already
+ * disagreed about whether the count was included in the string. This owns
+ * that one decision: the count is always included, and an irregular plural
+ * can be given explicitly rather than forcing a caller back to the ternary.
+ */
+export function plural(n: number, singular: string, pluralForm?: string): string {
+  return `${n} ${n === 1 ? singular : (pluralForm ?? `${singular}s`)}`;
+}
+
+/**
+ * Saving generated JSON to the user's disk.
+ *
+ * The toolbar's library export and the convert page's scene download had
+ * byte-identical Blob / createObjectURL / synthetic-anchor / revoke bodies.
+ * The sequence is easy to write and easy to write *almost* right - forgetting
+ * the revoke leaks the blob for the lifetime of the document - so it lives
+ * here once rather than being retyped per call site.
+ */
+export function downloadJson(filename: string, text: string): void {
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * The one confetti burst, in the one set of brand colours.
+ *
+ * `IconCard` inlined its own `confetti({...})` call with a two-colour literal
+ * array while `IconsToolbar` kept a four-colour `GCP_COLORS` constant and a
+ * local `celebrate` helper, so the same gesture threw different colours
+ * depending on whether one icon or a selection was copied.
+ *
+ * Also the one place that honours `prefers-reduced-motion`. Confetti is pure
+ * motion with no informational content, so a user who has asked for less of it
+ * gets none: the toast still fires, which is what actually reports the result.
+ */
+const GCP_COLORS = ['#4285f4', '#34a853', '#fbbc05', '#ea4335'];
+
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
+export function celebrate(particleCount = 60): void {
+  if (prefersReducedMotion()) return;
+  confetti({ particleCount, spread: 65, origin: { y: 0.15 }, colors: GCP_COLORS });
 }

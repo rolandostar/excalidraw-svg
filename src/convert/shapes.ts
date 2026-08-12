@@ -1,6 +1,6 @@
-import { MultiPolygon, Point, resolveFilledRegions, signedArea } from '../regions/regions';
-import { bridgeHoles, regionToBridgedRings } from '../regions/booleans';
-import { strokeToRegion } from '../strokeOutline';
+import { MultiPolygon, Point, resolveFilledRegions, signedArea } from './regions';
+import { bridgeHoles, regionToBridgedRings } from './booleans';
+import { strokeToRegion } from './strokes';
 import {
   EllipseAttrs,
   Matrix2D,
@@ -14,10 +14,10 @@ import {
   readPointsAttr,
   readRectAttrs,
   rectangleRing,
-} from '../svg/geometry';
-import { ShapeStyle, getShapeStyle } from '../svg/style';
-import { applyClip, getVisibilityRegion, resolveVisibility } from '../svg/visibility';
-import type { ViewBox , StyleMap } from '../svg/style';
+} from './geometry';
+import { ShapeStyle, getShapeStyle } from './style';
+import { applyClip, getVisibilityRegion, resolveVisibility } from './visibility';
+import type { ViewBox , StyleMap } from './style';
 import type { DropReason } from './parseSvg';
 
 /**

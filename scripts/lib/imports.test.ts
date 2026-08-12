@@ -50,7 +50,7 @@ const BARE = /import\s+'([^']+)'/g;
 
 /**
  * Comments are stripped first. Without this, the note in `setupDom.ts` that
- * says to write `import './setupDom'` reads as a self-edge.
+ * says to write `import '../setupDom'` reads as a self-edge.
  */
 const stripComments = (text: string): string =>
   text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');

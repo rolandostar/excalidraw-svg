@@ -11,7 +11,7 @@
  * will go missing *before* they paste.
  */
 import type { ExcalidrawElement, ExcalidrawFile } from '../types/excalidraw';
-import { LINE_CONFIRM_THRESHOLD } from './defaultOptions';
+import { LINE_CONFIRM_THRESHOLD } from './options';
 
 export interface FidelityIssue {
   elementIndex: number;

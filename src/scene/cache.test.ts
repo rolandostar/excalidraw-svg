@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { clear, getCachedScene, sceneCacheKey, setCachedScene, size } from './sceneCache';
+import { clear, getCachedScene, sceneCacheKey, setCachedScene, size } from './cache';
 import type { ExcalidrawElement } from '../types/excalidraw';
 
 const scene = (id: string) => [{ id } as ExcalidrawElement];

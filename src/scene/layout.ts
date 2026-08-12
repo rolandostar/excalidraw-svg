@@ -1,11 +1,11 @@
 import type { ExcalidrawElement, ExcalidrawFile, ExcalidrawLibraryPackage } from '../types/excalidraw';
 import type { ExcalidrawOptions } from '../types/options';
 import type { IconAsset } from '../types/icons';
-import { ICON_BASE_SIZE } from './defaultOptions';
-import { boundsOf } from './svg/geometry';
-import { lineHeightFor, measureLabel } from './textMetrics';
-import { createBaseElement, generateRandomId } from './convert/emit';
-import { parseSvgToExcalidrawElements } from './convert/parseSvg';
+import { ICON_BASE_SIZE } from './options';
+import { boundsOf } from '../convert/geometry';
+import { lineHeightFor, measureLabel } from './text';
+import { createBaseElement, generateRandomId } from '../convert/emit';
+import { parseSvgToExcalidrawElements } from '../convert/parseSvg';
 
 /**
  * Arranging converted artwork into something you can paste.

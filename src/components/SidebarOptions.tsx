@@ -2,7 +2,7 @@ import React from 'react';
 import { ChevronDown, Frame, Sliders, Type, Wand2 } from 'lucide-react';
 import type { ResolvedPreset } from '../types/icons';
 import { GCP_BLUE, ICON_SCALES, type CardFillStyle, type ExcalidrawOptions } from '../types/options';
-import { ICON_BASE_SIZE, normaliseOptions } from '../utils/defaultOptions';
+import { ICON_BASE_SIZE, normaliseOptions } from '../scene/options';
 import {
   BG_COLORS,
   ColorField,
@@ -20,7 +20,7 @@ import {
   Slider,
   Switch,
   TEXT_COLORS,
-} from './options/controls';
+} from './controls';
 import {
   CARD_CORNERS,
   CARD_FILL_STYLES,

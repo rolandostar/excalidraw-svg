@@ -11,11 +11,11 @@
  * against a renderer; for a stranger's logo, "nothing happened" is
  * indistinguishable from "your wordmark was dropped".
  */
-import { parseSvgToExcalidrawElements } from './convert/parseSvg';
-import { type ConversionDiagnostics, emptyDiagnostics } from './convert/parseSvg';
-import { type ViewBox, readViewBox } from './svg/style';
-import { type SvgFeatureWarning, collectUnsupportedFeatures } from './svgSupport';
-import { type FidelityIssue, auditSceneFidelity } from './sceneAudit';
+import { parseSvgToExcalidrawElements } from './parseSvg';
+import { type ConversionDiagnostics, emptyDiagnostics } from './parseSvg';
+import { type ViewBox, readViewBox } from './style';
+import { type SvgFeatureWarning, collectUnsupportedFeatures } from './support';
+import { type FidelityIssue, auditSceneFidelity } from '../scene/audit';
 import type { ExcalidrawElement } from '../types/excalidraw';
 
 /** Beyond this the scene stops being pasteable at a sensible zoom. */

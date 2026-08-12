@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { collectUnsupportedFeatures, describeWarnings, listSupportRules } from './svgSupport';
+import { collectUnsupportedFeatures, describeWarnings, listSupportRules } from './support';
 
 const svg = (body: string) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${body}</svg>`;
 const features = (body: string) => collectUnsupportedFeatures(svg(body)).map(w => w.feature);

@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { FlaskConical, Layers, ShieldCheck } from 'lucide-react';
 import { ConversionResultPanel } from '../components/ConversionResult';
 import { SvgDropzone, type SvgInput } from '../components/SvgDropzone';
-import { NextCard, Stat } from '../components/ui';
+import { NextCard, Stat , plural } from '../components/ui';
 import { STATS, formatPct } from '../site';
-import { listIconSets, totalIconCount } from '../utils/iconSets';
-import { plural } from '../utils/plural';
+import { listIconSets, totalIconCount } from '../library/iconSets';
 
 export function ConvertPage() {
   const [input, setInput] = useState<SvgInput | null>(null);

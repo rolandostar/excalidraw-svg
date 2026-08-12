@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
 import type { Plugin } from 'vite';
-import { optimizeSvgString } from '../src/utils/svgMarkup';
+import { optimizeSvgString } from '../src/library/svgMarkup';
 
 /**
  * Runs the SVG optimiser at build time instead of in the browser.

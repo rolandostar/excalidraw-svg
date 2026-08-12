@@ -1,6 +1,6 @@
-import type { ExcalidrawElement } from '../../types/excalidraw';
-import { DRAWABLE_SHAPES, toleranceFor } from '../svg/geometry';
-import { parseCssStylesheet, readViewBox } from '../svg/style';
+import type { ExcalidrawElement } from '../types/excalidraw';
+import { DRAWABLE_SHAPES, toleranceFor } from './geometry';
+import { parseCssStylesheet, readViewBox } from './style';
 import {
   type ConvertContext,
   RawShapeSink,

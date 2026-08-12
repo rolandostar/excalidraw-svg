@@ -8,10 +8,13 @@ import type {
   ResolvedPreset,
 } from '../types/icons';
 import { type ExcalidrawOptions, GCP_BLUE } from '../types/options';
-import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from './defaultOptions';
-import { sanitizeOptionsPatch } from './optionsSchema';
+import {
+  DEFAULT_EXCALIDRAW_OPTIONS,
+  normaliseOptions,
+  sanitizeOptionsPatch,
+} from '../scene/options';
 import { IMPLICIT_CATEGORY, categorizeByRules, expandSynonyms, formatTitle } from './categorizer';
-import { type Discovered, discover, readIntrinsicSize } from './iconSets/discovery';
+import { type Discovered, discover, readIntrinsicSize } from './discovery';
 import { toDataUrl } from './svgMarkup';
 
 /**

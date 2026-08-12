@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from './defaultOptions';
+import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from './options';
 import type { ExcalidrawOptions } from '../types/options';
 
 const withCard = (patch: Partial<ExcalidrawOptions>): ExcalidrawOptions => ({

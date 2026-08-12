@@ -4,14 +4,14 @@ import {
   multiPolygonBounds,
   rectRegion,
   resolveFilledRegions,
-} from '../regions/regions';
+} from './regions';
 import {
   differenceMultiPolygons,
   intersectMultiPolygons,
   intersectRingWithRegion,
   polygonsToMultiPolygon,
   robustUnion,
-} from '../regions/booleans';
+} from './booleans';
 import {
   AREA_SHAPES,
   BoundingBox,

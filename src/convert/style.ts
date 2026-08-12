@@ -1,6 +1,6 @@
-import type { FillRule } from '../regions/regions';
-import type { LineCap, LineJoin } from '../strokeOutline';
-import { hexChannels, relativeLuminance } from '../color';
+import type { FillRule } from './regions';
+import type { LineCap, LineJoin } from './strokes';
+import { hexChannels, relativeLuminance } from './color';
 
 /**
  * What a shape is painted with, and how big the document is.
