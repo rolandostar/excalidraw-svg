@@ -11,11 +11,8 @@
  * against a renderer; for a stranger's logo, "nothing happened" is
  * indistinguishable from "your wordmark was dropped".
  */
-import {
-  emptyDiagnostics,
-  parseSvgToExcalidrawElements,
-  type ConversionDiagnostics,
-} from './excalidrawGenerator';
+import { parseSvgToExcalidrawElements } from './convert/parseSvg';
+import { emptyDiagnostics, type ConversionDiagnostics } from './convert/diagnostics';
 import { readViewBox, type ViewBox } from './svg/viewBox';
 import { collectUnsupportedFeatures, type SvgFeatureWarning } from './svgSupport';
 import { auditSceneFidelity, type FidelityIssue } from './sceneAudit';

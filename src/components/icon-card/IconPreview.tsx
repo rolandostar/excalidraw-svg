@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ExcalidrawElement, ExcalidrawOptions, IconAsset } from '../../types';
-import { inkBoxFor, measureExcalidrawItem } from '../../utils/excalidrawGenerator';
+import { inkBoxFor, measureExcalidrawItem } from '../../utils/layout/itemLayout';
 import { fontFamilyCss, lineHeightFor } from '../../utils/textMetrics';
 import { STAGE_HEIGHT_PX, cardScaleFor } from '../gridMetrics';
 import { ExcalidrawPreview } from '../ExcalidrawPreview';

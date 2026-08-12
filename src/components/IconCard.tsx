@@ -1,10 +1,8 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 import { IconAsset, ExcalidrawOptions, ExcalidrawElement } from '../types';
-import {
-  buildExcalidrawClipboardData,
-  parseSvgToExcalidrawElements,
-} from '../utils/excalidrawGenerator';
+import { parseSvgToExcalidrawElements } from '../utils/convert/parseSvg';
+import { buildExcalidrawClipboardData } from '../utils/layout/packGrid';
 import { ICON_BASE_SIZE } from '../utils/defaultOptions';
 import { IconPreview } from './icon-card/IconPreview';
 import { useHasBeenVisible } from '../hooks/useHasBeenVisible';

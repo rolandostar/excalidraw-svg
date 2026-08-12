@@ -2,9 +2,9 @@ import React from 'react';
 import { Search, Copy, Download, CheckSquare, Square, X } from 'lucide-react';
 import { IconAsset, IconCategory, ExcalidrawOptions } from '../types';
 import {
-  buildExcalidrawLibraryPackage,
   buildExcalidrawClipboardData,
-} from '../utils/excalidrawGenerator';
+  buildExcalidrawLibraryPackage,
+} from '../utils/layout/packGrid';
 import { celebrate } from '../utils/celebrate';
 import { downloadJson } from '../utils/download';
 import { plural } from '../utils/plural';
