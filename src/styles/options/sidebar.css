@@ -5,6 +5,16 @@
   flex-direction: column;
   position: sticky;
   top: calc(var(--header-h) + 1.5rem);
+  /*
+   * Without this the panel does not stick.
+   *
+   * `.main-layout` is a grid and this is one of its items, so it defaults to
+   * `align-self: stretch` and its box is already as tall as the icon grid
+   * beside it. A sticky element can only travel inside its own box, and a box
+   * with no slack never moves. `start` shrinks it to its content, which is
+   * what leaves the column something to scroll within.
+   */
+  align-self: start;
   max-height: calc(100vh - var(--header-h) - 3rem);
   overflow-y: auto;
   overscroll-behavior: contain;

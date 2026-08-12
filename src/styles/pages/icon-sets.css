@@ -59,7 +59,14 @@
   object-fit: contain;
 }
 
+/*
+ * Grows to fill the card so the call to action can sit at the bottom of it.
+ * Cards in a row are the same height but their contents are not - a set with
+ * no description and one category is several lines shorter than one with both
+ * - so without this the CTA lands at a different height in every card.
+ */
 .set-card-body {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
@@ -114,7 +121,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  margin-top: 0.15rem;
+  /* Pinned to the foot of the card; see `.set-card-body`. */
+  margin-top: auto;
+  padding-top: 0.5rem;
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--set-accent);
@@ -141,4 +150,32 @@
 
 .set-card-license {
   opacity: 0.8;
+}
+
+/*
+ * "Add your own set" is a different kind of thing from the cards above it -
+ * an instruction, not a destination in the gallery - and at the grid's own
+ * 1.25rem gap it read as a wider tenth card. The rule carries the separation
+ * so the gap does not have to be large enough to do it alone.
+ */
+.page-sets .next-card {
+  margin-top: 3.5rem;
+  padding: 2rem 0.2rem 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+  border-radius: 0;
+  background: transparent;
+}
+
+/* A rule is not a card, so it should not lift or fill on hover. */
+.page-sets .next-card:hover {
+  background: transparent;
+  border-top-color: var(--border-color-hover);
+  transform: none;
+}
+
+@media (max-width: 720px) {
+  .page-sets .next-card {
+    margin-top: 2.5rem;
+  }
 }

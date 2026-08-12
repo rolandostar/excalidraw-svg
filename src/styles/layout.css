@@ -5,7 +5,17 @@
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  overflow-x: hidden;
+  /*
+   * `clip`, not `hidden`.
+   *
+   * Both stop sideways scrolling, but `overflow-x: hidden` forces the other
+   * axis from `visible` to `auto`, which makes this element a scroll
+   * container. Every `position: sticky` inside it then sticks relative to
+   * *this* box - which never scrolls, because the viewport does - so the
+   * styling sidebar silently scrolled away with the page. `clip` clips
+   * without becoming a scroll container.
+   */
+  overflow-x: clip;
 }
 
 .app-body {
