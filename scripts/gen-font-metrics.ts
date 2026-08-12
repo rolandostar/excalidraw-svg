@@ -1,5 +1,5 @@
 /**
- * Generates `src/utils/fontMetrics.generated.ts` from Excalidraw's own TTFs.
+ * Generates `src/scene/fontMetrics.generated.ts` from Excalidraw's own TTFs.
  *
  *   pnpm gen:font-metrics
  *
@@ -39,7 +39,7 @@ const ASSETS = path.join(
   ROOT,
   'node_modules/@excalidraw/utils/dist/prod/assets'
 );
-const OUT_FILE = path.join(ROOT, 'src/utils/fontMetrics.generated.ts');
+const OUT_FILE = path.join(ROOT, 'src/scene/fontMetrics.generated.ts');
 
 /**
  * The five fonts the sidebar offers, keyed by Excalidraw's real numeric font

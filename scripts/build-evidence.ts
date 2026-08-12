@@ -130,7 +130,10 @@ function readTrap(id: string): string | undefined {
   if (!fs.existsSync(file)) return undefined;
 
   const head = fs.readFileSync(file, 'utf-8').slice(0, 1200);
-  const match = head.match(/^\s*<!--([\s\S]*?)-->/);
+  // The prolog is optional and only two fixtures carry one, which is exactly
+  // why skipping only whitespace went unnoticed: those two published with no
+  // explanation while the warning below blamed a missing comment.
+  const match = head.match(/^\s*(?:<\?xml[^?]*\?>\s*)?<!--([\s\S]*?)-->/);
   if (!match) return undefined;
 
   return match[1]

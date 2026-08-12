@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-09T05:17:23.534Z",
+  "builtAt": "2026-08-12T04:55:31.230Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,7 +7,7 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-09T03:32:48.791Z",
+    "generatedAt": "2026-08-12T04:09:15.408Z",
     "total": 261,
     "perfect": 253,
     "imperfect": 8,
@@ -2394,7 +2394,7 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-09T03:33:02.162Z",
+    "generatedAt": "2026-08-12T04:09:27.094Z",
     "total": 30,
     "perfect": 26,
     "imperfect": 4,
@@ -2693,6 +2693,7 @@
         "shapeScore": 0,
         "placementErrorPx": 0,
         "elementCount": 1,
+        "trap": "Reported case. Paint declared on the root svg element, geometry in a bare child path with no fill of its own - the shape of most of SVG Repo, and of every Feather / Lucide / Tabler / Bootstrap / Heroicons outline icon. The inheritance walk in `getShapeStyle` used to stop *before* the root element, so `fill` here was never read, the path resolved to \"no fill and no stroke\", and the whole file converted to zero elements. NOTE: no literal svg start tag in this comment - the harness finds the root tag with a regex and would match the comment text instead.",
         "auditIssues": [],
         "failing": false,
         "image": "torture/26-root-svg-presentation-attrs.png"
@@ -2726,6 +2727,7 @@
         "shapeScore": 0.0010003158892281773,
         "placementErrorPx": 0.022500000000000853,
         "elementCount": 3,
+        "trap": "Reported case. Line art whose silhouette touches all four edges of the artboard, on a 32-unit viewBox. The background-plate filter used to be two literal constants, 0.5 and 23.5, hard-coded for a 24x24 artboard but compared against root user-space coordinates. On this file 23.5 sits at 73% of the width, so the squirrel's body - one bridged 691-point ring - was classified as a background and deleted, leaving just the eye and one small island. Spanning the artboard is not what makes something a background; being solid is. This body inks 24.5% of its own bounding box, a rectangle inks 100% and a full ellipse 78.5%. NOTE: no literal svg start tag in this comment - the harness finds the root tag with a regex and would match the comment text instead.",
         "auditIssues": [],
         "failing": false,
         "image": "torture/29-artboard-spanning-artwork.png"

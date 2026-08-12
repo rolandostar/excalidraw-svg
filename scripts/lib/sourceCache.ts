@@ -37,20 +37,20 @@ export interface CachedSource {
 /**
  * Invalidation tag.
  *
- * Hashes the source of both measurement modules plus the caller's geometry
- * constants. `raster.ts` decides what a render looks like and `fidelity.ts`
- * decides what a window means, so a change to either must throw the cache
- * away - a cached panel measured under different rules is not a speed-up, it
- * is a wrong answer that reproduces.
+ * Hashes the measurement code plus the caller's geometry constants.
+ * `raster.ts` decides both what a render looks like and what a window means,
+ * so a change to it must throw the cache away - a cached panel measured under
+ * different rules is not a speed-up, it is a wrong answer that reproduces.
+ *
+ * A missing file throws rather than degrading. Reading the filename as if it
+ * were the file's contents produces a hash that is stable no matter how the
+ * measurement changes, which is the one failure this function exists to
+ * prevent.
  */
+const MEASUREMENT_SOURCES = ['raster.ts'];
+
 export function cacheVersion(constants: unknown): string {
-  const parts = ['raster.ts', 'fidelity.ts'].map(f => {
-    try {
-      return fs.readFileSync(path.join(HERE, f), 'utf-8');
-    } catch {
-      return f;
-    }
-  });
+  const parts = MEASUREMENT_SOURCES.map(f => fs.readFileSync(path.join(HERE, f), 'utf-8'));
 
   return crypto
     .createHash('sha256')
