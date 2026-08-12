@@ -246,7 +246,7 @@ export interface ShapeStyle {
   /**
    * Raw width in *user units*. Scaling to output pixels happens at emit time,
    * once the element transform and the viewBox->target factor are both known.
-   * Rounding here (the old behaviour) both destroyed sub-pixel hairlines and
+   * Rounding here both destroys sub-pixel hairlines and
    * made a `stroke-width="2"` icon render at half thickness.
    */
   strokeWidth: number;
@@ -263,8 +263,7 @@ export function getShapeStyle(el: Element, styleMap: StyleMap, doc: Document): S
   /**
    * Group `opacity` composites rather than inherits, so it multiplies down the
    * tree instead of being overridden by the nearest declaration. Ignoring
-   * ancestors entirely - the old behaviour - rendered `<g opacity="0.5">`
-   * fully opaque.
+   * ancestors entirely renders `<g opacity="0.5">` fully opaque.
    *
    * Compositing a group as a unit and compositing its members individually
    * only differ where members overlap each other; per-shape is the closest
@@ -304,13 +303,11 @@ export function getShapeStyle(el: Element, styleMap: StyleMap, doc: Document): S
   /**
    * Then inherit, nearest ancestor first, for anything still undeclared.
    *
-   * Two things were previously missed here. The walk stopped *before* the root
-   * `<svg>`, so `<svg fill="none" stroke="currentColor">` - the shape of every
-   * Feather, Lucide, Tabler, Bootstrap and Heroicons outline icon, and of most
-   * of what SVG Repo serves - contributed nothing and every child resolved to
-   * "no fill, no stroke" and was dropped. And ancestors were read for
-   * presentation *attributes* only, so `<g style="fill:#111">` and
-   * `<g class="ico">` were invisible.
+   * The walk must include the root `<svg>`: `<svg fill="none"
+   * stroke="currentColor">` is the shape of every Feather, Lucide, Tabler,
+   * Bootstrap and Heroicons outline icon, and stopping short of it resolves
+   * every child to "no fill, no stroke". It must also read `style` and
+   * `class` on ancestors, not only presentation attributes.
    *
    * The walk stops after the nearest `<svg>` because a nested one establishes
    * its own viewport; that case is reported as unsupported elsewhere.
@@ -351,7 +348,7 @@ export function getShapeStyle(el: Element, styleMap: StyleMap, doc: Document): S
 
   /**
    * The initial value of `fill` is black, not `none`. Conflating "undeclared"
-   * with "explicitly none" - the old behaviour - silently discarded every
+   * with "explicitly none" silently discards every
    * shape in a file that relies on the SVG default, which is most hand-written
    * and CSS-driven artwork. `stroke` genuinely does default to `none`, so only
    * `fill` gets a fallback.
@@ -407,13 +404,6 @@ export function paintLuminance(value: string | null): number {
 
 /**
  * The one place that answers "how big is this SVG, and in what coordinates".
- *
- * There used to be three: the converter (fallback 24), the upload path
- * (fallback 100) and the icon-set loader (fallback 48, regex-based). They
- * disagreed about more than the fallback - whether a comma-separated viewBox
- * parses, whether a zero extent falls through to `width`/`height` - which is
- * exactly the kind of divergence nobody notices until one file renders at the
- * wrong scale on one page.
  *
  * The fallback stays a caller-supplied argument: 24, 100 and 48 are three
  * genuinely different guesses about three different kinds of input, and

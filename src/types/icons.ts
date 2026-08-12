@@ -3,10 +3,6 @@ import type { ExcalidrawOptions } from './options';
 /**
  * Owns the icon-library domain: what an icon is, what a set is, and what
  * `svg/<set-id>/set.json` may declare.
- *
- * Separate because these three types travel together and nothing else needs
- * them. The gallery and the set page import from here; the converter and the
- * export path do not.
  */
 
 export interface IconAsset {

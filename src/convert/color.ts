@@ -4,9 +4,7 @@
  * Pure string and number in, string and number out - no `Document`, no React
  * - which is why all three layers can share it. The build-time optimiser
  * averages gradient stops here, the converter weighs mask luminance here, and
- * the swatch row decides tick contrast here. Each used to carry its own
- * `#rgb` expansion, in three different idioms, and two carried their own copy
- * of the sRGB luminance coefficients.
+ * the swatch row decides tick contrast here.
  */
 
 /**

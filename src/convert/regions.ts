@@ -11,9 +11,7 @@ import { boundsOfRings, closeRing, ringGap } from './geometry';
  *  - **Hole-ness comes from the fill rule, not from winding direction.** A
  *    subpath is a hole when the fill rule says the area just inside it is
  *    empty. `nonzero` (the SVG default) and `evenodd` disagree, and an author
- *    is free to wind every subpath the same way and rely on `evenodd`. The
- *    heuristic this replaced - "opposite winding AND bounding box inside" -
- *    got both halves wrong.
+ *    is free to wind every subpath the same way and rely on `evenodd`.
  *
  *  - **Containment is point-in-polygon, not bounding box.** Two disjoint
  *    shapes can easily have nested bounding boxes; punching one out of the
@@ -34,10 +32,6 @@ import { boundsOfRings, closeRing, ringGap } from './geometry';
  * Owns the vocabulary every other module in `regions/` speaks: the ring and
  * polygon types, the tolerance they are compared at, and the handful of pure
  * predicates over a single ring.
- *
- * Separate because nothing here knows about fill rules or booleans. These are
- * the functions that must stay dependency-free so `fillRule.ts`, `boolean.ts`
- * and `bridge.ts` can each import them without importing each other.
  */
 
 export type Point = [number, number];
@@ -81,7 +75,7 @@ export const EPSILON = 1e-9;
  *
  * Critically, this is conditional. `pointsOnPath` only appends the start point
  * for a subpath that carries an explicit `Z`; unconditionally slicing off the
- * last element - as the old code did - deleted a real vertex from every
+ * last element deletes a real vertex from every
  * unclosed subpath.
  */
 export function normaliseRing(points: Point[]): Ring {
@@ -181,35 +175,7 @@ export function multiPolygonBounds(region: MultiPolygon) {
 // Fill-rule classification
 // ---------------------------------------------------------------------------
 
-/**
- * Owns the only question that decides whether artwork survives conversion:
- * given the subpaths of one `<path>` and its declared fill rule, which areas
- * are painted and which are holes.
- *
- * Separate from `boolean.ts` because this is *classification* - exact,
- * per-ring, and driven by the SVG spec. The boolean engine that follows it
- * only canonicalises an answer this file has already produced.
- *
- * Three rules decide it, and all three have been got wrong here before:
- *
- *  - **Hole-ness comes from the fill rule, not from winding direction.** A
- *    subpath is a hole when the fill rule says the area just inside it is
- *    empty. `nonzero` (the SVG default) and `evenodd` disagree, and an author
- *    is free to wind every subpath the same way and rely on `evenodd`. The
- *    heuristic this replaced - "opposite winding AND bounding box inside" -
- *    got both halves wrong.
- *
- *  - **Containment is point-in-polygon, not bounding box.** Two disjoint
- *    shapes can easily have nested bounding boxes; punching one out of the
- *    other deletes real artwork.
- *
- *  - **Orientation is never forced.** `polygon-clipping` returns canonical
- *    winding (outer one way, holes the other), which is correct under both
- *    fill rules, so nothing downstream needs to reverse a ring.
- */
-
 // --- tuning constants for `representativePoints` ---------------------------
-// These were all bare literals. Each one is a real trade-off, not a rounding.
 
 /** Fewer vertices than this and the ring encloses no area worth sampling. */
 const MIN_RING_VERTICES = 3;

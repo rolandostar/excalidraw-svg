@@ -25,11 +25,6 @@ import { parseSvgToExcalidrawElements } from '../convert/parseSvg';
 /**
  * How big one item is and where its parts sit inside it - measured, never
  * assumed.
- *
- * Separate from `buildItem.ts` because the grid packers, the fidelity harness
- * and the card preview all need to *ask* for a layout without building one,
- * and because everything here is pure arithmetic over an `IconAsset` and an
- * `ExcalidrawOptions`.
  */
 
 export interface ItemLayout {
@@ -211,11 +206,6 @@ function translateElements(
 
 /**
  * One icon, converted and laid out: frame, artwork, label.
- *
- * Its own module because it is the only thing that spans both halves of this
- * folder - it calls the converter, then the measurer, then places what came
- * back - and because the five numbered steps below are the whole contract
- * between them.
  */
 
 export function createExcalidrawItem(
@@ -357,10 +347,6 @@ export function createExcalidrawItem(
 /**
  * Laying many items out on a grid, and the two package formats that carry the
  * result out of the app.
- *
- * Separate from `buildItem.ts` because packing is about the *relationship*
- * between items - a pitch is only meaningful across a set - and because the
- * two exporters differ solely in their gutter, column count and envelope.
  */
 
 interface PackedItem {

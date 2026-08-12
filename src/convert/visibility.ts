@@ -32,11 +32,6 @@ import { FILL_RULES, getInheritedFillRule, inheritedEnum, paintLuminance, refId 
  * Everything that limits *where* a shape may paint: `clip-path`, `mask`, the
  * `objectBoundingBox` unit system both are expressed in, and the final
  * ring-against-region intersection.
- *
- * One module because clips and masks are mutually recursive in practice - a
- * mask child can carry a filter whose region is a bounding box of its own -
- * and because the whole group is consumed through one entry point,
- * `getVisibilityRegion`.
  */
 
 // ---------------------------------------------------------------------------
@@ -115,12 +110,12 @@ type UnitsAttr = 'filterUnits' | 'maskUnits' | 'clipPathUnits';
 /**
  * The x/y/width/height region of a `<filter>` or `<mask>`, in user space.
  *
- * Both attributes default to `objectBoundingBox`, not `userSpaceOnUse`, with a
- * default region of -10%/-10%/120%/120%. Requiring an explicit
- * `userSpaceOnUse` - as this used to - silently skipped the region for every
- * file that relied on the default. For a mask that is harmless, because the
- * default region is larger than the object; for the flood rect of a luminosity
- * mask it collapsed the mask to nothing and deleted the artwork.
+ * Both attributes default to `objectBoundingBox`, not `userSpaceOnUse`, with
+ * a default region of -10%/-10%/120%/120%. Requiring an explicit
+ * `userSpaceOnUse` skips the region for every file relying on the default:
+ * harmless for a mask, whose default region is larger than the object, but
+ * for the flood rect of a luminosity mask it collapses the mask to nothing
+ * and deletes the artwork.
  */
 function explicitRegionRect(
   el: Element,
@@ -154,16 +149,6 @@ function explicitRegionRect(
   );
 }
 
-/**
- * Everything that limits *where* a shape may paint: `clip-path`, `mask`, and
- * the final ring-against-region intersection.
- *
- * One module because clips and masks are mutually recursive in practice - a
- * mask child can carry a filter whose region is a bounding box of its own -
- * and because the whole group is consumed through a single entry point,
- * `getVisibilityRegion`. The unit system both of them can be expressed in
- * lives next door, in `objectBounds.ts`.
- */
 
 // ---------------------------------------------------------------------------
 // Clips and masks

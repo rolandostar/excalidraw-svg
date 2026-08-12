@@ -2,11 +2,6 @@
  * Owns the styling options a set or a user chooses, and the allow-lists they
  * are validated against.
  *
- * Separate from the icon and Excalidraw types because this is the only domain
- * with a runtime half. `set.json` is hand-authored and not typechecked, so
- * every union below also has to exist as an array `optionsSchema.ts` can test
- * membership in.
- *
  * **The arrays are the source of truth; the unions are derived from them.**
  * Adding a member to an array below widens the type, the validator and the
  * control that offers it in one edit, and fails the build at the label table

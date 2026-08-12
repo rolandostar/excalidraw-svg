@@ -57,14 +57,11 @@ function toFileSlug(value: string): string {
 /**
  * The single control bar for the icon library.
  *
- * Previously this was a full second header, complete with its own logo and
- * product name stacked directly beneath the site header - two brand lockups,
- * two blurred sticky bars, and roughly 130px of chrome before any content.
- * There is one header on this site; this is a toolbar.
+ * A toolbar, not a second header: the site has one brand lockup and one
+ * sticky bar, and a second of each costs ~130px before any content.
  *
- * It used to take fifteen props, nine of them raw setters or derived values
- * read once. They are grouped now: what is being filtered, what is selected,
- * and what would be exported.
+ * Props are grouped into what is being filtered, what is selected and what
+ * would be exported, rather than passed as fifteen loose values.
  */
 export const IconsToolbar: React.FC<IconsToolbarProps> = ({ filters, selection, library }) => {
   const { searchQuery, setSearchQuery, activeCategory, setActiveCategory } = filters;

@@ -4,36 +4,20 @@ import { averageHexColors, parseHexColor } from '../convert/color';
 /**
  * The build-time SVG optimiser.
  *
- * Never imported by anything the browser loads: it pulls in SVGO, and the
- * markup reaching the app has already been through this at build time. Only
- * `vite/icon-sets.ts` and the fidelity harness call it.
+ * Node only: it pulls in SVGO, and importing it from anything the browser
+ * loads puts 550 kB in the entry chunk. The two callers are
+ * `vite/icon-sets.ts` and the fidelity harness, which is what makes the
+ * markup the site renders and the markup the harness scores byte-identical.
  *
- * Node-loadable on purpose. The build plugin and the fidelity harness both
- * run this outside a browser, so nothing here may reach for `virtual:`
- * modules or the DOM at import time.
- *
- * Runs in Node at build time as well as in the browser - see
- * `vite/icon-sets.ts` - so the markup the site renders and the markup the
- * fidelity harness scores are byte-identical.
- *
- * Each pass is a mutation over one shared `Document`. `PASSES`, near the
- * bottom, owns the order, which is the load-bearing part.
+ * Each pass mutates one shared `Document`. `PASSES`, near the bottom, owns
+ * the order, which is the load-bearing part.
  */
 
 // ---------------------------------------------------------------------------
 // Pass: flatten the style cascade
 // ---------------------------------------------------------------------------
 
-/**
- * Owns the one pass that implements a piece of CSS: resolving `<style>` rules
- * onto elements as presentation attributes.
- *
- * Separate because it is the only pass whose correctness is defined by a spec
- * outside this codebase, and because the property list it maintains is a
- * contract with the Excalidraw generator - the generator reads those exact
- * attributes back off the element, so adding to the list here is how a new
- * property becomes visible downstream.
- */
+/** Resolves `<style>` rules onto elements as presentation attributes. */
 
 /**
  * Presentation properties that affect how a shape is drawn and that the
@@ -153,11 +137,6 @@ function flattenStyleCascade(doc: Document): void {
  * Owns gradient flattening: every `<linearGradient>`/`<radialGradient>` is
  * replaced by the average of its stops, and every reference to it is rewritten
  * to that flat colour.
- *
- * Separate because this is the pass that builds selectors and regular
- * expressions out of author-controlled ids, which is the one place in the
- * optimiser where untrusted text becomes code. Keeping it alone makes the two
- * escapers below impossible to miss.
  */
 
 /**
@@ -225,20 +204,6 @@ function flattenGradients(doc: Document): void {
     gradEl.parentNode?.removeChild(gradEl);
   });
 }
-
-/**
- * Flattens gradients, resolves CSS rules and normalises colours across an SVG
- * string.
- *
- * Runs in Node at build time as well as in the browser - see
- * `vite/icon-sets.ts` - so the markup the site renders and the markup the
- * fidelity harness scores are byte-identical.
- *
- * Each pass is a mutation over one shared `Document`. The order below is the
- * load-bearing part; the two larger passes, `flattenStyleCascade` and
- * `flattenGradients`, live in `optimize/` because they are substantial enough
- * to read on their own.
- */
 
 // ---------------------------------------------------------------------------
 // Passes: <use> expansion, colour normalisation, empty <defs>

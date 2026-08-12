@@ -120,11 +120,6 @@ const FALLBACK_PRESETS: {
 /**
  * Owns the turn from an untrusted `set.json` into a fully resolved, validated
  * `IconSetSummary`.
- *
- * Separate because every function here is defensive in the same way: the
- * manifest is hand-authored and not typechecked, so each field is filtered,
- * defaulted, or run through `sanitizeOptionsPatch` before anything downstream
- * is allowed to see it.
  */
 
 // ---------------------------------------------------------------------------
@@ -225,25 +220,6 @@ function summarise(entry: Discovered): IconSetSummary {
   return summary;
 }
 
-/**
- * Icon sets are folders.
- *
- * `svg/<set-id>/*.svg` is a set, and `svg/<set-id>/set.json` optionally names
- * and categorises it. Nothing has to be registered anywhere: dropping a folder
- * into `svg/` makes it appear at `/icons/<set-id>` on the next dev-server tick,
- * because `vite/icon-sets.ts` watches the folder and rebuilds this module when
- * anything in it changes.
- *
- * A folder with no `set.json` still works - the name is inferred from the
- * folder and every icon lands in one bucket. Requiring boilerplate before an
- * icon showed up would defeat the point of dropping the folder in.
- *
- * The SVG markup arriving here is **already optimised**. That runs in Node at
- * build time; see `vite/icon-sets.ts` for why.
- *
- * This file is the public surface - four getters and the memo that backs the
- * heaviest of them. The work is in `iconSets/`.
- */
 
 /**
  * Populated once and never invalidated, as are `discovered` in `discovery.ts`

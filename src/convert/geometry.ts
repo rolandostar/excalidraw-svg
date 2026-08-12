@@ -5,9 +5,6 @@ import type { Point } from './regions';
  * Reading shapes out of an SVG document as plain numbers: curve flattening,
  * affine transforms, and the geometry of every shape element.
  *
- * One module because they are one question - "where is this shape, in what
- * coordinates" - and because every consumer of any of them needs at least two.
- *
  *   flattening   the `points-on-path` dependency and the tolerance policy
  *   transforms   parsing `transform`, composing up the tree, applying
  *   shapes       rects, ellipses, polylines and paths as rings
@@ -20,10 +17,6 @@ import type { Point } from './regions';
 /**
  * Curve flattening: turning a `d` attribute into polylines, and choosing how
  * finely to do it.
- *
- * Separate from the geometry module because it owns the one third-party
- * dependency in the conversion pipeline (`points-on-path`) and the interop
- * shim that dependency needs. Everything downstream sees plain point arrays.
  */
 
 /**
@@ -70,11 +63,6 @@ export function toleranceFor(scale: number): number {
 /**
  * 2D affine transforms: parsing SVG `transform` attributes, composing them up
  * the element tree, and applying them to points.
- *
- * Its own module because every other part of the converter needs it and none
- * of them needs anything else from each other - clip paths, masks, bounding
- * boxes, stroke outlining and the artwork pipeline all resolve coordinates
- * through exactly these six functions.
  */
 
 // ---------------------------------------------------------------------------
@@ -190,16 +178,11 @@ export function boundingBoxMatrix(box: BoundingBox): Matrix2D {
  * Turning SVG shape elements into plain polygon rings, plus the small
  * numeric primitives that job needs.
  *
- * Separate from `pathRegions.ts` because nothing here knows about fill rules
- * or booleans - it is pure tessellation and attribute reading - and separate
- * from `clipping.ts` because clip paths, masks and the artwork pipeline all
- * flatten shapes the same way and must keep agreeing about how.
- *
  * `closeRing`, `boundsOf` and `arcSegmentCount` live here rather than in a
  * module of their own because they existed in three, six and four
  * near-identical copies respectively across this codebase, and every copy had
  * drifted. They are shared by `pathRegions.ts` and `strokeOutline.ts` too;
- * the numeric parameters that used to differ between copies are arguments, so
+ * the numeric parameters that differ between callers are arguments, so
  * each caller keeps exactly the behaviour it had.
  */
 

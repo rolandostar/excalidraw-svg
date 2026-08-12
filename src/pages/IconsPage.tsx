@@ -328,10 +328,6 @@ interface IconsPageProps {
 
 /**
  * Materialising a set's icons, off the first-paint critical path.
- *
- * Separate from the set *summary*, which is available synchronously and is
- * what seeds the styling defaults. This is the expensive half: `loadIconSet`
- * runs SVGO over every file in the set.
  */
 function useIconSetData(setId: string): {
   set: IconSet | null;

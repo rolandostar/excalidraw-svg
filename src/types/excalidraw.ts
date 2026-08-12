@@ -1,10 +1,6 @@
 /**
  * Owns the wire format: the shape of the JSON that goes onto the clipboard or
  * into an `.excalidrawlib` file.
- *
- * Separate because this is not our design - it is Excalidraw's, and it changes
- * when Excalidraw changes. Nothing here should acquire fields we invented, and
- * nothing here should import from the other two type modules.
  */
 
 /**

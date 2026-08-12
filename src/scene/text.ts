@@ -1,27 +1,17 @@
 /**
  * Label text measurement, matching what Excalidraw will actually draw.
  *
- * ## Why this has to exist
- *
- * `createExcalidrawItem` writes a `width` and `height` onto the label text
- * element, and Excalidraw's `restoreElement` does **not** recompute them for
+ * Excalidraw's `restoreElement` does **not** recompute width and height for
  * pasted text - `refreshDimensions` is opt-in and the paste path never asks
- * for it. Whatever is written here is what the card gets sized around and what
- * the selection box reports, permanently.
+ * for it - so whatever is written here sizes the card permanently. A
+ * character-count estimate is wrong in both directions: "Illustrated" and
+ * "WWW Gateway" have the same length and nothing like the same width.
  *
- * This used to be `title.length * fontSize * 0.6`, which is wrong by a wide
- * margin in both directions: "Illustrated" and "WWW Gateway" have the same
- * character count and nothing like the same width.
- *
- * ## Accuracy
- *
- * Widths come from `fontMetrics.generated.ts`, extracted from the same
- * TrueType files Excalidraw renders with, so per-character advances are exact.
- * Kerning is not modelled - see `scripts/gen-font-metrics.ts` for why that is
- * acceptable. The residual error is well under 1% on ASCII product names, and
- * it lands somewhere harmless: the label is emitted with `textAlign: 'center'`,
- * so Excalidraw centres the glyph run inside whatever width we declare. Being
- * slightly off mis-sizes the *card*, never the text's position on it.
+ * Widths are per-character advances from the same TrueType files Excalidraw
+ * renders with, so they are exact. Kerning is not modelled; the residual is
+ * under 1% on ASCII product names and lands harmlessly, because the label is
+ * emitted `textAlign: 'center'` - being slightly off mis-sizes the *card*,
+ * never the text's position on it.
  *
  * `lineHeight` is copied, not chosen - see `lineHeightFor`.
  */

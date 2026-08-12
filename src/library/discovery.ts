@@ -7,10 +7,6 @@ import { readViewBoxFromMarkup } from '../convert/style';
  * The boundary with the build, and the only module in `src/` that cannot be
  * loaded outside Vite.
  *
- * Its own file for exactly that reason: `import 'virtual:icon-sets'` runs at
- * module scope, so anything that merges into here becomes unreachable from
- * the fidelity harness, which is plain Node. That happened once.
- *
  * Everything downstream sees a plain `Map<string, Discovered>` and can be
  * reasoned about, and tested, without Vite in the picture.
  */
@@ -72,9 +68,4 @@ export function discover(): Map<string, Discovered> {
 
 /**
  * Owns the presets a set gets when it declares none. Pure data.
- *
- * Separate because it is 70 lines of literal sitting in the middle of the
- * resolution control flow, and because the only interesting thing about it -
- * the hachure/background pairing below - is a comment that was invisible
- * buried among the other functions.
  */

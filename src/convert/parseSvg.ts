@@ -23,17 +23,12 @@ import { rawShapesToElements } from './emit';
 
 /**
  * Why source shapes produced no output, tallied per reason.
- *
- * Its own module because it is the one part of the conversion pipeline the UI
- * imports directly - `ConversionResult.tsx` renders `DROP_REASON_LABELS` - and
- * dragging the whole converter into a React component's dependency graph for a
- * lookup table is how a 700 kB chunk happens.
  */
 
 /**
  * Why a shape in the source never became an element.
  *
- * The converter used to drop shapes silently, which made every failure look
+ * A converter that drops shapes silently makes every failure look
  * identical from the outside: an empty canvas, or the flat message "No
  * drawable geometry found in that file." Attributing each drop is the
  * difference between a user filing a useful bug and giving up.

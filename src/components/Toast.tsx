@@ -13,10 +13,9 @@ import { Check, X } from 'lucide-react';
  * The transient confirmation line, and the context that lets anything under
  * the icon library raise one.
  *
- * `onToast` used to be threaded from `IconsPage` through `IconsToolbar` and
- * `IconGrid` and into `IconCard`, appearing in three component interfaces
- * purely to be passed along. None of those components have anything to say
- * about how a toast is shown, so the channel is ambient instead.
+ * Ambient rather than a prop: nothing between the page and the card has
+ * anything to say about how a toast is shown, so threading `onToast` through
+ * three component interfaces only widened them.
  */
 interface ToastProps {
   message: string | null;
@@ -25,22 +24,18 @@ interface ToastProps {
 }
 
 /**
- * Replaces the blocking `alert()` the copy action used to fire.
- *
- * A native modal in a dark glass UI is jarring, it blocks the page until
- * dismissed, and it fires on the happy path - punishing the action the whole
- * product exists to make easy.
+ * Not a native modal: `alert()` blocks the page until dismissed, and this
+ * fires on the happy path - punishing the action the product exists to make
+ * easy.
  */
 function Toast({ message, onDismiss, durationMs = 4000 }: ToastProps) {
   /*
    * The dismiss callback is read through a ref, not depended on.
    *
-   * It used to sit in the dependency array while the call site passed an
-   * inline arrow, so every re-render of the page above - and the page
-   * re-renders on every option change - tore down the timer and armed a fresh
-   * one. Dragging a slider therefore kept a toast on screen indefinitely,
-   * because the four seconds never got a chance to elapse. Only `message` and
-   * `durationMs` describe *which* timer this is; the callback does not.
+   * Call sites pass an inline arrow, so depending on it re-arms the timer on
+   * every render of the page above - and the page re-renders on every option
+   * change. Dragging a slider would keep a toast on screen indefinitely. Only
+   * `message` and `durationMs` describe *which* timer this is.
    */
   const dismiss = useRef(onDismiss);
   dismiss.current = onDismiss;

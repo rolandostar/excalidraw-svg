@@ -47,7 +47,7 @@ import type { DropReason } from './parseSvg';
  *
  * There is deliberately no stroke here. Every stroke a source declares is
  * emitted as the *area* it covers (see `shapeConverters.ts`), so a raw shape
- * is always fill-only; the `stroke`/`strokeWidth` fields this used to carry
+ * is always fill-only; `stroke`/`strokeWidth` fields
  * were written as `'transparent'`/`0` at all six push sites and read nowhere.
  */
 
@@ -424,7 +424,7 @@ const SHAPE_CONVERTERS: Record<string, ShapeConverter> = {
  * Converts one source element, returning why it drew nothing, or `null`.
  *
  * Extracted from the document loop so the *whole* body sits inside one `try`.
- * It previously did not: `getVisibilityRegion` runs `parsePath` over every
+ * The whole body must be inside it: `getVisibilityRegion` runs `parsePath` over every
  * `<clipPath>` and `<mask>` in the document, and that throws on malformed or
  * SVGO-minified arc data (`a5 5 0 0110 0` tokenises as one number). Outside
  * the try, a single bad `d` in a clip path escaped to the function-level catch
@@ -464,11 +464,6 @@ export function convertShapeElement(el: Element, ctx: ConvertContext): DropReaso
 
 /**
  * The full-artboard background plate filter.
- *
- * Its own module because it is the only step in the pipeline that deletes
- * artwork on a heuristic, and the two constants it turns on are the whole
- * decision. Both are load-bearing and both have been wrong before; keeping
- * them next to the test they parameterise is what makes that reviewable.
  */
 
 /**

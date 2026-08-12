@@ -132,17 +132,13 @@ function IconPreview({
   stageWidth,
 }: IconPreviewProps) {
   /*
-   * The exporter's own layout, not a lookalike.
+   * The exporter's own layout, not a lookalike: the preview is positioned by
+   * `measureExcalidrawItem`, the function that sizes the real export, so the
+   * two agree by construction.
    *
-   * This used to be a flexbox arrangement that guessed `flex-direction` from
-   * `labelPosition` and shared no code with `measureExcalidrawItem`. It could
-   * not be correct, and for `labelPosition: 'right'` it was visibly wrong: the
-   * artwork was a flex item wrapping an SVG, so its min-content width was zero
-   * and it collapsed to a sliver, while the label - squeezed below one word's
-   * width - broke mid-word into "Collaboratio / n".
-   *
-   * Driving the preview from the same function the exporter calls makes the
-   * two agree by construction instead of by maintenance.
+   * A flexbox approximation cannot. Under `labelPosition: 'right'` the
+   * artwork is a flex item wrapping an SVG, so its min-content width is zero
+   * and it collapses to a sliver while the label breaks mid-word.
    */
   const ink = React.useMemo(
     () => (elements ? inkBoxFor(elements, options) : null),

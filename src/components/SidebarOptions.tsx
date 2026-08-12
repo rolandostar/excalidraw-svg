@@ -43,19 +43,7 @@ import {
 // Writing options
 // ---------------------------------------------------------------------------
 
-/**
- * Every write the styling panel makes to `ExcalidrawOptions`.
- *
- * The three "the control does nothing" invariants - a visible card needs a
- * visible stroke, a hatch needs a background to hatch, a transparent
- * background forces a solid fill - used to exist in three places at once:
- * `normaliseOptions`, a pair of handlers in `SidebarOptions`, and a twelve
- * line anonymous updater passed inline as a JSX prop. The three had already
- * drifted, and the inline one was invisible from anywhere the rule mattered.
- *
- * `normaliseOptions` is now the only statement of them, and every setter here
- * routes through it. It is idempotent, so applying it to every write is free.
- */
+/** Every write the styling panel makes to `ExcalidrawOptions`. */
 function useStyleOptions(
   setOptions: React.Dispatch<React.SetStateAction<ExcalidrawOptions>>
 ) {
@@ -96,8 +84,6 @@ function useStyleOptions(
     [setOptions]
   );
 
-  // Both of these are plain writes; the repair each one used to carry out by
-  // hand is one of the rules `normaliseOptions` already applies.
   const setBgColor = React.useCallback(
     (cardBgColor: string) => updateOption('cardBgColor', cardBgColor),
     [updateOption]
@@ -300,14 +286,6 @@ function LabelSection({ options, style }: SectionProps) {
 }
 
 /**
- * The styling panel: a collapsible shell around four sections.
- *
- * Presets and Artwork are here because neither is more than a handful of
- * controls; Frame and Label are large enough to read on their own and live in
- * `options/`. Everything that reads or writes an option goes through
- * `useStyleOptions`, which is where the "the control does nothing" rules are.
- */
-/**
  * The row of named looks a set declares in its `set.json`.
  *
  * Purely presentational: which preset is active is decided by comparing the
@@ -351,11 +329,9 @@ function PresetSection({
 /**
  * Everything that applies to the icon itself, with or without a frame.
  *
- * Deliberately before Frame, and outside it. Icon roughness used to live
- * inside the frame section, gated on the frame being switched on - while the
- * value it set was applied to the artwork regardless. So sketchy icons were
- * unreachable without a card, and turning the card off left the icons sketchy
- * with no visible control explaining why.
+ * Before Frame and outside it, because icon roughness applies to the artwork
+ * whether or not a card is drawn. Nesting it under the frame makes sketchy
+ * icons unreachable without one.
  */
 function ArtworkSection({ options, style }: SectionProps) {
   return (

@@ -248,10 +248,10 @@ const COLOR_NAMES: Record<string, string> = {
 /**
  * Whether a swatch fill is light enough to need a dark tick drawn on it.
  *
- * The stylesheet cannot work this out for itself: it used to try, with
- * `.color-swatch[style*="#ffffff"]`, but React serialises the inline
- * background as `rgb(255, 255, 255)` so those selectors never matched and
- * every pale swatch drew a white check on a white fill. Anything that is not
+ * The stylesheet cannot work this out for itself: React serialises the
+ * inline background as `rgb(255, 255, 255)`, so an attribute selector on the
+ * hex never matches and every pale swatch draws a white check on a white
+ * fill. Anything that is not
  * a plain hex - `transparent`, an `rgba()` - is not light; `transparent` has
  * its own attribute.
  */

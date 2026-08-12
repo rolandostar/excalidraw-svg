@@ -6,12 +6,11 @@ import { Link, type RoutePath } from '../router';
 
 /**
  * The small pieces more than one page needs: shared markup, and three
- * one-function helpers that have no better home.
+ * one-function helpers with no better home.
  *
- * Each component here replaced a set of hand-written copies that had already
- * begun to disagree - two glyph sizes on the same card, a `rel` present on
- * five external links and absent on the sixth. Pairing the parts that must
- * agree is the point; none of them is here to save lines.
+ * Each component pairs parts that must agree - a card's glyph with its
+ * destination, an external href with its `rel`. That is the point of them;
+ * none is here to save lines.
  */
 
 // ---------------------------------------------------------------------------
@@ -19,17 +18,7 @@ import { Link, type RoutePath } from '../router';
 // ---------------------------------------------------------------------------
 
 /**
- * The small pieces of markup that more than one page renders.
- *
- * Each of these replaced a set of hand-written copies that had already begun
- * to disagree with each other - two glyph sizes on the same card, a `rel`
- * present on five external links and absent on the sixth. Pairing the parts
- * that must agree in one component is the point; none of them is here to save
- * lines.
- */
-
-/**
- * The boxed callout used to report what a conversion could not do.
+ * The boxed callout that reports what a conversion could not do.
  *
  * Pairing the icon with the severity is the point: a `notice-warn` box with a
  * red `AlertTriangle` in it was already possible, and reads as an error the
@@ -207,16 +196,12 @@ export function downloadJson(filename: string, text: string): void {
 }
 
 /**
- * The one confetti burst, in the one set of brand colours.
+ * The one confetti burst, and the one place that honours
+ * `prefers-reduced-motion`.
  *
- * `IconCard` inlined its own `confetti({...})` call with a two-colour literal
- * array while `IconsToolbar` kept a four-colour `GCP_COLORS` constant and a
- * local `celebrate` helper, so the same gesture threw different colours
- * depending on whether one icon or a selection was copied.
- *
- * Also the one place that honours `prefers-reduced-motion`. Confetti is pure
- * motion with no informational content, so a user who has asked for less of it
- * gets none: the toast still fires, which is what actually reports the result.
+ * Confetti is pure motion with no informational content, so a user who has
+ * asked for less of it gets none. The toast still fires, which is what
+ * actually reports the result.
  */
 const GCP_COLORS = ['#4285f4', '#34a853', '#fbbc05', '#ea4335'];
 

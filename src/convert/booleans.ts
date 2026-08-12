@@ -26,11 +26,6 @@ import {
  * Owns every call into `polygon-clipping`, and the two defences that make
  * those calls survivable: coordinate snapping before the sweep, and a
  * graceful fallback after it throws.
- *
- * Separate because that failure handling is the whole content of this file.
- * Every export here is "the boolean operation you wanted, but it degrades
- * instead of losing the artwork", and keeping them together is what stops a
- * caller reaching for the raw library and skipping the snap.
  */
 
 export function polygonsToMultiPolygon(polygons: PolygonWithHoles[]): MultiPolygon {
@@ -136,11 +131,6 @@ export function intersectRingWithRegion(ring: Ring, region: MultiPolygon, minHol
 /**
  * Owns the last step before emission: collapsing outer-plus-holes structure
  * into the single point list an Excalidraw `line` element can hold.
- *
- * Separate because it is the one place that knowingly produces degenerate
- * geometry - self-touching rings with zero-width corridors - and because both
- * of the comments below record defects that were caused by getting the detail
- * of that collapse wrong.
  */
 
 /**

@@ -143,10 +143,6 @@ export function simplifyClosedRing(ring: Point[], tolerance: number): Point[] {
 
 /**
  * The last step: raw user-space geometry becomes Excalidraw elements.
- *
- * Separate from the converters because this is the only place that knows about
- * Excalidraw's schema, its defaults, and the viewBox -> target fit. Everything
- * upstream works in the source file's own coordinates.
  */
 
 export function generateRandomId(): string {
