@@ -8,7 +8,7 @@ is the copy that stays true. When this page held its own copy of that
 reasoning, four of the mechanisms it described had been renamed or replaced
 while every source docblock it was paraphrasing was still correct.
 
-Read the invariant list before changing anything in `src/utils/`. Most of them
+Read the invariant list before changing anything in `src/convert/`. Most of them
 look like they could be simplified. They cannot — each is there because of a
 real failure, and most have a fixture pinning them in place.
 
@@ -19,14 +19,14 @@ real failure, and most have a fixture pinning them in place.
 ```
 raw SVG string
    │
-   ├─ optimizeSvgString()                     src/utils/svgOptimizer.ts
+   ├─ optimizeSvgString()      BUILD TIME ONLY   src/library/svgMarkup.ts
    │    SVGO preset-default (no convertStyleToAttrs)
    │    flattenStyleCascade()   attribute < stylesheet < inline style
    │    <use>/<symbol> expansion
    │    gradient flattening -> averaged solid colour
    │    colour normalisation -> #rrggbb
    │
-   ├─ parseSvgToExcalidrawElements()          src/utils/convert/parseSvg.ts
+   ├─ parseSvgToExcalidrawElements()          src/convert/parseSvg.ts
    │    viewBox -> target fit (scale + offset), flattening tolerance
    │    per shape:
    │      resolve style (fill, stroke, fill-rule, caps/joins, opacity)
@@ -35,30 +35,37 @@ raw SVG string
    │      STROKE -> strokeToRegion()       -> filled area
    │      clip each result, simplify the ring, emit as `line` / `ellipse`
    │
-   └─ createExcalidrawItem()                  src/utils/layout/buildItem.ts
+   └─ createExcalidrawItem()                  src/scene/layout.ts
         card + label layout, then
-        buildExcalidrawLibraryPackage()  -> .excalidrawlib   layout/packGrid.ts
-        buildExcalidrawClipboardData()   -> clipboard JSON   layout/packGrid.ts
+        buildExcalidrawLibraryPackage()  -> .excalidrawlib   scene/layout.ts
+        buildExcalidrawClipboardData()   -> clipboard JSON   scene/layout.ts
 ```
 
-Only the **upload** path runs `optimizeSvgString` at request time. Shipped icon
-sets are optimised once at build time by `vite/icon-sets.ts`, so the markup the
-site renders and the markup the harness scores are byte-identical.
+The optimiser runs **only at build time**, in `vite/icon-sets.ts`, so the
+markup the site renders and the markup the harness scores are byte-identical.
+An uploaded file skips it entirely and goes straight into
+`parseSvgToExcalidrawElements` - which is why the converter, not the
+optimiser, has to handle gradients, `<use>` and the CSS cascade on that path.
 
-`DEFAULT_EXCALIDRAW_OPTIONS` (`src/utils/defaultOptions.ts`) is the single
+`DEFAULT_EXCALIDRAW_OPTIONS` (`src/scene/options.ts`) is the single
 source of truth for export settings; the UI and the harness both read it.
 
 ## Source map
 
 | directory | what is in it |
 |---|---|
-| `src/utils/svg/` | reading an SVG document: matrices, geometry, paint, clipping, viewBox |
-| `src/utils/regions/` | ring classification, polygon booleans, hole bridging |
-| `src/utils/convert/` | turning that into Excalidraw elements |
-| `src/utils/layout/` | arranging elements into items, grids and packages |
-| `src/utils/optimize/` | the two large build-time passes; the rest is in `svgOptimizer.ts` |
-| `scripts/fidelity/` | the harness: corpus, scoring, worker pool, gate |
-| `scripts/lib/` | rasterisation, pixel comparison, thresholds, claims |
+| `src/convert/` | SVG in, Excalidraw elements out. Knows nothing about React or icon sets. |
+| `src/library/` | icon sets: discovery, the `set.json` schema, categorisation, the build-time optimiser |
+| `src/scene/` | Excalidraw-scene concerns: styling options, item and grid layout, text metrics, the audit |
+| `src/components/`, `src/pages/` | the web app |
+| `src/types/` | the three vocabularies: icons, options, Excalidraw's wire format |
+| `scripts/fidelity/` | the harness: corpus, scoring, worker pool, gate, report |
+| `scripts/lib/` | rasterisation, pixel comparison, claims, environment |
+
+Inside `src/convert/` the order is `geometry` → `regions` → `booleans` →
+`strokes` → `shapes` → `emit` → `parseSvg`, with `style` and `visibility`
+consulted per shape. Each file opens with a table of contents naming its
+sections. There is no `src/utils/`.
 
 ## Icon sets
 
@@ -77,23 +84,23 @@ Each links to the module that implements it and states its docblock.
 
 | # | invariant | where |
 |---|---|---|
-| 1 | Holes come from the fill rule, never from winding direction. Containment is point-in-polygon, not bounding box. | `regions/fillRule.ts` |
-| 2 | Representative points are sampled where the ring is *isolated*, not at its longest edge. | `regions/fillRule.ts` — `representativePoints` |
-| 3 | Strokes are emitted as filled areas. Excalidraw's `strokeWidth` is a style property and does not scale with the element. | `strokeOutline.ts` |
-| 4 | Stroke outlines are built by *offsetting*, not by unioning per-segment quads. | `strokeOutline.ts` |
-| 5 | Holes are bridged with zero-width corridors, each anchored on the **original** outer ring. | `regions/bridge.ts` |
-| 6 | Every tolerance is derived from the output scale, never a constant. | `svg/pathFlatten.ts` — `toleranceFor` |
-| 7 | `clip-path` and `mask` are real geometry, intersected across nesting. | `svg/clipping.ts` |
-| 8 | `objectBoundingBox` units resolve against the referencing element's own box. | `svg/objectBounds.ts` |
-| 9 | Fail visible, never fail invisible — an unresolvable clip drops confidence rather than guessing. | `svg/clipping.ts` — `resolveVisibility` |
-| 10 | `polygon-clipping` is numerically fragile; the snapping and balanced-merge mitigations are load-bearing. | `regions/boolean.ts` |
-| 11 | Output rings are simplified after every boolean, at a tolerance the sweep below fixed. | `convert/simplify.ts`, applied in `convert/emit.ts` |
+| 1 | Holes come from the fill rule, never from winding direction. Containment is point-in-polygon, not bounding box. | `convert/regions.ts` |
+| 2 | Representative points are sampled where the ring is *isolated*, not at its longest edge. | `convert/regions.ts` — `representativePoints` |
+| 3 | Strokes are emitted as filled areas. Excalidraw's `strokeWidth` is a style property and does not scale with the element. | `convert/strokes.ts` |
+| 4 | Stroke outlines are built by *offsetting*, not by unioning per-segment quads. | `convert/strokes.ts` |
+| 5 | Holes are bridged with zero-width corridors, each anchored on the **original** outer ring. | `convert/booleans.ts` |
+| 6 | Every tolerance is derived from the output scale, never a constant. | `convert/geometry.ts` — `toleranceFor` |
+| 7 | `clip-path` and `mask` are real geometry, intersected across nesting. | `convert/visibility.ts` |
+| 8 | `objectBoundingBox` units resolve against the referencing element's own box. | `convert/visibility.ts` |
+| 9 | Fail visible, never fail invisible — an unresolvable clip drops confidence rather than guessing. | `convert/visibility.ts` — `resolveVisibility` |
+| 10 | `polygon-clipping` is numerically fragile; the snapping and balanced-merge mitigations are load-bearing. | `convert/booleans.ts` |
+| 11 | Output rings are simplified after every boolean, at a tolerance the sweep below fixed. | `convert/emit.ts` |
 
 Two invariants are enforced by the type system rather than by prose:
 
 - Adding a value to any option allow-list in `types/options.ts` fails the build
-  at the label table in `components/options/labels.ts` until it is named.
-- Every `exportToSvg` call goes through `sceneFrame.exportSceneArgs`, which is
+  at the label table in `components/controls.tsx` until it is named.
+- Every `exportToSvg` call goes through `scene/frame.exportSceneArgs`, which is
   what makes the 16.6 MB font strip in `vite.config.ts` sound.
 
 ### Things measured and rejected
@@ -156,15 +163,15 @@ stated where it is relied upon; this is the list of *which* modules to read.
 
 | what | where it matters |
 |---|---|
-| A `line` is only filled when `isPathALoop(points)` — first/last gap ≤ `LINE_CONFIRM_THRESHOLD` (8) | `defaultOptions.ts`, checked in `sceneAudit.ts` |
+| A `line` is only filled when `isPathALoop(points)` — first/last gap ≤ `LINE_CONFIRM_THRESHOLD` (8) | `scene/options.ts`, checked in `scene/audit.ts` |
 | `polygon: true` is an editor flag, not a rendering one; `restore` clears it unless `isValidPolygon` | `types/excalidraw.ts` |
-| Pasted text is never re-measured, so the declared width is permanent | `textMetrics.ts` |
-| `lineHeight` must be byte-identical to `FONT_METADATA`, or text sits off-centre in its own box | `textMetrics.ts` — `lineHeightFor` |
+| Pasted text is never re-measured, so the declared width is permanent | `scene/text.ts` |
+| `lineHeight` must be byte-identical to `FONT_METADATA`, or text sits off-centre in its own box | `scene/text.ts` — `lineHeightFor` |
 | Font ids are 5–9; 4 is permanently unused and falls back to the emoji font | `types/options.ts` |
 | `getCornerRadius` returns `shorterSide * 0.25` below 128 units for both radius modes | `types/options.ts` |
-| Rough.js hatches the *fill*, so a hatch over a transparent background draws nothing | `defaultOptions.ts` — `normaliseOptions` |
-| `exportToSvg` always crops to the scene bounding box and bakes the offset in | `sceneFrame.ts` — `withFrame` |
-| `.excalidrawlib` v2 carries `files` in both places, because builds have looked in either | `layout/packGrid.ts` |
+| Rough.js hatches the *fill*, so a hatch over a transparent background draws nothing | `scene/options.ts` — `normaliseOptions` |
+| `exportToSvg` always crops to the scene bounding box and bakes the offset in | `scene/frame.ts` — `withFrame` |
+| `.excalidrawlib` v2 carries `files` in both places, because builds have looked in either | `scene/layout.ts` |
 
 ## Known gaps
 
@@ -176,7 +183,7 @@ Beyond the reported-unsupported list in the
 - **Group opacity is applied per shape.** Compositing a group as a unit differs
   where its members overlap each other; per-shape is the closest Excalidraw can
   express.
-- **Label kerning is not modelled.** `textMetrics.measureLabel` sums per-glyph
+- **Label kerning is not modelled.** `scene/text.measureLabel` sums per-glyph
   `hmtx` advances, so a kerned pair measures a fraction of a unit wide. It
   mis-sizes the card, never the text's position on it.
 - **`measureExcalidrawItem` measures the nominal artwork box.** Deliberate, and

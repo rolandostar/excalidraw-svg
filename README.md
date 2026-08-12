@@ -70,15 +70,17 @@ the cases deleted.
 
 ```
 src/
-  utils/                     the conversion pipeline, icon-set discovery and
-                             the shared option/schema definitions
+  convert/                   SVG in, Excalidraw elements out
+  library/                   icon sets: discovery, set.json, the build optimiser
+  scene/                     styling options, layout, text metrics, scene audit
   components/                React UI
   pages/                     one file per route
+  types/                     icons, options, Excalidraw's wire format
   styles/                    CSS, split by area (tokens, layout, pages, ui)
 scripts/
   run-fidelity.ts            test entry point
-  fidelity/                  the harness: config, corpus, score, pool, gate
-  lib/                       rasterisation, metrics, thresholds, reporting
+  fidelity/                  the harness: config, corpus, score, pool, report
+  lib/                       rasterisation, pixel comparison, claims, env
   build-evidence.ts          freezes harness output into public/evidence/
   dev/                       local-only tooling (screenshots)
 tests/

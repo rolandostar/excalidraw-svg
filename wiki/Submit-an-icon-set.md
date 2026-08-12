@@ -2,7 +2,7 @@
 
 A **set** is a folder of `.svg` files under `svg/`. The folder name becomes the
 URL, each filename becomes an icon title, and the set shows up in the gallery
-at `/icons`. Nothing has to be registered anywhere — `src/utils/iconSets.ts`
+at `/icons`. Nothing has to be registered anywhere — `src/library/iconSets.ts`
 discovers folders with `import.meta.glob`, and the dev server picks up a new
 one on the next tick.
 
@@ -125,7 +125,7 @@ unreachable, and `outline` silently ignored `cardBgColor`. `cardStyle` and
 `roughness` are both rejected with a message naming what replaced them.
 
 **Unrecognised keys and out-of-range values are dropped, not merged.**
-`optionsSchema.ts` validates `defaults` and `presets` and warns in dev. A value
+`scene/options.ts` validates `defaults` and `presets` and warns in dev. A value
 none of the sidebar controls can represent would leave the UI unable to show or
 undo it.
 
