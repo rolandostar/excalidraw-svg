@@ -5,8 +5,7 @@ import { ExcalidrawElement, ExcalidrawFile } from '../src/types';
 import { withFrame } from '../src/utils/sceneFrame';
 
 // The scene audit is pure and shared with the browser, so it lives in `src/`.
-// Re-exported here so existing harness imports keep working.
-export { auditSceneFidelity, type FidelityIssue } from '../src/utils/sceneAudit';
+export { auditSceneFidelity } from '../src/utils/sceneAudit';
 
 export interface RenderedScene {
   svg: string;

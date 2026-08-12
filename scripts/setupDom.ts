@@ -49,4 +49,3 @@ define('navigator', win.navigator);
 define('location', win.location);
 define('devicePixelRatio', 1);
 
-export const document = win.document as Document;

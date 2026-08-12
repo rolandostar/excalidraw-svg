@@ -15,46 +15,7 @@ import type {
 } from '../../types';
 import { generateRandomId } from '../convert/emit';
 import { createExcalidrawItem } from './buildItem';
-import { elementsBounds, measureExcalidrawItem, translateElements } from './itemLayout';
-
-/**
- * Column/row pitch that fits the largest item in the set, plus a gutter.
- *
- * Replaces the old fixed 160/180 constants, which were sized for a 48px icon
- * with a short label and overlapped as soon as either grew.
- *
- * Exported for the fidelity harness, which needs the pitch *before* it has
- * converted anything: `measureExcalidrawItem` reads only `icon.title` and the
- * options, so the layout can be computed from filenames alone and handed to
- * worker processes that each own one slice of the corpus.
- *
- * Always measures the *nominal* artwork box, so the answer never depends on a
- * conversion. Labels are measured exactly, which removes the axis that
- * actually used to overlap - long titles against a pitch that ignored them.
- *
- * This is an estimate, not a bound, and the packers below no longer rely on
- * it. Two things can make a real item exceed it: `fitFrame`, which is measured
- * from ink this function has not seen, and source artwork drawn outside its
- * own `viewBox`. A browser clips the latter to the viewport and this converter
- * does not, so `Iot-Edge.svg` genuinely produces geometry 12 units past the
- * edge of its 96-unit box.
- */
-export function gridPitch(
-  icons: IconAsset[],
-  options: ExcalidrawOptions,
-  gutter: number
-): { pitchX: number; pitchY: number } {
-  let widest = 0;
-  let tallest = 0;
-
-  for (const icon of icons) {
-    const { cardWidth, cardHeight } = measureExcalidrawItem(icon, options);
-    if (cardWidth > widest) widest = cardWidth;
-    if (cardHeight > tallest) tallest = cardHeight;
-  }
-
-  return { pitchX: Math.ceil(widest) + gutter, pitchY: Math.ceil(tallest) + gutter };
-}
+import { elementsBounds, translateElements } from './itemLayout';
 
 export interface PackedItem {
   icon: IconAsset;
@@ -66,12 +27,11 @@ export interface PackedItem {
  * Builds every item and lays them out on a grid sized to what they measure.
  *
  * Two passes over one conversion each: build at the origin, take each item's
- * real extent, then translate into a cell. Deriving the pitch from the built
- * items rather than from `gridPitch` is what makes the packing exact - an item
- * can be larger than the nominal estimate for two reasons that no
- * pre-conversion measurement can see. `fitFrame` sizes the frame from ink, and
- * source artwork is not clipped to its own `viewBox`, so a file that draws
- * outside it (`Iot-Edge.svg` does, by 12 units) used to overlap its neighbour.
+ * real extent, then translate into a cell. The pitch has to come from the
+ * built items: `fitFrame` sizes the frame from ink, and source artwork is not
+ * clipped to its own `viewBox`, so a file that draws outside it
+ * (`Iot-Edge.svg` does, by 12 units) is larger than any measurement taken
+ * before conversion can predict.
  *
  * Cells are aligned on each item's measured bounds rather than on its
  * nominal origin, so the escaping case is centred in its cell instead of

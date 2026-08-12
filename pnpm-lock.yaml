@@ -66,9 +66,6 @@ importers:
       pngjs:
         specifier: ^7.0.0
         version: 7.0.0
-      roughjs:
-        specifier: ^4.6.6
-        version: 4.6.6
       tsx:
         specifier: ^4.23.1
         version: 4.23.1
@@ -1185,9 +1182,6 @@ packages:
 
   roughjs@4.6.4:
     resolution: {integrity: sha512-s6EZ0BntezkFYMf/9mGn7M8XGIoaav9QQBCnJROWB3brUWQ683Q2LbRD/hq0Z3bAJ/9NVpU/5LpiTWvQMyLDhw==}
-
-  roughjs@4.6.6:
-    resolution: {integrity: sha512-ZUz/69+SYpFN/g/lUlo2FXcIjRkSu3nDarreVdGGndHEBJ6cXPdKguS8JGxwj5HA5xIbVKSmLgr5b3AWxtRfvQ==}
 
   sax@1.6.1:
     resolution: {integrity: sha512-42tBVwLWnaQvW5zc4HbZrTuWccECCZfBi92FDuwtqxasH+JbPB3/FOKb1m222K42R4WxuxzzMsTswfzgtSu64Q==}
@@ -2346,13 +2340,6 @@ snapshots:
       fsevents: 2.3.3
 
   roughjs@4.6.4:
-    dependencies:
-      hachure-fill: 0.5.2
-      path-data-parser: 0.1.0
-      points-on-curve: 0.2.0
-      points-on-path: 0.2.1
-
-  roughjs@4.6.6:
     dependencies:
       hachure-fill: 0.5.2
       path-data-parser: 0.1.0

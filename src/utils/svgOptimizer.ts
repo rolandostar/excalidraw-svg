@@ -4,9 +4,6 @@ import { expandUseElements } from './optimize/useExpand';
 import { flattenGradients } from './optimize/gradients';
 import { normaliseColors, removeEmptyDefs } from './optimize/cleanup';
 
-export { parseHexColor, averageHexColors } from './optimize/color';
-export { optimizeSvgWithSvgo } from './optimize/svgoConfig';
-
 /**
  * Flattens gradients, resolves CSS rules, and normalizes colors across SVG
  * string.

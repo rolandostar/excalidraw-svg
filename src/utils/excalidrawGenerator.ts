@@ -38,6 +38,5 @@ export { createExcalidrawItem } from './layout/buildItem';
 export {
   buildExcalidrawClipboardData,
   buildExcalidrawLibraryPackage,
-  gridPitch,
   type PackedItem,
 } from './layout/packGrid';

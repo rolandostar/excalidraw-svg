@@ -16,7 +16,7 @@
  */
 import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
-import { Box, Raster, inkBox, rasterise, setViewBox } from './raster';
+import { Box, Raster, rasterise, setViewBox } from './raster';
 
 export interface ShapeReport {
   /** Mismatched pixels / union ink pixels. 0 is identical. */
@@ -234,4 +234,3 @@ export function comparePlacement(expected: Box, actual: Box | null): PlacementRe
   };
 }
 
-export { inkBox };
