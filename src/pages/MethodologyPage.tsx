@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ExternalLink } from 'lucide-react';
-import { NEW_ISSUE_URL, WIKI_URL, STATS, formatPct } from '../site';
-import { TrapTable } from '../components/TrapTable';
+import { AlertTriangle, ExternalLink } from 'lucide-react';
+import { NEW_ISSUE_URL, WIKI_URL, STATS, formatPct, formatPx } from '../site';
+import { TrapTable, type TrapRow } from '../components/TrapTable';
 import { plural } from '../utils/plural';
 import { listIconSets } from '../utils/iconSets';
-import { evidenceImageUrl, loadEvidence, type EvidenceManifest } from '../utils/evidence';
-import { CaseCard } from './methodology/CaseCard';
-import { ScoringSection, ShippingGateSection } from './methodology/ScoringSection';
-import { SupportSection } from './methodology/SupportSection';
-import { TRAP_ROWS } from './methodology/traps';
+import { listSupportRules } from '../utils/svgSupport';
+import {
+  evidenceImageUrl,
+  loadEvidence,
+  type EvidenceCase,
+  type EvidenceManifest,
+} from '../utils/evidence';
 
 /**
  * The strip shown next to the introduction.
@@ -21,6 +23,103 @@ const HERO_CASE = 'torture/07-stroke-caps-joins.png';
 
 /** How many torture cases are shown before the "show all" button. */
 const VISIBLE_CASES = 6;
+
+/**
+ * "Mistakes this caught". From the table of the same name in the Architecture
+ * wiki page. Each row is a bug that reached review looking correct, so this
+ * list only ever grows.
+ */
+const TRAP_ROWS: TrapRow[] = (
+  [
+    ['Inferring holes from winding direction', '13 subpaths misclassified across Administration and Agent-Assist'],
+    ['Testing containment with bounding boxes', 'Network-Connectivity-Center lost 64.8% of a path'],
+    ['Replacing a clipped group with its clip shape', 'Kuberun rendered as a solid blue rectangle — 91.9% error'],
+    ['Applying only the nearest ancestor clip', 'Iot-Edge rendered as a large blue rectangle — 82.7% error'],
+    ['Dropping the last vertex of every subpath', 'Deleted a real vertex from 19 subpaths'],
+    ['Framing each side of the comparison on its own ink box', 'Inflated every real error tenfold'],
+    ['Guessing "large radius means ellipse"', 'Turned every pill shape into a full ellipse'],
+  ] as const
+).map(([mistake, consequence]) => ({ key: mistake, term: mistake, detail: consequence }));
+
+/**
+ * One evidence strip: name, score, the source/converted/difference triptych,
+ * and the reason if it fails on purpose.
+ *
+ * Rendered from two different lists - the torture suite and the imperfect
+ * icons - which must not be allowed to drift into showing different things.
+ */
+function CaseCard({ item }: { item: EvidenceCase }) {
+  return (
+    <figure className={`case-card${item.failing ? ' is-failing' : ''}`}>
+      <figcaption className="case-head">
+        <span className="case-name">{item.label}</span>
+        <span className={`case-score${item.failing ? ' is-failing' : ''}`}>
+          {item.shapeScore === null ? 'n/a' : formatPct(item.shapeScore, 2)}
+        </span>
+      </figcaption>
+
+      {item.image && (
+        <img
+          className="case-image"
+          src={evidenceImageUrl(item.image)}
+          alt={`${item.label}: source, converted and pixel difference`}
+          loading="lazy"
+        />
+      )}
+
+      {item.trap && <p className="case-trap">{item.trap}</p>}
+
+      <p className="case-meta">
+        placement {item.placementErrorPx === null ? 'n/a' : formatPx(item.placementErrorPx)} ·{' '}
+        {plural(item.elementCount, 'element')}
+      </p>
+
+      {/*
+        The reason comes from tests/baselines/<suite>.expected-failures.json,
+        the same file the test gate reads. The page used to keep its own copy
+        of these four explanations.
+      */}
+      {item.expectedFailureReason && (
+        <p className="case-deliberate">
+          <AlertTriangle size={13} aria-hidden="true" /> Fails on purpose.{' '}
+          {item.expectedFailureReason}
+        </p>
+      )}
+    </figure>
+  );
+}
+
+/**
+ * "What is and isn't supported".
+ *
+ * The one section that reads from the converter rather than from a manifest:
+ * `listSupportRules()` is the same detection code that warns you on the
+ * convert page, so the table cannot disagree with the behaviour.
+ */
+function SupportSection() {
+  const rules = useMemo(() => listSupportRules(), []);
+  const rowsFor = (severity: string): TrapRow[] =>
+    rules
+      .filter(r => r.severity === severity)
+      .map(r => ({ key: r.feature, term: r.feature, detail: r.detail }));
+
+  return (
+    <section className="doc-section">
+      <h2>What is and isn't supported</h2>
+      <p className="doc-body">
+        This table is generated from the converter's own detection rules, so it cannot
+        disagree with the code. Anything listed here is <strong>reported</strong> when you
+        convert a file — nothing is dropped silently.
+      </p>
+
+      <h3 className="doc-subhead">Not converted</h3>
+      <TrapTable rows={rowsFor('unsupported')} mono />
+
+      <h3 className="doc-subhead">Approximated</h3>
+      <TrapTable rows={rowsFor('approximated')} mono />
+    </section>
+  );
+}
 
 export function MethodologyPage() {
   const [manifest, setManifest] = useState<EvidenceManifest | null>(null);
@@ -56,6 +155,8 @@ export function MethodologyPage() {
         .sort((a, b) => (b.shapeScore ?? 0) - (a.shapeScore ?? 0)),
     [manifest]
   );
+
+  const regressionSlack = manifest?.thresholds.regressionSlack ?? 0.001;
 
   return (
     <main className="page page-doc">
@@ -103,8 +204,45 @@ export function MethodologyPage() {
         </div>
       </div>
 
-      <ScoringSection />
-      <ShippingGateSection regressionSlack={manifest?.thresholds.regressionSlack ?? 0.001} />
+      <section className="doc-section">
+        <h2>How a conversion is scored</h2>
+        <p className="doc-body">
+          Each SVG is rendered by <strong>resvg</strong> from the source, and again by{' '}
+          <strong>Excalidraw's own exporter</strong> from the converted elements. The two
+          images go through pixelmatch, and the score is mismatched pixels divided by{' '}
+          <em>inked</em> pixels — not canvas area, so a small glyph does not get flattered by
+          the empty space around it.
+        </p>
+        <p className="doc-body">
+          Both sides are framed on the same window. Cropping each one to its own ink box
+          sounds reasonable and was the worst mistake in this project: it hides translation
+          error completely, and it made every real number look ten times better than it was.
+          A transparent marker spanning the artboard forces the shared frame, and the run
+          stops if any content escapes it.
+        </p>
+        <p className="doc-body">
+          A second pass catches what pixels cannot: shapes Excalidraw will refuse to draw as
+          intended — an unclosed path carrying a fill, a zero-sized ellipse, an image pointing
+          at a missing file. It runs on every export path, and it is the same code that warns
+          you on the convert page.
+        </p>
+      </section>
+
+      <section className="doc-section">
+        <h2>What stops a bad change from shipping</h2>
+        <p className="doc-body">
+          Every score is committed to a baseline file. An icon that gets worse than its
+          baseline by more than {formatPct(regressionSlack, 1)} fails the build, as does any
+          shape error above {formatPct(STATS.shapeThreshold, 0)} or placement error above{' '}
+          {formatPx(STATS.placementThresholdPx)}.
+        </p>
+        <p className="doc-body">
+          The check is verified to actually fail. Editing one baseline entry by hand produces{' '}
+          <code>Kuberun: 0.00% -&gt; 91.89%</code> and a non-zero exit code. A check that
+          cannot fail is worse than none, so that test is repeated whenever the harness
+          changes.
+        </p>
+      </section>
 
       <section className="doc-section">
         <h2>Mistakes this caught</h2>

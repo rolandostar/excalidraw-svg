@@ -16,7 +16,7 @@ import { collectUnsupportedFeatures, describeWarnings } from '../../src/utils/sv
 import type { IconAsset } from '../../src/types/icons';
 
 import { renderExcalidrawSceneInWindow, auditSceneFidelity } from '../excalidrawRenderer';
-import { inkBox, readViewBox } from '../lib/raster';
+import { composeTriptych, inkBox, readViewBox } from '../lib/raster';
 import {
   compareRasterInFrame,
   comparePlacement,
@@ -27,7 +27,7 @@ import {
 } from '../lib/fidelity';
 import { cacheVersion, readSource, writeSource } from '../lib/sourceCache';
 import { IconMetrics } from '../lib/thresholds';
-import { composeTriptych } from '../lib/triptych';
+
 import { Config, PANEL_SIZE, SCENE_WINDOW, TARGET } from './config';
 import { Candidate, buildIcon } from './corpus';
 

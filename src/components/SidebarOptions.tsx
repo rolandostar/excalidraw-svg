@@ -1,21 +1,102 @@
 import React from 'react';
-import { ChevronDown, Wand2 } from 'lucide-react';
+import { ChevronDown, Sliders, Wand2 } from 'lucide-react';
 import type { ResolvedPreset } from '../types/icons';
-import type { ExcalidrawOptions } from '../types/options';
-import { sameOptions, useStyleOptions } from './options/useStyleOptions';
-import { PresetSection } from './options/PresetSection';
-import { ArtworkSection } from './options/ArtworkSection';
+import { ICON_SCALES, type ExcalidrawOptions } from '../types/options';
+import { sameOptions, useStyleOptions, type SectionProps } from './options/useStyleOptions';
+import { ICON_BASE_SIZE } from '../utils/defaultOptions';
+import { Segments, Slider } from './options/controls';
+import { ROUGHNESS_LABELS, ROUGHNESS_VALUES } from './options/labels';
 import { FrameSection } from './options/FrameSection';
 import { LabelSection } from './options/LabelSection';
 
 /**
- * The styling panel: a collapsible shell around four independent sections.
+ * The styling panel: a collapsible shell around four sections.
  *
- * This file owns only what the sections cannot each decide for themselves -
- * whether the panel is open, and which preset the current options happen to
- * match. Everything that reads or writes an option goes through
- * `useStyleOptions`; everything that renders one lives in `options/`.
+ * Presets and Artwork are here because neither is more than a handful of
+ * controls; Frame and Label are large enough to read on their own and live in
+ * `options/`. Everything that reads or writes an option goes through
+ * `useStyleOptions`, which is where the "the control does nothing" rules are.
  */
+/**
+ * The row of named looks a set declares in its `set.json`.
+ *
+ * Purely presentational: which preset is active is decided by comparing the
+ * live options against each preset's, in `SidebarOptions`, because there is no
+ * such thing as a stored "current preset" - see `sameOptions`.
+ */
+function PresetSection({
+  presets,
+  activeId,
+  onSelect,
+}: {
+  presets: ResolvedPreset[];
+  activeId: string | null;
+  onSelect: (preset: ResolvedPreset) => void;
+}) {
+  return (
+    <section className="opt-section">
+      <h3 className="opt-heading">
+        <Wand2 size={14} aria-hidden="true" />
+        Presets
+      </h3>
+
+      <div className="preset-grid">
+        {presets.map(preset => (
+          <button
+            key={preset.id}
+            type="button"
+            className={`preset-btn${activeId === preset.id ? ' is-active' : ''}`}
+            onClick={() => onSelect(preset)}
+            aria-pressed={activeId === preset.id}
+            title={preset.hint}
+          >
+            {preset.label}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Everything that applies to the icon itself, with or without a frame.
+ *
+ * Deliberately before Frame, and outside it. Icon roughness used to live
+ * inside the frame section, gated on the frame being switched on - while the
+ * value it set was applied to the artwork regardless. So sketchy icons were
+ * unreachable without a card, and turning the card off left the icons sketchy
+ * with no visible control explaining why.
+ */
+function ArtworkSection({ options, style }: SectionProps) {
+  return (
+    <section className="opt-section">
+      <h3 className="opt-heading">
+        <Sliders size={14} aria-hidden="true" />
+        Artwork
+      </h3>
+
+      <Slider
+        label="Icon scale"
+        value={options.iconScale}
+        display={`${Math.round(ICON_BASE_SIZE * options.iconScale)}px · ${options.iconScale}x`}
+        min={ICON_SCALES[0]}
+        max={ICON_SCALES[ICON_SCALES.length - 1]}
+        step={ICON_SCALES[1] - ICON_SCALES[0]}
+        ariaLabel="Icon scale"
+        onChange={v => style.updateOption('iconScale', v)}
+      />
+
+      <Segments
+        label="Roughness"
+        values={ROUGHNESS_VALUES}
+        current={options.iconRoughness}
+        render={r => ROUGHNESS_LABELS[r]}
+        onSelect={r => style.updateOption('iconRoughness', r)}
+      />
+    </section>
+  );
+}
+
 interface SidebarOptionsProps {
   options: ExcalidrawOptions;
   setOptions: React.Dispatch<React.SetStateAction<ExcalidrawOptions>>;
