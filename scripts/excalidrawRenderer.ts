@@ -2,7 +2,7 @@ import './setupDom';
 
 import { exportToSvg } from '@excalidraw/utils';
 import type { ExcalidrawElement, ExcalidrawFile } from '../src/types/excalidraw';
-import { withFrame } from '../src/utils/sceneFrame';
+import { exportSceneArgs, withFrame } from '../src/utils/sceneFrame';
 
 // The scene audit is pure and shared with the browser, so it lives in `src/`.
 export { auditSceneFidelity } from '../src/utils/sceneAudit';
@@ -37,18 +37,7 @@ async function renderExcalidrawScene(
   files: Record<string, ExcalidrawFile> = {},
   exportPadding = 0
 ): Promise<RenderedScene> {
-  const svgElement = await exportToSvg({
-    elements: elements as any,
-    files: (Object.keys(files).length ? files : null) as any,
-    appState: {
-      exportBackground: false,
-      exportWithDarkMode: false,
-      exportScale: 1,
-      viewBackgroundColor: '#ffffff',
-    } as any,
-    exportPadding,
-    skipInliningFonts: true,
-  });
+  const svgElement = await exportToSvg(exportSceneArgs(elements, files, exportPadding) as never);
 
   const viewBox = svgElement.getAttribute('viewBox') || '0 0 0 0';
   const [, , vbW, vbH] = viewBox.split(/\s+/).map(Number);
@@ -63,14 +52,7 @@ async function renderExcalidrawScene(
 
 /**
  * Renders a scene inside a caller-chosen window instead of Excalidraw's
- * automatic content bounds.
- *
- * `exportToSvg` always crops to the scene's bounding box and bakes the
- * resulting offset into every element transform, so the output cannot be
- * reframed afterwards. Prepending an invisible `line` element that spans the
- * desired window makes that window *become* the bounding box, which yields a
- * `viewBox` of exactly `0 0 w h` with a zero translate - and therefore a frame
- * that can be aligned pixel-for-pixel with the source SVG.
+ * automatic content bounds. `withFrame` explains how.
  *
  * Throws if content escapes the window, because a silently shifted frame would
  * make every subsequent measurement wrong.

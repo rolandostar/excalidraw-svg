@@ -1,6 +1,50 @@
 /**
- * Forces a scene to be exported inside a caller-chosen window.
+ * How this project calls `exportToSvg`, and how it forces a scene to be
+ * exported inside a caller-chosen window.
  *
+ * Both halves are shared between the harness, which asserts that nothing
+ * escapes the window, and the browser preview, which uses it to align the two
+ * panes. Neither can drift from the other without the comparison quietly
+ * measuring two different things.
+ */
+import type { ExcalidrawElement, ExcalidrawFile } from '../types/excalidraw';
+
+/**
+ * The arguments every `exportToSvg` call in this project passes.
+ *
+ * `skipInliningFonts` is load-bearing beyond this call: the font-stripping
+ * transform in `vite.config.ts` deletes 16.6 MB of payload from
+ * `@excalidraw/utils` and is only sound because nothing ever asks for a font.
+ * That claim is checkable here rather than being an invariant spread across
+ * two files that never import each other.
+ */
+export function exportSceneArgs(
+  elements: ExcalidrawElement[],
+  files: Record<string, ExcalidrawFile>,
+  exportPadding = 0
+) {
+  return {
+    elements: elements as never,
+    files: (Object.keys(files).length ? files : null) as never,
+    appState: {
+      exportBackground: false,
+      exportWithDarkMode: false,
+      exportScale: 1,
+      viewBackgroundColor: '#ffffff',
+    } as never,
+    exportPadding,
+    skipInliningFonts: true as const,
+  };
+}
+
+export interface FrameWindow {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
  * `exportToSvg` always crops to the scene's bounding box and bakes the
  * resulting offset into every element transform, so the output cannot be
  * reframed afterwards. Prepending an invisible `line` that spans the desired
@@ -11,18 +55,7 @@
  * ink box is a documented trap - it inflated measured error tenfold in the
  * harness, and in the UI it makes a correct conversion look misaligned purely
  * because the two panes were cropped differently.
- *
- * Shared between the harness, which asserts that nothing escapes the window,
- * and the browser preview, which uses it to align the two panes.
  */
-import type { ExcalidrawElement } from '../types/excalidraw';
-
-export interface FrameWindow {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
 
 export function buildFrameSentinel(
   template: ExcalidrawElement,

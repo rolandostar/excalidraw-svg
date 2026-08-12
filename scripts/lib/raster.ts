@@ -10,6 +10,7 @@
  * ink box for both sides under identical rules.
  */
 import { Resvg } from '@resvg/resvg-js';
+import { readViewBoxFromMarkup } from '../../src/utils/svg/viewBox';
 
 export interface Box {
   x: number;
@@ -26,36 +27,18 @@ export interface Raster {
 
 const SVG_TAG = /<svg\b[^>]*>/i;
 
-function parseNumberList(value: string): number[] {
-  return value
-    .trim()
-    .split(/[\s,]+/)
-    .map(Number)
-    .filter(n => Number.isFinite(n));
-}
-
-/** Reads the user-space window of an SVG document. */
+/**
+ * Reads the user-space window of an SVG document, or null if it declares
+ * nothing this harness should trust.
+ *
+ * Delegates to the converter's own reader. The harness exists to measure
+ * what the app produces, so parsing the input differently from the app is
+ * the one divergence it cannot detect in itself - and there was one: this
+ * used to accept `width="100"` but not `width="100mm"`.
+ */
 export function readViewBox(svg: string): Box | null {
-  const tag = svg.match(SVG_TAG)?.[0];
-  if (!tag) return null;
-
-  const vb = tag.match(/\bviewBox\s*=\s*["']([^"']+)["']/i);
-  if (vb) {
-    const parts = parseNumberList(vb[1]);
-    if (parts.length >= 4 && parts[2] > 0 && parts[3] > 0) {
-      return { x: parts[0], y: parts[1], width: parts[2], height: parts[3] };
-    }
-  }
-
-  const w = tag.match(/\bwidth\s*=\s*["']([\d.]+)/i);
-  const h = tag.match(/\bheight\s*=\s*["']([\d.]+)/i);
-  if (w && h) {
-    const width = parseFloat(w[1]);
-    const height = parseFloat(h[1]);
-    if (width > 0 && height > 0) return { x: 0, y: 0, width, height };
-  }
-
-  return null;
+  const box = readViewBoxFromMarkup(svg, { width: 0, height: 0 });
+  return box.source === 'fallback' ? null : box;
 }
 
 /**

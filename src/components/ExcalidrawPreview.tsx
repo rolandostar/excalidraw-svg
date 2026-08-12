@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import type { ExcalidrawElement, ExcalidrawFile } from '../types/excalidraw';
-import { type FrameWindow, withFrame } from '../utils/sceneFrame';
+import { exportSceneArgs, type FrameWindow, withFrame } from '../utils/sceneFrame';
 
 /**
  * Renders elements with **Excalidraw's own exporter**, not a lookalike.
@@ -66,20 +66,7 @@ function ExcalidrawPreviewImpl({
     const scene = frame ? withFrame(elements, frame) : elements;
 
     loadExporter()
-      .then(exportToSvg =>
-        exportToSvg({
-          elements: scene as never,
-          files: (Object.keys(files).length ? files : null) as never,
-          appState: {
-            exportBackground: false,
-            exportWithDarkMode: false,
-            exportScale: 1,
-            viewBackgroundColor: '#ffffff',
-          } as never,
-          exportPadding: 0,
-          skipInliningFonts: true,
-        })
-      )
+      .then(exportToSvg => exportToSvg(exportSceneArgs(scene, files)))
       .then(svg => {
         if (cancelled || !hostRef.current) return;
 
