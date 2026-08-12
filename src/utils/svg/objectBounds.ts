@@ -8,7 +8,8 @@
  * separate from `clipping.ts` so that the clip and mask logic can be read
  * without it and so that `matrix.ts` can depend on `BoundingBox` alone.
  */
-import { MultiPolygon, Point, rectRegion } from '../pathRegions';
+import { Point, rectRegion } from '../regions/primitives';
+import type { MultiPolygon } from '../regions/boolean';
 import { applyMatrix, getCombinedTransformMatrixUntil } from './matrix';
 import { boundsOfRings, shapeBoundsPoints } from './geometry';
 

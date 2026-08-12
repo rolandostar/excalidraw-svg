@@ -8,7 +8,7 @@
  * being rediscovered at each call site. Parsing the stylesheet itself is
  * `stylesheet.ts`.
  */
-import type { FillRule } from '../pathRegions';
+import type { FillRule } from '../regions/primitives';
 import type { LineCap, LineJoin } from '../strokeOutline';
 import type { StyleMap } from './stylesheet';
 

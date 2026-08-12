@@ -14,7 +14,7 @@
  * the numeric parameters that used to differ between copies are arguments, so
  * each caller keeps exactly the behaviour it had.
  */
-import type { Point } from '../pathRegions';
+import type { Point } from '../regions/primitives';
 import { getPointsOnPath } from './pathFlatten';
 
 /** Axis-aligned extent, in whatever space the points were given in. */

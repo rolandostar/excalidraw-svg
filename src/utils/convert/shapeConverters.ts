@@ -9,14 +9,10 @@
  * The dispatch is a lookup table rather than a chain so that adding a tag is a
  * map entry, and so that "which tags are handled" is one readable line.
  */
-import {
-  MultiPolygon,
-  Point,
-  bridgeHoles,
-  regionToBridgedRings,
-  resolveFilledRegions,
-  signedArea,
-} from '../pathRegions';
+import { Point, signedArea } from '../regions/primitives';
+import { resolveFilledRegions } from '../regions/fillRule';
+import type { MultiPolygon } from '../regions/boolean';
+import { bridgeHoles, regionToBridgedRings } from '../regions/bridge';
 import { strokeToRegion } from '../strokeOutline';
 import {
   Matrix2D,

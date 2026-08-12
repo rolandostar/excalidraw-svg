@@ -8,17 +8,16 @@
  * `getVisibilityRegion`. The unit system both of them can be expressed in
  * lives next door, in `objectBounds.ts`.
  */
+import { Point, multiPolygonBounds } from '../regions/primitives';
+import { resolveFilledRegions } from '../regions/fillRule';
 import {
   MultiPolygon,
-  Point,
   differenceMultiPolygons,
   intersectMultiPolygons,
   intersectRingWithRegion,
-  multiPolygonBounds,
   polygonsToMultiPolygon,
-  resolveFilledRegions,
   robustUnion,
-} from '../pathRegions';
+} from '../regions/boolean';
 import {
   Matrix2D,
   applyMatrix,

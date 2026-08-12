@@ -22,6 +22,23 @@ import {
  * Separate from `boolean.ts` because this is *classification* - exact,
  * per-ring, and driven by the SVG spec. The boolean engine that follows it
  * only canonicalises an answer this file has already produced.
+ *
+ * Three rules decide it, and all three have been got wrong here before:
+ *
+ *  - **Hole-ness comes from the fill rule, not from winding direction.** A
+ *    subpath is a hole when the fill rule says the area just inside it is
+ *    empty. `nonzero` (the SVG default) and `evenodd` disagree, and an author
+ *    is free to wind every subpath the same way and rely on `evenodd`. The
+ *    heuristic this replaced - "opposite winding AND bounding box inside" -
+ *    got both halves wrong.
+ *
+ *  - **Containment is point-in-polygon, not bounding box.** Two disjoint
+ *    shapes can easily have nested bounding boxes; punching one out of the
+ *    other deletes real artwork.
+ *
+ *  - **Orientation is never forced.** `polygon-clipping` returns canonical
+ *    winding (outer one way, holes the other), which is correct under both
+ *    fill rules, so nothing downstream needs to reverse a ring.
  */
 
 // --- tuning constants for `representativePoints` ---------------------------

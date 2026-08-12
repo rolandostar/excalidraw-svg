@@ -1,11 +1,10 @@
+import { Point, signedArea } from './regions/primitives';
 import {
   MultiPolygon,
-  Point,
   differenceMultiPolygons,
   normaliseRegion,
   robustUnion,
-  signedArea,
-} from './pathRegions';
+} from './regions/boolean';
 import { arcSegmentCount, closeRing } from './svg/geometry';
 
 /**

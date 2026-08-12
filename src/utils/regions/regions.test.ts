@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { multiPolygonBounds, polygonsToMultiPolygon, resolveFilledRegions, signedArea } from './pathRegions';
+import { multiPolygonBounds, signedArea } from './primitives';
+import { polygonsToMultiPolygon } from './boolean';
+import { resolveFilledRegions } from './fillRule';
 
 const ring = (x: number, y: number, size: number) => [
   [x, y],
