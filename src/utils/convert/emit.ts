@@ -5,8 +5,8 @@
  * Excalidraw's schema, its defaults, and the viewBox -> target fit. Everything
  * upstream works in the source file's own coordinates.
  */
-import type { ExcalidrawElement } from '../../types';
-import { closeRing, boundsOf } from '../svg/geometry';
+import type { ExcalidrawElement } from '../../types/excalidraw';
+import { boundsOf, closeRing } from '../svg/geometry';
 import { OUTPUT_SIMPLIFY_TOLERANCE_PX, simplifyClosedRing } from './simplify';
 import type { RawShape } from './rawShape';
 

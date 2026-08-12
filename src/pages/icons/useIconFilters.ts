@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import type { IconAsset, IconSet } from '../../types';
+import type { IconAsset, IconSet } from '../../types/icons';
 import {
   asBoolean,
   asString,

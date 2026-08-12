@@ -28,8 +28,8 @@
  * it has to be byte-identical to that font's entry in Excalidraw's
  * `FONT_METADATA` or the text sits off-centre in its own box.
  */
-import type { LabelFontFamily } from '../types';
-import { FIRST_CHAR, LAST_CHAR, NORMALISED_UPEM, FONT_METRICS } from './fontMetrics.generated';
+import type { LabelFontFamily } from '../types/options';
+import { FIRST_CHAR, FONT_METRICS, LAST_CHAR, NORMALISED_UPEM } from './fontMetrics.generated';
 
 /**
  * Fallback for a font id with no generated entry.

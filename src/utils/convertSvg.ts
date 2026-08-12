@@ -12,11 +12,11 @@
  * indistinguishable from "your wordmark was dropped".
  */
 import { parseSvgToExcalidrawElements } from './convert/parseSvg';
-import { emptyDiagnostics, type ConversionDiagnostics } from './convert/diagnostics';
-import { readViewBox, type ViewBox } from './svg/viewBox';
-import { collectUnsupportedFeatures, type SvgFeatureWarning } from './svgSupport';
-import { auditSceneFidelity, type FidelityIssue } from './sceneAudit';
-import type { ExcalidrawElement } from '../types';
+import { type ConversionDiagnostics, emptyDiagnostics } from './convert/diagnostics';
+import { type ViewBox, readViewBox } from './svg/viewBox';
+import { type SvgFeatureWarning, collectUnsupportedFeatures } from './svgSupport';
+import { type FidelityIssue, auditSceneFidelity } from './sceneAudit';
+import type { ExcalidrawElement } from '../types/excalidraw';
 
 /** Beyond this the scene stops being pasteable at a sensible zoom. */
 const MAX_DIMENSION = 1200;

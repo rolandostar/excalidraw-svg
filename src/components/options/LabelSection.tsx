@@ -1,5 +1,5 @@
 import { Type } from 'lucide-react';
-import type { LabelPosition } from '../../types';
+import type { LabelPosition } from '../../types/options';
 import { Field, Segments, Slider, Switch } from './controls';
 import { ColorField } from './ColorField';
 import { TEXT_COLORS } from './palette';

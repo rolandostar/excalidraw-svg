@@ -6,12 +6,9 @@
  * back - and because the five numbered steps below are the whole contract
  * between them.
  */
-import type {
-  ExcalidrawElement,
-  ExcalidrawFile,
-  ExcalidrawOptions,
-  IconAsset,
-} from '../../types';
+import type { IconAsset } from '../../types/icons';
+import type { ExcalidrawOptions } from '../../types/options';
+import type { ExcalidrawElement, ExcalidrawFile } from '../../types/excalidraw';
 import { ICON_BASE_SIZE } from '../defaultOptions';
 import { lineHeightFor } from '../textMetrics';
 import { createBaseElement, generateRandomId } from '../convert/emit';

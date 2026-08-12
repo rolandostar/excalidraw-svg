@@ -1,4 +1,4 @@
-import type { LabelFontFamily, Roughness } from '../../types';
+import type { LabelFontFamily, Roughness } from '../../types/options';
 
 /**
  * Display names for the two enumerated option values that have no sensible

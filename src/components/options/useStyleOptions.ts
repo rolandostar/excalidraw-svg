@@ -1,5 +1,5 @@
 import React from 'react';
-import { GCP_BLUE, type CardFillStyle, type ExcalidrawOptions } from '../../types';
+import { type CardFillStyle, type ExcalidrawOptions, GCP_BLUE } from '../../types/options';
 import { normaliseOptions } from '../../utils/defaultOptions';
 
 /**

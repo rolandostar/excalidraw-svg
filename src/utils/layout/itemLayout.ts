@@ -7,7 +7,9 @@
  * and because everything here is pure arithmetic over an `IconAsset` and an
  * `ExcalidrawOptions`.
  */
-import type { ExcalidrawElement, ExcalidrawOptions, IconAsset } from '../../types';
+import type { IconAsset } from '../../types/icons';
+import type { ExcalidrawOptions } from '../../types/options';
+import type { ExcalidrawElement } from '../../types/excalidraw';
 import { ICON_BASE_SIZE } from '../defaultOptions';
 import { measureLabel } from '../textMetrics';
 import { boundsOf } from '../svg/geometry';

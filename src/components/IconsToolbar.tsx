@@ -1,6 +1,7 @@
 import React from 'react';
-import { Search, Copy, Download, CheckSquare, Square, X } from 'lucide-react';
-import { IconAsset, IconCategory, ExcalidrawOptions } from '../types';
+import { CheckSquare, Copy, Download, Search, Square, X } from 'lucide-react';
+import type { IconAsset, IconCategory } from '../types/icons';
+import type { ExcalidrawOptions } from '../types/options';
 import {
   buildExcalidrawClipboardData,
   buildExcalidrawLibraryPackage,

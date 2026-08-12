@@ -15,7 +15,7 @@
  * Shared between the harness, which asserts that nothing escapes the window,
  * and the browser preview, which uses it to align the two panes.
  */
-import type { ExcalidrawElement } from '../types';
+import type { ExcalidrawElement } from '../types/excalidraw';
 
 export interface FrameWindow {
   x: number;

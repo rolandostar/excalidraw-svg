@@ -6,13 +6,13 @@
  * between items - a pitch is only meaningful across a set - and because the
  * two exporters differ solely in their gutter, column count and envelope.
  */
+import type { IconAsset } from '../../types/icons';
+import type { ExcalidrawOptions } from '../../types/options';
 import type {
   ExcalidrawElement,
   ExcalidrawFile,
   ExcalidrawLibraryPackage,
-  ExcalidrawOptions,
-  IconAsset,
-} from '../../types';
+} from '../../types/excalidraw';
 import { generateRandomId } from '../convert/emit';
 import { createExcalidrawItem } from './buildItem';
 import { elementsBounds, translateElements } from './itemLayout';

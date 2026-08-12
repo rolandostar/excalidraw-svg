@@ -1,4 +1,4 @@
-import type { ExcalidrawElement } from '../types';
+import type { ExcalidrawElement } from '../types/excalidraw';
 
 /**
  * Bounded, insertion-ordered cache of conversion results.

@@ -1,7 +1,7 @@
 import './setupDom';
 
 import { exportToSvg } from '@excalidraw/utils';
-import { ExcalidrawElement, ExcalidrawFile } from '../src/types';
+import type { ExcalidrawElement, ExcalidrawFile } from '../src/types/excalidraw';
 import { withFrame } from '../src/utils/sceneFrame';
 
 // The scene audit is pure and shared with the browser, so it lives in `src/`.

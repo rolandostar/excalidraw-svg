@@ -7,7 +7,7 @@ import path from 'node:path';
 
 import { optimizeSvgString } from '../../src/utils/svgOptimizer';
 import { IMPLICIT_CATEGORY, categorizeByRules, formatTitle } from '../../src/utils/categorizer';
-import { IconAsset, IconSetManifest } from '../../src/types';
+import type { IconAsset, IconSetManifest } from '../../src/types/icons';
 
 import { readViewBox } from '../lib/raster';
 import { warnBadManifest } from './console';

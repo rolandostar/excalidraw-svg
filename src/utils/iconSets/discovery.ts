@@ -1,4 +1,4 @@
-import type { IconSetManifest } from '../../types';
+import type { IconSetManifest } from '../../types/icons';
 import { readViewBoxFromMarkup } from '../svg/viewBox';
 // eslint-disable-next-line import/no-unresolved -- supplied by vite/icon-sets.ts
 import { ICON_SETS } from 'virtual:icon-sets';

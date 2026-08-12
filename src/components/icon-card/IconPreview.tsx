@@ -1,5 +1,7 @@
 import React from 'react';
-import type { ExcalidrawElement, ExcalidrawOptions, IconAsset } from '../../types';
+import type { IconAsset } from '../../types/icons';
+import type { ExcalidrawOptions } from '../../types/options';
+import type { ExcalidrawElement } from '../../types/excalidraw';
 import { inkBoxFor, measureExcalidrawItem } from '../../utils/layout/itemLayout';
 import { fontFamilyCss, lineHeightFor } from '../../utils/textMetrics';
 import { STAGE_HEIGHT_PX, cardScaleFor } from '../gridMetrics';

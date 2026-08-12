@@ -1,7 +1,8 @@
 import React from 'react';
-import { Wand2, ChevronDown } from 'lucide-react';
-import { ExcalidrawOptions, ResolvedPreset } from '../types';
-import { useStyleOptions, sameOptions } from './options/useStyleOptions';
+import { ChevronDown, Wand2 } from 'lucide-react';
+import type { ResolvedPreset } from '../types/icons';
+import type { ExcalidrawOptions } from '../types/options';
+import { sameOptions, useStyleOptions } from './options/useStyleOptions';
 import { PresetSection } from './options/PresetSection';
 import { ArtworkSection } from './options/ArtworkSection';
 import { FrameSection } from './options/FrameSection';

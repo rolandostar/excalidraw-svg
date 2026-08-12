@@ -10,7 +10,7 @@
  * paths, and the browser runs it on an uploaded file so the user is told what
  * will go missing *before* they paste.
  */
-import type { ExcalidrawElement, ExcalidrawFile } from '../types';
+import type { ExcalidrawElement, ExcalidrawFile } from '../types/excalidraw';
 import { LINE_CONFIRM_THRESHOLD } from './defaultOptions';
 
 export interface FidelityIssue {

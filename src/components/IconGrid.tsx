@@ -1,5 +1,6 @@
 import React from 'react';
-import { IconAsset, ExcalidrawOptions } from '../types';
+import type { IconAsset } from '../types/icons';
+import type { ExcalidrawOptions } from '../types/options';
 import { IconCard } from './IconCard';
 import type { IconSelection } from './IconsToolbar';
 import { SearchX } from 'lucide-react';

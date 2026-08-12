@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ExcalidrawOptions } from '../../types';
+import type { ExcalidrawOptions } from '../../types/options';
 
 /**
  * The CSS mock of the card rectangle Excalidraw will draw.

@@ -1,4 +1,4 @@
-import type { ExcalidrawOptions } from '../../types';
+import type { ExcalidrawOptions } from '../../types/options';
 import {
   DEFAULT_EXCALIDRAW_OPTIONS,
   looksLikeV1Options,

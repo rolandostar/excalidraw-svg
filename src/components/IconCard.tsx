@@ -1,6 +1,8 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { IconAsset, ExcalidrawOptions, ExcalidrawElement } from '../types';
+import type { IconAsset } from '../types/icons';
+import type { ExcalidrawOptions } from '../types/options';
+import type { ExcalidrawElement } from '../types/excalidraw';
 import { parseSvgToExcalidrawElements } from '../utils/convert/parseSvg';
 import { buildExcalidrawClipboardData } from '../utils/layout/packGrid';
 import { ICON_BASE_SIZE } from '../utils/defaultOptions';

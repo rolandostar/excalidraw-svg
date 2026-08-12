@@ -13,7 +13,7 @@ import { parseSvgToExcalidrawElements } from '../../src/utils/convert/parseSvg';
 import { createExcalidrawItem } from '../../src/utils/layout/buildItem';
 import { formatTitle } from '../../src/utils/categorizer';
 import { collectUnsupportedFeatures, describeWarnings } from '../../src/utils/svgSupport';
-import { IconAsset } from '../../src/types';
+import type { IconAsset } from '../../src/types/icons';
 
 import { renderExcalidrawSceneInWindow, auditSceneFidelity } from '../excalidrawRenderer';
 import { inkBox, readViewBox } from '../lib/raster';

@@ -1,4 +1,4 @@
-import { GCP_BLUE, type ExcalidrawOptions } from '../../types';
+import { type ExcalidrawOptions, GCP_BLUE } from '../../types/options';
 
 /**
  * Owns the presets a set gets when it declares none. Pure data.

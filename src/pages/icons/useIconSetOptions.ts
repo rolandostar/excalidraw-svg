@@ -1,5 +1,6 @@
-import { useCallback, useMemo, type Dispatch, type SetStateAction } from 'react';
-import type { ExcalidrawOptions, IconSetSummary } from '../../types';
+import { type Dispatch, type SetStateAction, useCallback, useMemo } from 'react';
+import type { IconSetSummary } from '../../types/icons';
+import type { ExcalidrawOptions } from '../../types/options';
 import {
   DEFAULT_EXCALIDRAW_OPTIONS,
   OPTIONS_STORAGE_VERSION,

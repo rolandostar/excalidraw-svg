@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { IconAsset, IconSet } from '../../types';
+import type { IconAsset, IconSet } from '../../types/icons';
 import { loadIconSet } from '../../utils/iconSets';
 
 /**

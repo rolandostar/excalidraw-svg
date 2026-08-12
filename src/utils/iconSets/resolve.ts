@@ -1,17 +1,16 @@
 import type {
-  ExcalidrawOptions,
   IconCategory,
   IconCategoryRule,
   IconSetManifest,
   IconSetSummary,
   ResolvedPreset,
-} from '../../types';
-import { GCP_BLUE } from '../../types/options';
+} from '../../types/icons';
+import { type ExcalidrawOptions, GCP_BLUE } from '../../types/options';
 import { DEFAULT_EXCALIDRAW_OPTIONS, normaliseOptions } from '../defaultOptions';
 import { sanitizeOptionsPatch } from '../optionsSchema';
 import { IMPLICIT_CATEGORY, formatTitle } from '../categorizer';
 import { FALLBACK_PRESETS } from './fallbackPresets';
-import { toDataUrl, type Discovered } from './discovery';
+import { type Discovered, toDataUrl } from './discovery';
 
 /**
  * Owns the turn from an untrusted `set.json` into a fully resolved, validated

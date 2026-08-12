@@ -6,12 +6,17 @@
  * emit. Each of those steps is a module of its own, so this file is the place
  * to read the *order* things happen in and nothing else.
  */
-import type { ExcalidrawElement } from '../../types';
+import type { ExcalidrawElement } from '../../types/excalidraw';
 import { parseCssStylesheet } from '../svg/stylesheet';
 import { toleranceFor } from '../svg/pathFlatten';
 import { readViewBox } from '../svg/viewBox';
 import { ConversionDiagnostics, DiagnosticsSink } from './diagnostics';
-import { DRAWABLE_SHAPES, RawShapeSink, convertShapeElement, type ConvertContext } from './shapeConverters';
+import {
+  type ConvertContext,
+  DRAWABLE_SHAPES,
+  RawShapeSink,
+  convertShapeElement,
+} from './shapeConverters';
 import { dedupeRawShapes } from './rawShape';
 import { dropBackgroundPlate } from './backgroundPlate';
 import { rawShapesToElements } from './emit';

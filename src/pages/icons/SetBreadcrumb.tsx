@@ -1,5 +1,5 @@
 import { ArrowLeft } from 'lucide-react';
-import type { IconSet } from '../../types';
+import type { IconSet } from '../../types/icons';
 import { Link } from '../../router';
 
 /**

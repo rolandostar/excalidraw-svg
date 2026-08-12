@@ -1,4 +1,4 @@
-import type { IconCategory, IconCategoryRule } from '../types';
+import type { IconCategory, IconCategoryRule } from '../types/icons';
 
 /**
  * Category and search-alias resolution.

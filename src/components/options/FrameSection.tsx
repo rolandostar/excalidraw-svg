@@ -1,5 +1,5 @@
 import { Frame } from 'lucide-react';
-import type { CardCorners, CardFillStyle, CardStrokeWidth } from '../../types';
+import type { CardCorners, CardFillStyle, CardStrokeWidth } from '../../types/options';
 import { Segments, Slider, Switch } from './controls';
 import { ColorField } from './ColorField';
 import { BG_COLORS, STROKE_COLORS } from './palette';

@@ -1,5 +1,5 @@
 import { Wand2 } from 'lucide-react';
-import type { ResolvedPreset } from '../../types';
+import type { ResolvedPreset } from '../../types/icons';
 
 /**
  * The row of named looks a set declares in its `set.json`.

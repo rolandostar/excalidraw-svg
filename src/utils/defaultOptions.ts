@@ -1,4 +1,4 @@
-import { ExcalidrawOptions, GCP_BLUE, LabelFontFamily } from '../types';
+import { type ExcalidrawOptions, GCP_BLUE, type LabelFontFamily } from '../types/options';
 
 /**
  * Edge length in Excalidraw canvas units of an icon at `iconScale: 1`.

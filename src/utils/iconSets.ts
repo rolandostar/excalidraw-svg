@@ -1,4 +1,4 @@
-import type { IconAsset, IconSet, IconSetSummary } from '../types';
+import type { IconAsset, IconSet, IconSetSummary } from '../types/icons';
 import { categorizeByRules, expandSynonyms, formatTitle } from './categorizer';
 import { discover, readIntrinsicSize, toDataUrl } from './iconSets/discovery';
 import { resolveRules, summarise } from './iconSets/resolve';
