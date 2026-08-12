@@ -499,3 +499,16 @@ export function readViewBoxFromMarkup(svg: string, fallback: ViewBoxFallback): V
     fallback
   );
 }
+
+/**
+ * Encodes an SVG for use in an `img` `src`. Quotes are escaped, nothing else
+ * is - a fully encoded payload is roughly a third larger for no benefit.
+ *
+ * Next to `readViewBoxFromMarkup` because they are the two things done to raw
+ * markup without parsing it, and because the alternative home - the optimiser
+ * - drags SVGO into every bundle that wants a data URL.
+ */
+export function toDataUrl(svg: string): string {
+  const encoded = encodeURIComponent(svg).replace(/'/g, '%27').replace(/"/g, '%22');
+  return `data:image/svg+xml,${encoded}`;
+}

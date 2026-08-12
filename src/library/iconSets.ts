@@ -15,7 +15,7 @@ import {
 } from '../scene/options';
 import { IMPLICIT_CATEGORY, categorizeByRules, expandSynonyms, formatTitle } from './categorizer';
 import { type Discovered, discover, readIntrinsicSize } from './discovery';
-import { toDataUrl } from './svgMarkup';
+import { toDataUrl } from '../convert/style';
 
 /**
  * Icon sets are folders.

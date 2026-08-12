@@ -81,8 +81,16 @@ export default defineConfig({
     open: true,
   },
   build: {
-    // The Excalidraw exporter is a deliberate lazy chunk: the landing page
-    // must not download a renderer before anyone has converted anything.
-    chunkSizeWarningLimit: 1200,
+    /*
+     * Sized just above the entry chunk, not above the largest one.
+     *
+     * `@excalidraw/utils` is a deliberate lazy chunk of about 2.2 MB - the
+     * landing page must not download a renderer before anyone has converted
+     * anything - so it trips this every build and always will. What the
+     * warning is for is the entry chunk, currently ~720 kB: SVGO reached it
+     * once, through a four-line data-URL helper, and cost 550 kB before
+     * anyone noticed.
+     */
+    chunkSizeWarningLimit: 800,
   },
 });

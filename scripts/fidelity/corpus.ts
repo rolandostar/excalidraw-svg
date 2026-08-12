@@ -5,7 +5,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { optimizeSvgString, toDataUrl } from '../../src/library/svgMarkup';
+import { optimizeSvgString } from '../../src/library/svgMarkup';
+import { toDataUrl } from '../../src/convert/style';
 import { IMPLICIT_CATEGORY, categorizeByRules, formatTitle } from '../../src/library/categorizer';
 
 import type { IconAsset, IconSetManifest } from '../../src/types/icons';

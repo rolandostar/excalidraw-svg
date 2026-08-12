@@ -2,8 +2,11 @@ import { Config, optimize } from 'svgo/browser';
 import { averageHexColors, parseHexColor } from '../convert/color';
 
 /**
- * Operations on SVG markup as a string: optimising it, and encoding it for
- * display.
+ * The build-time SVG optimiser.
+ *
+ * Never imported by anything the browser loads: it pulls in SVGO, and the
+ * markup reaching the app has already been through this at build time. Only
+ * `vite/icon-sets.ts` and the fidelity harness call it.
  *
  * Node-loadable on purpose. The build plugin and the fidelity harness both
  * run this outside a browser, so nothing here may reach for `virtual:`
@@ -411,17 +414,4 @@ export function optimizeSvgString(rawSvg: string): string {
     console.error('SVG Optimizer error:', err);
     return svgoCleaned;
   }
-}
-
-// ---------------------------------------------------------------------------
-// Encoding
-// ---------------------------------------------------------------------------
-
-/**
- * Encodes an SVG for use in an `img` `src`. Quotes are escaped, nothing else
- * is - a fully encoded payload is roughly a third larger for no benefit.
- */
-export function toDataUrl(svg: string): string {
-  const encoded = encodeURIComponent(svg).replace(/'/g, '%27').replace(/"/g, '%22');
-  return `data:image/svg+xml,${encoded}`;
 }
