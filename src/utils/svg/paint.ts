@@ -14,7 +14,7 @@ import type { StyleMap } from './stylesheet';
 import { hexChannels, relativeLuminance } from '../color';
 
 /** The SVG initial value of the `fill` property. Undeclared is *not* `none`. */
-export const DEFAULT_FILL = '#000000';
+const DEFAULT_FILL = '#000000';
 
 /**
  * The id inside a `url(#foo)` / `url('#foo')` reference, or null.
@@ -26,11 +26,11 @@ export const DEFAULT_FILL = '#000000';
 export const refId = (value: string | null | undefined): string | null =>
   value?.match(/#([^'")\s]+)/)?.[1] ?? null;
 
-export const toPercent = (value: number): number =>
+const toPercent = (value: number): number =>
   Math.min(Math.max(Math.round(value * 100), 0), 100);
 
 /** Nearest declared value of an inherited presentation attribute. */
-export function getInheritedPresentation(el: Element, name: string): string | null {
+function getInheritedPresentation(el: Element, name: string): string | null {
   let current: Element | null = el;
   while (current) {
     const value = current.getAttribute?.(name);
@@ -83,7 +83,7 @@ export function getInheritedFillRule(el: Element): FillRule {
 }
 
 /** The subset of paint declarations this converter models, from one source. */
-export interface PaintDecls {
+interface PaintDecls {
   fill?: string;
   stroke?: string;
   strokeWidth?: string;
@@ -91,24 +91,24 @@ export interface PaintDecls {
 }
 
 /** Reads `fill`/`stroke`/`stroke-width` out of a `style="…"` attribute. */
-export function readStyleAttribute(el: Element): PaintDecls {
+function readStyleAttribute(el: Element): PaintDecls {
   const text = el.getAttribute('style');
   if (!text) return {};
 
   const out: PaintDecls = {};
-  const fillMatch = text.match(/(?:^|[;\s])fill\s*:\s*([^;\}]+)/i);
+  const fillMatch = text.match(/(?:^|[;\s])fill\s*:\s*([^;}]+)/i);
   if (fillMatch) out.fill = fillMatch[1].trim();
-  const strokeMatch = text.match(/(?:^|[;\s])stroke\s*:\s*([^;\}]+)/i);
+  const strokeMatch = text.match(/(?:^|[;\s])stroke\s*:\s*([^;}]+)/i);
   if (strokeMatch) out.stroke = strokeMatch[1].trim();
-  const swMatch = text.match(/stroke-width\s*:\s*([^;\}]+)/i);
+  const swMatch = text.match(/stroke-width\s*:\s*([^;}]+)/i);
   if (swMatch) out.strokeWidth = swMatch[1].trim();
-  const opacityMatch = text.match(/(?:^|[;\s])opacity\s*:\s*([^;\}]+)/i);
+  const opacityMatch = text.match(/(?:^|[;\s])opacity\s*:\s*([^;}]+)/i);
   if (opacityMatch) out.opacity = opacityMatch[1].trim();
   return out;
 }
 
 /** Merges the `<style>` rules matching this element's `class` list. */
-export function readClassRules(el: Element, styleMap: StyleMap): PaintDecls {
+function readClassRules(el: Element, styleMap: StyleMap): PaintDecls {
   const className = el.getAttribute('class');
   if (!className) return {};
 
@@ -133,7 +133,7 @@ export function readClassRules(el: Element, styleMap: StyleMap): PaintDecls {
  * declaration wins *within a single ancestor*, which was previously not
  * modelled at all because ancestors were read for attributes only.
  */
-export function declaredPaint(el: Element, styleMap: StyleMap): PaintDecls {
+function declaredPaint(el: Element, styleMap: StyleMap): PaintDecls {
   const attrs: PaintDecls = {};
   const fill = el.getAttribute('fill');
   if (fill) attrs.fill = fill;

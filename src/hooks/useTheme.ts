@@ -4,7 +4,7 @@ import { storageKey } from './usePersistentState';
 export type ThemePreference = 'system' | 'light' | 'dark';
 export type ResolvedTheme = 'light' | 'dark';
 
-export const THEME_STORAGE_KEY = storageKey('theme');
+const THEME_STORAGE_KEY = storageKey('theme');
 
 const PREFERENCES: ThemePreference[] = ['system', 'light', 'dark'];
 
@@ -12,7 +12,7 @@ function isPreference(value: unknown): value is ThemePreference {
   return typeof value === 'string' && (PREFERENCES as string[]).includes(value);
 }
 
-export function readStoredPreference(): ThemePreference {
+function readStoredPreference(): ThemePreference {
   try {
     const raw = window.localStorage.getItem(THEME_STORAGE_KEY);
     return isPreference(raw) ? raw : 'system';
@@ -21,11 +21,11 @@ export function readStoredPreference(): ThemePreference {
   }
 }
 
-export function systemTheme(): ResolvedTheme {
+function systemTheme(): ResolvedTheme {
   return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
 
-export function resolveTheme(preference: ThemePreference): ResolvedTheme {
+function resolveTheme(preference: ThemePreference): ResolvedTheme {
   return preference === 'system' ? systemTheme() : preference;
 }
 

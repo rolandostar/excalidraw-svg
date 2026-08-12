@@ -60,7 +60,7 @@ export interface IconCategoryRule {
  * `DEFAULT_EXCALIDRAW_OPTIONS`. Authors therefore write the two or three
  * things that make the preset interesting, not all twelve.
  */
-export interface IconSetPreset {
+interface IconSetPreset {
   id: string;
   label: string;
   /** Tooltip. One short line describing what the preset is for. */

@@ -37,7 +37,7 @@ export function toDataUrl(svg: string): string {
 /** Sets without an explicit `order` sort after every set that has one. */
 const UNORDERED = 1_000;
 
-export function resolveCategories(manifest: IconSetManifest): IconCategory[] {
+function resolveCategories(manifest: IconSetManifest): IconCategory[] {
   const declared = manifest.categories?.filter(c => c?.id && c?.name) ?? [];
   return declared.length > 0 ? declared : [IMPLICIT_CATEGORY];
 }
@@ -46,7 +46,7 @@ export function resolveRules(manifest: IconSetManifest): IconCategoryRule[] {
   return manifest.rules?.filter(r => r?.category && r.match?.length) ?? [];
 }
 
-export function resolveDefaults(setId: string, manifest: IconSetManifest): ExcalidrawOptions {
+function resolveDefaults(setId: string, manifest: IconSetManifest): ExcalidrawOptions {
   return normaliseOptions({
     ...DEFAULT_EXCALIDRAW_OPTIONS,
     ...sanitizeOptionsPatch(manifest.defaults, `${setId}/set.json defaults`),
@@ -61,7 +61,7 @@ export function resolveDefaults(setId: string, manifest: IconSetManifest): Excal
  * who declares their own `default` preset replaces the label and hint but not
  * that guarantee.
  */
-export function resolvePresets(
+function resolvePresets(
   setId: string,
   manifest: IconSetManifest,
   defaults: ExcalidrawOptions

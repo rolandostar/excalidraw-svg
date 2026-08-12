@@ -111,7 +111,7 @@ function diffRasters(source: Raster | null, scene: Raster | null, size: number):
  * geometry box against a stroked ink box reports a phantom error of half a
  * stroke width on every side.
  */
-export function elementBounds(element: any): Box | null {
+function elementBounds(element: any): Box | null {
   if (element.isDeleted) return null;
 
   const hasStroke = !!element.strokeColor && element.strokeColor !== 'transparent';

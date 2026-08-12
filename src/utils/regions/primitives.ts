@@ -105,7 +105,7 @@ export function windingNumber(point: Point, ring: Ring): number {
   return winding;
 }
 
-export function pointSegmentDistance(p: Point, a: Point, b: Point): number {
+function pointSegmentDistance(p: Point, a: Point, b: Point): number {
   const dx = b[0] - a[0];
   const dy = b[1] - a[1];
   const lengthSq = dx * dx + dy * dy;

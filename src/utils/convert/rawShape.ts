@@ -14,7 +14,7 @@
  * were written as `'transparent'`/`0` at all six push sites and read nowhere.
  */
 
-export interface RawLine {
+interface RawLine {
   type: 'line';
   /** Closed ring in root user space. */
   absPoints: [number, number][];
@@ -22,7 +22,7 @@ export interface RawLine {
   opacity: number;
 }
 
-export interface RawEllipse {
+interface RawEllipse {
   type: 'ellipse';
   cx: number;
   cy: number;

@@ -31,7 +31,7 @@ interface ToastProps {
  * dismissed, and it fires on the happy path - punishing the action the whole
  * product exists to make easy.
  */
-export function Toast({ message, onDismiss, durationMs = 4000 }: ToastProps) {
+function Toast({ message, onDismiss, durationMs = 4000 }: ToastProps) {
   /*
    * The dismiss callback is read through a ref, not depended on.
    *

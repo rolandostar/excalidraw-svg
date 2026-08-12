@@ -21,7 +21,7 @@ export interface EvidenceCase {
   image?: string;
 }
 
-export interface EvidenceSuite {
+interface EvidenceSuite {
   name: string;
   generatedAt: string;
   total: number;

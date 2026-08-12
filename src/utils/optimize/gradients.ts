@@ -40,7 +40,7 @@ export function flattenGradients(doc: Document): void {
       let color = stop.getAttribute('stop-color');
       if (!color) {
         const style = stop.getAttribute('style') || '';
-        const match = style.match(/stop-color\s*:\s*([^;\}]+)/i);
+        const match = style.match(/stop-color\s*:\s*([^;}]+)/i);
         if (match) color = match[1].trim();
       }
       if (color) stopColors.push(color);

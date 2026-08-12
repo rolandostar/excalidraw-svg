@@ -30,6 +30,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Cheapest first. Lint is seconds; knip is what stops dead exports and
+      # unused dependencies coming back, which a linter cannot see.
+      - run: pnpm lint
+      - run: pnpm lint:dead
+
       # `pnpm build` is `tsc && vite build`, so this is the typecheck too.
       - run: pnpm build
 

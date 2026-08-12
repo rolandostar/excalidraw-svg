@@ -73,7 +73,7 @@ export interface Config {
 export const WORKER_OUT_ENV = 'FIDELITY_WORKER_OUT';
 
 /** Path of the expected-failures file for a suite. Shared with build-evidence. */
-export const expectedFailuresPath = (suite: string): string =>
+const expectedFailuresPath = (suite: string): string =>
   path.resolve(process.cwd(), 'tests/baselines', `${suite}.expected-failures.json`);
 
 /**

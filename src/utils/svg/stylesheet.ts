@@ -13,7 +13,7 @@
  */
 
 /** One `<style>` rule, reduced to the properties this converter models. */
-export interface CssPaintRule {
+interface CssPaintRule {
   fill?: string;
   stroke?: string;
   opacity?: number;
@@ -38,13 +38,13 @@ export function parseCssStylesheet(doc: Document): StyleMap {
       let stroke: string | undefined;
       let opacity: number | undefined;
 
-      const fillMatch = declsStr.match(/fill\s*:\s*([^;\}]+)/i);
+      const fillMatch = declsStr.match(/fill\s*:\s*([^;}]+)/i);
       if (fillMatch && fillMatch[1].trim() !== 'none') fill = fillMatch[1].trim();
 
-      const strokeMatch = declsStr.match(/stroke\s*:\s*([^;\}]+)/i);
+      const strokeMatch = declsStr.match(/stroke\s*:\s*([^;}]+)/i);
       if (strokeMatch && strokeMatch[1].trim() !== 'none') stroke = strokeMatch[1].trim();
 
-      const opacityMatch = declsStr.match(/opacity\s*:\s*([^;\}]+)/i);
+      const opacityMatch = declsStr.match(/opacity\s*:\s*([^;}]+)/i);
       if (opacityMatch) opacity = parseFloat(opacityMatch[1]);
 
       selectors.forEach(sel => {

@@ -57,7 +57,7 @@ export interface FrameWindow {
  * because the two panes were cropped differently.
  */
 
-export function buildFrameSentinel(
+function buildFrameSentinel(
   template: ExcalidrawElement,
   window: FrameWindow
 ): ExcalidrawElement {

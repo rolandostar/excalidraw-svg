@@ -52,7 +52,7 @@ export const MIN_TRACK_PX = 132;
  * to show that at full scale would leave two columns. Capping trades some scale
  * for a grid that can still be browsed.
  */
-export const MAX_TRACK_PX = 260;
+const MAX_TRACK_PX = 260;
 
 /**
  * Scale a wide card is allowed to shrink to before the track grows instead.
@@ -86,7 +86,7 @@ const TRACK_QUANTILE = 0.9;
  * Applied to the width fit only. Height always fits, or the label would be
  * sliced off horizontally with nothing to indicate it.
  */
-export const MIN_CARD_SCALE = 0.45;
+const MIN_CARD_SCALE = 0.45;
 
 /**
  * Track width that keeps a typical card in this set readable.

@@ -26,12 +26,12 @@ import { optimizeSvgString } from '../src/utils/svgOptimizer';
 const VIRTUAL_ID = 'virtual:icon-sets';
 const RESOLVED_ID = '\0virtual:icon-sets';
 
-export interface BuiltIcon {
+interface BuiltIcon {
   name: string;
   svg: string;
 }
 
-export interface BuiltSet {
+interface BuiltSet {
   id: string;
   manifest: unknown;
   icons: BuiltIcon[];

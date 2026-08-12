@@ -17,7 +17,7 @@
  * which parts of a compound path are holes. Dropping them (as this module used
  * to) makes every donut a guess.
  */
-export const CASCADED_PROPERTIES = [
+const CASCADED_PROPERTIES = [
   'fill',
   'fill-opacity',
   'fill-rule',
@@ -43,7 +43,7 @@ type CascadedProperty = (typeof CASCADED_PROPERTIES)[number];
 type Declarations = Partial<Record<CascadedProperty, string>>;
 
 /** Parses `fill:red;stroke:none` into a declaration bag, ignoring anything we don't model. */
-export function parseDeclarations(text: string): Declarations {
+function parseDeclarations(text: string): Declarations {
   const out: Declarations = {};
   for (const chunk of text.split(';')) {
     const idx = chunk.indexOf(':');

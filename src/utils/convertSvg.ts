@@ -23,7 +23,7 @@ const MAX_DIMENSION = 1200;
 /** Below this, Excalidraw's minimum stroke rendering starts to dominate. */
 const MIN_DIMENSION = 24;
 
-export interface SvgDimensions {
+interface SvgDimensions {
   width: number;
   height: number;
   /** Where the numbers came from, so the UI can say so honestly. */
@@ -58,7 +58,7 @@ export class SvgConversionError extends Error {
  * the icon-set loader; only the "there must be an `<svg>`" precondition and
  * the 100x100 fallback are specific to the upload path.
  */
-export function readSvgDimensions(doc: Document): SvgDimensions {
+function readSvgDimensions(doc: Document): SvgDimensions {
   const svg = doc.querySelector('svg');
   if (!svg) throw new SvgConversionError('No <svg> element found.');
 
@@ -67,7 +67,7 @@ export function readSvgDimensions(doc: Document): SvgDimensions {
 }
 
 /** Scales the intrinsic box into the pasteable range, preserving aspect ratio. */
-export function fitToCanvas(dims: SvgDimensions): { width: number; height: number } {
+function fitToCanvas(dims: SvgDimensions): { width: number; height: number } {
   const longest = Math.max(dims.width, dims.height);
   const scale =
     longest > MAX_DIMENSION

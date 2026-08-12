@@ -11,7 +11,7 @@ import type { IconMetrics, Summary } from '../lib/thresholds';
 import type { Config } from './config';
 import type { GateResult } from './gate';
 
-export const USAGE = `Conversion fidelity harness.
+const USAGE = `Conversion fidelity harness.
 
 Scores a directory of SVGs through the shipped export path, renders the result
 with Excalidraw's own exportToSvg, and pixel-diffs it against the source.

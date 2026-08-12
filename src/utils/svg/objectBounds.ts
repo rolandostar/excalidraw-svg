@@ -68,7 +68,7 @@ export function localBoundingBox(node: Element, tolerance: number): BoundingBox 
  * Parses a length that may be a fraction or a percentage.
  * In `objectBoundingBox` units `-10%` and `-0.1` mean the same thing.
  */
-export function parseFraction(value: string | null, fallback: number): number {
+function parseFraction(value: string | null, fallback: number): number {
   if (value === null) return fallback;
   const text = value.trim();
   const parsed = text.endsWith('%') ? parseFloat(text) / 100 : parseFloat(text);

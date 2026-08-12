@@ -17,7 +17,7 @@ import { generateRandomId } from '../convert/emit';
 import { createExcalidrawItem } from './buildItem';
 import { elementsBounds, translateElements } from './itemLayout';
 
-export interface PackedItem {
+interface PackedItem {
   icon: IconAsset;
   elements: ExcalidrawElement[];
   files: Record<string, ExcalidrawFile>;

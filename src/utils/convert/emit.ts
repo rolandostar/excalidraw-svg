@@ -14,7 +14,7 @@ export function generateRandomId(): string {
   return Math.random().toString(16).substring(2, 18);
 }
 
-export function generateRandomSeed(): number {
+function generateRandomSeed(): number {
   return Math.floor(Math.random() * 2000000000);
 }
 

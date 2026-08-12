@@ -85,7 +85,7 @@ export interface ExcalidrawFile {
   created: number;
 }
 
-export interface ExcalidrawLibraryItem {
+interface ExcalidrawLibraryItem {
   id: string;
   status: 'published' | 'unpublished';
   created: number;

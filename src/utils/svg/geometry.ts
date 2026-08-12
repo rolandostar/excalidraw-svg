@@ -90,7 +90,7 @@ export function arcSegmentCount(
  * corners have to become real geometry. Deriving the count from the radius
  * keeps a 0.24-unit corner cheap and a 6-unit corner smooth.
  */
-export function arcSegments(rx: number, ry: number, tolerance: number): number {
+function arcSegments(rx: number, ry: number, tolerance: number): number {
   const radius = Math.max(rx, ry);
   if (radius <= 0) return 1;
   return arcSegmentCount(Math.PI / 2, radius, tolerance, 2, 64);

@@ -71,7 +71,7 @@ export function useStyleOptions(
 }
 
 /** What a styling section needs to read and write. */
-export type StyleOptions = ReturnType<typeof useStyleOptions>;
+type StyleOptions = ReturnType<typeof useStyleOptions>;
 
 export interface SectionProps {
   options: ExcalidrawOptions;

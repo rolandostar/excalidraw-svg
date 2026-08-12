@@ -57,7 +57,7 @@ const MIN_OFFSET_EDGE_FRACTION = 1e-4;
 /** `polygon-clipping` returns *closed* rings, so a triangle is four points. */
 const MIN_CLOSED_RING_VERTICES = 4;
 
-export function isFilled(point: Point, rings: Ring[], rule: FillRule): boolean {
+function isFilled(point: Point, rings: Ring[], rule: FillRule): boolean {
   if (rule === 'evenodd') {
     let crossings = 0;
     for (const ring of rings) if (pointInRing(point, ring)) crossings++;
@@ -79,7 +79,7 @@ export function isFilled(point: Point, rings: Ring[], rule: FillRule): boolean {
  * and the entire shape is classified as empty. Choosing the edge with the best
  * clearance from other rings makes the fill-rule evaluation unambiguous.
  */
-export function representativePoints(rings: Ring[]): Array<Point | null> {
+function representativePoints(rings: Ring[]): Array<Point | null> {
   return rings.map((ring, index) => {
     if (ring.length < MIN_RING_VERTICES) return null;
 

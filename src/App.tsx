@@ -50,7 +50,7 @@ function Routes() {
   return <ConvertPage />;
 }
 
-export function App() {
+function App() {
   return (
     <RouterProvider>
       <div className="app-container">

@@ -37,7 +37,7 @@ export interface IconSelection {
 }
 
 /** The set being browsed, and the look it would be exported with. */
-export interface IconLibrary {
+interface IconLibrary {
   all: IconAsset[];
   filtered: IconAsset[];
   options: ExcalidrawOptions;

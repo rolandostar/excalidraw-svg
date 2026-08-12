@@ -336,7 +336,7 @@ const convertEllipse: ShapeConverter = (el, ctx, clipRegion) => {
 };
 
 /** Every tag the artwork pipeline knows how to draw. */
-export const SHAPE_CONVERTERS: Record<string, ShapeConverter> = {
+const SHAPE_CONVERTERS: Record<string, ShapeConverter> = {
   path: convertPath,
   polygon: convertPolyShape,
   polyline: convertPolyShape,

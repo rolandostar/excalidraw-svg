@@ -9,7 +9,7 @@
  */
 import { JSDOM } from 'jsdom';
 
-export const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
   pretendToBeVisual: true,
   url: 'https://excalidraw-gcp.local/',
 });

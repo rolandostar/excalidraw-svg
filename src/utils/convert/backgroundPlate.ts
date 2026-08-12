@@ -16,14 +16,14 @@ import type { RawShape } from './rawShape';
  * viewBox, before it is a background-plate candidate. Half a unit on the 24x24
  * artboard these icons are authored against.
  */
-export const ARTBOARD_MARGIN_FRACTION = 0.5 / 24;
+const ARTBOARD_MARGIN_FRACTION = 0.5 / 24;
 
 /**
  * Fraction of its own bounding box a shape must ink to count as a background
  * plate rather than artwork. A rectangle is 1.0 and a full ellipse is pi/4;
  * anything with real internal structure is far below both.
  */
-export const BACKGROUND_PLATE_SOLIDITY = 0.75;
+const BACKGROUND_PLATE_SOLIDITY = 0.75;
 
 /**
  * Drops a full-artboard background plate, which design tools emit on almost
@@ -51,24 +51,27 @@ export function dropBackgroundPlate(shapes: RawShape[], viewBox: ViewBox): RawSh
   const marginX = viewBox.width * ARTBOARD_MARGIN_FRACTION;
   const marginY = viewBox.height * ARTBOARD_MARGIN_FRACTION;
 
-  const content = shapes.filter(shape => {
-    let sMinX = Infinity;
-    let sMinY = Infinity;
-    let sMaxX = -Infinity;
-    let sMaxY = -Infinity;
-    let solidity = 0;
-
-    if (shape.type === 'line') {
-      ({ minX: sMinX, minY: sMinY, maxX: sMaxX, maxY: sMaxY } = boundsOf(shape.absPoints));
-      const boxArea = (sMaxX - sMinX) * (sMaxY - sMinY);
-      solidity = boxArea > 0 ? Math.abs(signedArea(shape.absPoints)) / boxArea : 0;
-    } else {
-      sMinX = shape.cx - shape.rx;
-      sMinY = shape.cy - shape.ry;
-      sMaxX = shape.cx + shape.rx;
-      sMaxY = shape.cy + shape.ry;
-      solidity = Math.PI / 4;
+  const measure = (shape: RawShape) => {
+    if (shape.type !== 'line') {
+      const { cx, cy, rx, ry } = shape;
+      return {
+        minX: cx - rx,
+        minY: cy - ry,
+        maxX: cx + rx,
+        maxY: cy + ry,
+        solidity: Math.PI / 4,
+      };
     }
+    const box = boundsOf(shape.absPoints);
+    const boxArea = (box.maxX - box.minX) * (box.maxY - box.minY);
+    return {
+      ...box,
+      solidity: boxArea > 0 ? Math.abs(signedArea(shape.absPoints)) / boxArea : 0,
+    };
+  };
+
+  const content = shapes.filter(shape => {
+    const { minX: sMinX, minY: sMinY, maxX: sMaxX, maxY: sMaxY, solidity } = measure(shape);
 
     const spansArtboard =
       sMinX <= viewBox.x + marginX &&

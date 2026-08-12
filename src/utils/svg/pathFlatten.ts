@@ -36,7 +36,7 @@ export function getPointsOnPath(path: string, tolerance?: number): [number, numb
  * Empirically 0.002 puts a 9-unit circle at ~0.003 user units of sagitta -
  * under a hundredth of a pixel at 48px - for ~130 points.
  */
-export const CURVE_TOLERANCE_USER_UNITS_AT_1X = 0.002;
+const CURVE_TOLERANCE_USER_UNITS_AT_1X = 0.002;
 
 /**
  * Curve flattening tolerance, in *user units*, derived from the output size so

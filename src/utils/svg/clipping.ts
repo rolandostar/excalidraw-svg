@@ -30,7 +30,7 @@ import { BoundingBox, explicitRegionRect, localBoundingBox } from './objectBound
 import { FILL_RULES, getInheritedFillRule, inheritedEnum, paintLuminance, refId } from './paint';
 
 /** The region a single `<clipPath>` defines, in the referencing element's space. */
-export function resolveClipPathRegion(
+function resolveClipPathRegion(
   clipEl: Element,
   referenceMatrix: Matrix2D,
   tolerance: number,
@@ -76,7 +76,7 @@ export function resolveClipPathRegion(
  * circle" rather than "reveal nothing". Without it, `PubSub.svg` masks its
  * three connector bars away entirely.
  */
-export function resolveMaskRegion(
+function resolveMaskRegion(
   maskEl: Element,
   referenceMatrix: Matrix2D,
   tolerance: number,
