@@ -1,0 +1,20 @@
+<!-- CSS stylesheet class rules declaring `fill: none`, `stroke`, `stroke-width` and `stroke-miterlimit`.
+     Expected: transparent hollow rectangles with exact stroke width, not solid black boxes.
+     A converter that ignores `fill: none` or `stroke-width` in CSS classes fills the rects solid black. -->
+<svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .chip-outline { fill: none; stroke: #4285f4; stroke-width: 1.5px; stroke-miterlimit: 10; }
+      .chip-core { fill: none; stroke: #34a853; stroke-width: 1.5px; }
+      .pin { stroke: #ea4335; stroke-width: 1.5px; }
+    </style>
+  </defs>
+  <rect class="chip-outline" x="3" y="3" width="18" height="18" rx="2"/>
+  <rect class="chip-core" x="7" y="7" width="10" height="10" rx="1.5"/>
+  <line class="pin" x1="7" y1="0.5" x2="7" y2="2.5"/>
+  <line class="pin" x1="12" y1="0.5" x2="12" y2="2.5"/>
+  <line class="pin" x1="17" y1="0.5" x2="17" y2="2.5"/>
+  <line class="pin" x1="7" y1="21.5" x2="7" y2="23.5"/>
+  <line class="pin" x1="12" y1="21.5" x2="12" y2="23.5"/>
+  <line class="pin" x1="17" y1="21.5" x2="17" y2="23.5"/>
+</svg>

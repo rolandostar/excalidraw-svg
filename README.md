@@ -42,7 +42,7 @@ read a failure.
 | suite | files | mean shape error | worst | worst placement | failing |
 |---|---|---|---|---|---|
 | icons | 261 | **0.001 %** | 0.13 % | 0.200 px | **0** |
-| torture | 30 | 3.06 % | 58 % | — | 4 of 4 expected |
+| torture | 31 | 2.96 % | 58 % | — | 4 of 4 expected |
 
 That is every set: 216 legacy-gcp, 26 category-icons, 19 unique-icons. 253 of the 261 icons are a
 pixel-exact match; the rest differ by a few pixels along a curved edge, and all

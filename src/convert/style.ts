@@ -34,7 +34,12 @@ import { hexChannels, relativeLuminance } from './color';
 /** One `<style>` rule, reduced to the properties this converter models. */
 interface CssPaintRule {
   fill?: string;
+  fillRule?: string;
   stroke?: string;
+  strokeWidth?: string;
+  strokeLinecap?: string;
+  strokeLinejoin?: string;
+  strokeMiterlimit?: string;
   opacity?: number;
 }
 
@@ -45,7 +50,7 @@ export type StyleMap = Record<string, CssPaintRule>;
 export function parseCssStylesheet(doc: Document): StyleMap {
   const styleMap: StyleMap = {};
   doc.querySelectorAll('style').forEach(styleEl => {
-    const text = styleEl.textContent || '';
+    const text = (styleEl.textContent || '').replace(/\/\*[\s\S]*?\*\//g, '');
     const ruleBlocks = text.match(/([^{]+)\{([^}]+)\}/g) || [];
     ruleBlocks.forEach(block => {
       const parts = block.split('{');
@@ -54,22 +59,47 @@ export function parseCssStylesheet(doc: Document): StyleMap {
       const declsStr = parts[1];
 
       let fill: string | undefined;
+      let fillRule: string | undefined;
       let stroke: string | undefined;
+      let strokeWidth: string | undefined;
+      let strokeLinecap: string | undefined;
+      let strokeLinejoin: string | undefined;
+      let strokeMiterlimit: string | undefined;
       let opacity: number | undefined;
 
-      const fillMatch = declsStr.match(/fill\s*:\s*([^;}]+)/i);
-      if (fillMatch && fillMatch[1].trim() !== 'none') fill = fillMatch[1].trim();
+      const fillMatch = declsStr.match(/(?:^|[;\s])fill\s*:\s*([^;}]+)/i);
+      if (fillMatch) fill = fillMatch[1].trim();
 
-      const strokeMatch = declsStr.match(/stroke\s*:\s*([^;}]+)/i);
-      if (strokeMatch && strokeMatch[1].trim() !== 'none') stroke = strokeMatch[1].trim();
+      const fillRuleMatch = declsStr.match(/(?:^|[;\s])fill-rule\s*:\s*([^;}]+)/i);
+      if (fillRuleMatch) fillRule = fillRuleMatch[1].trim();
 
-      const opacityMatch = declsStr.match(/opacity\s*:\s*([^;}]+)/i);
+      const strokeMatch = declsStr.match(/(?:^|[;\s])stroke\s*:\s*([^;}]+)/i);
+      if (strokeMatch) stroke = strokeMatch[1].trim();
+
+      const strokeWidthMatch = declsStr.match(/(?:^|[;\s])stroke-width\s*:\s*([^;}]+)/i);
+      if (strokeWidthMatch) strokeWidth = strokeWidthMatch[1].trim();
+
+      const strokeLinecapMatch = declsStr.match(/(?:^|[;\s])stroke-linecap\s*:\s*([^;}]+)/i);
+      if (strokeLinecapMatch) strokeLinecap = strokeLinecapMatch[1].trim();
+
+      const strokeLinejoinMatch = declsStr.match(/(?:^|[;\s])stroke-linejoin\s*:\s*([^;}]+)/i);
+      if (strokeLinejoinMatch) strokeLinejoin = strokeLinejoinMatch[1].trim();
+
+      const strokeMiterlimitMatch = declsStr.match(/(?:^|[;\s])stroke-miterlimit\s*:\s*([^;}]+)/i);
+      if (strokeMiterlimitMatch) strokeMiterlimit = strokeMiterlimitMatch[1].trim();
+
+      const opacityMatch = declsStr.match(/(?:^|[;\s])opacity\s*:\s*([^;}]+)/i);
       if (opacityMatch) opacity = parseFloat(opacityMatch[1]);
 
       selectors.forEach(sel => {
         if (!styleMap[sel]) styleMap[sel] = {};
-        if (fill) styleMap[sel].fill = fill;
-        if (stroke) styleMap[sel].stroke = stroke;
+        if (fill !== undefined) styleMap[sel].fill = fill;
+        if (fillRule !== undefined) styleMap[sel].fillRule = fillRule;
+        if (stroke !== undefined) styleMap[sel].stroke = stroke;
+        if (strokeWidth !== undefined) styleMap[sel].strokeWidth = strokeWidth;
+        if (strokeLinecap !== undefined) styleMap[sel].strokeLinecap = strokeLinecap;
+        if (strokeLinejoin !== undefined) styleMap[sel].strokeLinejoin = strokeLinejoin;
+        if (strokeMiterlimit !== undefined) styleMap[sel].strokeMiterlimit = strokeMiterlimit;
         if (opacity !== undefined) styleMap[sel].opacity = opacity;
       });
     });
@@ -163,12 +193,16 @@ export function getInheritedFillRule(el: Element): FillRule {
 /** The subset of paint declarations this converter models, from one source. */
 interface PaintDecls {
   fill?: string;
+  fillRule?: string;
   stroke?: string;
   strokeWidth?: string;
+  strokeLinecap?: string;
+  strokeLinejoin?: string;
+  strokeMiterlimit?: string;
   opacity?: string;
 }
 
-/** Reads `fill`/`stroke`/`stroke-width` out of a `style="…"` attribute. */
+/** Reads `fill`/`stroke`/`stroke-width`/etc. out of a `style="…"` attribute. */
 function readStyleAttribute(el: Element): PaintDecls {
   const text = el.getAttribute('style');
   if (!text) return {};
@@ -176,10 +210,18 @@ function readStyleAttribute(el: Element): PaintDecls {
   const out: PaintDecls = {};
   const fillMatch = text.match(/(?:^|[;\s])fill\s*:\s*([^;}]+)/i);
   if (fillMatch) out.fill = fillMatch[1].trim();
+  const fillRuleMatch = text.match(/(?:^|[;\s])fill-rule\s*:\s*([^;}]+)/i);
+  if (fillRuleMatch) out.fillRule = fillRuleMatch[1].trim();
   const strokeMatch = text.match(/(?:^|[;\s])stroke\s*:\s*([^;}]+)/i);
   if (strokeMatch) out.stroke = strokeMatch[1].trim();
-  const swMatch = text.match(/stroke-width\s*:\s*([^;}]+)/i);
+  const swMatch = text.match(/(?:^|[;\s])stroke-width\s*:\s*([^;}]+)/i);
   if (swMatch) out.strokeWidth = swMatch[1].trim();
+  const slcMatch = text.match(/(?:^|[;\s])stroke-linecap\s*:\s*([^;}]+)/i);
+  if (slcMatch) out.strokeLinecap = slcMatch[1].trim();
+  const sljMatch = text.match(/(?:^|[;\s])stroke-linejoin\s*:\s*([^;}]+)/i);
+  if (sljMatch) out.strokeLinejoin = sljMatch[1].trim();
+  const smlMatch = text.match(/(?:^|[;\s])stroke-miterlimit\s*:\s*([^;}]+)/i);
+  if (smlMatch) out.strokeMiterlimit = smlMatch[1].trim();
   const opacityMatch = text.match(/(?:^|[;\s])opacity\s*:\s*([^;}]+)/i);
   if (opacityMatch) out.opacity = opacityMatch[1].trim();
   return out;
@@ -194,8 +236,13 @@ function readClassRules(el: Element, styleMap: StyleMap): PaintDecls {
   for (const name of className.split(/\s+/)) {
     const rule = styleMap[name];
     if (!rule) continue;
-    if (rule.fill) out.fill = rule.fill;
-    if (rule.stroke) out.stroke = rule.stroke;
+    if (rule.fill !== undefined) out.fill = rule.fill;
+    if (rule.fillRule !== undefined) out.fillRule = rule.fillRule;
+    if (rule.stroke !== undefined) out.stroke = rule.stroke;
+    if (rule.strokeWidth !== undefined) out.strokeWidth = rule.strokeWidth;
+    if (rule.strokeLinecap !== undefined) out.strokeLinecap = rule.strokeLinecap;
+    if (rule.strokeLinejoin !== undefined) out.strokeLinejoin = rule.strokeLinejoin;
+    if (rule.strokeMiterlimit !== undefined) out.strokeMiterlimit = rule.strokeMiterlimit;
     if (rule.opacity !== undefined) out.opacity = String(rule.opacity);
   }
   return out;
@@ -215,10 +262,18 @@ function declaredPaint(el: Element, styleMap: StyleMap): PaintDecls {
   const attrs: PaintDecls = {};
   const fill = el.getAttribute('fill');
   if (fill) attrs.fill = fill;
+  const fillRule = el.getAttribute('fill-rule');
+  if (fillRule) attrs.fillRule = fillRule;
   const stroke = el.getAttribute('stroke');
   if (stroke) attrs.stroke = stroke;
   const strokeWidth = el.getAttribute('stroke-width');
   if (strokeWidth) attrs.strokeWidth = strokeWidth;
+  const strokeLinecap = el.getAttribute('stroke-linecap');
+  if (strokeLinecap) attrs.strokeLinecap = strokeLinecap;
+  const strokeLinejoin = el.getAttribute('stroke-linejoin');
+  if (strokeLinejoin) attrs.strokeLinejoin = strokeLinejoin;
+  const strokeMiterlimit = el.getAttribute('stroke-miterlimit');
+  if (strokeMiterlimit) attrs.strokeMiterlimit = strokeMiterlimit;
 
   return { ...attrs, ...readClassRules(el, styleMap), ...readStyleAttribute(el) };
 }
@@ -285,18 +340,39 @@ export function getShapeStyle(el: Element, styleMap: StyleMap, doc: Document): S
   const fillOpacity = readOpacity(el.getAttribute('fill-opacity'));
   const strokeOpacity = readOpacity(el.getAttribute('stroke-opacity'));
   let strokeWidthStr: string | null = null;
+  let strokeLinecapStr: string | null = null;
+  let strokeLinejoinStr: string | null = null;
+  let strokeMiterlimitStr: string | null = null;
+  let fillRuleStr: string | null = null;
 
   // Own declarations first. A presentation attribute still beats a stylesheet
   // rule here, which is backwards per CSS but is long-standing behaviour that
   // the curated icon baseline depends on; `flattenStyleCascade` in the
   // optimizer already resolves the cascade correctly for that path.
   const ownClassRules = readClassRules(el, styleMap);
-  if (!fill && ownClassRules.fill) fill = ownClassRules.fill;
-  if (!stroke && ownClassRules.stroke) stroke = ownClassRules.stroke;
+  if (!fill && ownClassRules.fill !== undefined) fill = ownClassRules.fill;
+  if (!stroke && ownClassRules.stroke !== undefined) stroke = ownClassRules.stroke;
   if (ownClassRules.opacity !== undefined) groupOpacity *= readOpacity(ownClassRules.opacity);
 
   const elStrokeWidth = el.getAttribute('stroke-width');
   if (elStrokeWidth) strokeWidthStr = elStrokeWidth;
+  else if (ownClassRules.strokeWidth !== undefined) strokeWidthStr = ownClassRules.strokeWidth;
+
+  const elStrokeLinecap = el.getAttribute('stroke-linecap');
+  if (elStrokeLinecap) strokeLinecapStr = elStrokeLinecap;
+  else if (ownClassRules.strokeLinecap !== undefined) strokeLinecapStr = ownClassRules.strokeLinecap;
+
+  const elStrokeLinejoin = el.getAttribute('stroke-linejoin');
+  if (elStrokeLinejoin) strokeLinejoinStr = elStrokeLinejoin;
+  else if (ownClassRules.strokeLinejoin !== undefined) strokeLinejoinStr = ownClassRules.strokeLinejoin;
+
+  const elStrokeMiterlimit = el.getAttribute('stroke-miterlimit');
+  if (elStrokeMiterlimit) strokeMiterlimitStr = elStrokeMiterlimit;
+  else if (ownClassRules.strokeMiterlimit !== undefined) strokeMiterlimitStr = ownClassRules.strokeMiterlimit;
+
+  const elFillRule = el.getAttribute('fill-rule');
+  if (elFillRule) fillRuleStr = elFillRule;
+  else if (ownClassRules.fillRule !== undefined) fillRuleStr = ownClassRules.fillRule;
 
   /**
    * Then inherit, nearest ancestor first, for anything still undeclared.
@@ -315,15 +391,23 @@ export function getShapeStyle(el: Element, styleMap: StyleMap, doc: Document): S
     if (!fill) fill = declared.fill ?? null;
     if (!stroke) stroke = declared.stroke ?? null;
     if (!strokeWidthStr) strokeWidthStr = declared.strokeWidth ?? null;
+    if (!strokeLinecapStr) strokeLinecapStr = declared.strokeLinecap ?? null;
+    if (!strokeLinejoinStr) strokeLinejoinStr = declared.strokeLinejoin ?? null;
+    if (!strokeMiterlimitStr) strokeMiterlimitStr = declared.strokeMiterlimit ?? null;
+    if (!fillRuleStr) fillRuleStr = declared.fillRule ?? null;
     if (ancestor.tagName.toLowerCase() === 'svg') break;
   }
 
   // Finally the element's own inline style, which outranks everything.
   const ownStyle = readStyleAttribute(el);
-  if (ownStyle.fill) fill = ownStyle.fill;
-  if (ownStyle.stroke) stroke = ownStyle.stroke;
-  if (ownStyle.strokeWidth) strokeWidthStr = ownStyle.strokeWidth;
-  if (ownStyle.opacity) groupOpacity = readOpacity(ownStyle.opacity);
+  if (ownStyle.fill !== undefined) fill = ownStyle.fill;
+  if (ownStyle.stroke !== undefined) stroke = ownStyle.stroke;
+  if (ownStyle.strokeWidth !== undefined) strokeWidthStr = ownStyle.strokeWidth;
+  if (ownStyle.strokeLinecap !== undefined) strokeLinecapStr = ownStyle.strokeLinecap;
+  if (ownStyle.strokeLinejoin !== undefined) strokeLinejoinStr = ownStyle.strokeLinejoin;
+  if (ownStyle.strokeMiterlimit !== undefined) strokeMiterlimitStr = ownStyle.strokeMiterlimit;
+  if (ownStyle.fillRule !== undefined) fillRuleStr = ownStyle.fillRule;
+  if (ownStyle.opacity !== undefined) groupOpacity = readOpacity(ownStyle.opacity);
 
   // Approximate a gradient by its middle stop. Build-time artwork has already
   // had `flattenGradients` run over it; this is the upload path.
@@ -363,10 +447,18 @@ export function getShapeStyle(el: Element, styleMap: StyleMap, doc: Document): S
     stroke: isStrokeNone ? 'transparent' : (stroke || 'transparent'),
     isFillNone,
     isStrokeNone,
-    fillRule: getInheritedFillRule(el),
-    lineCap: (getInheritedPresentation(el, 'stroke-linecap') as LineCap) || 'butt',
-    lineJoin: (getInheritedPresentation(el, 'stroke-linejoin') as LineJoin) || 'miter',
-    miterLimit: Number(getInheritedPresentation(el, 'stroke-miterlimit')) || 4,
+    fillRule: fillRuleStr && (FILL_RULES as readonly string[]).includes(fillRuleStr.toLowerCase())
+      ? (fillRuleStr.toLowerCase() as FillRule)
+      : getInheritedFillRule(el),
+    lineCap: strokeLinecapStr && ['butt', 'round', 'square'].includes(strokeLinecapStr.toLowerCase())
+      ? (strokeLinecapStr.toLowerCase() as LineCap)
+      : (getInheritedPresentation(el, 'stroke-linecap') as LineCap) || 'butt',
+    lineJoin: strokeLinejoinStr && ['miter', 'round', 'bevel'].includes(strokeLinejoinStr.toLowerCase())
+      ? (strokeLinejoinStr.toLowerCase() as LineJoin)
+      : (getInheritedPresentation(el, 'stroke-linejoin') as LineJoin) || 'miter',
+    miterLimit: strokeMiterlimitStr && Number.isFinite(parseFloat(strokeMiterlimitStr))
+      ? parseFloat(strokeMiterlimitStr)
+      : Number(getInheritedPresentation(el, 'stroke-miterlimit')) || 4,
     strokeWidth: strokeWidthStr && Number.isFinite(parseFloat(strokeWidthStr))
       ? Math.max(parseFloat(strokeWidthStr), 0)
       : 1,

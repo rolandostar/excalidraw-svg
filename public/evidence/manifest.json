@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-18T07:10:53.153Z",
+  "builtAt": "2026-08-18T07:41:12.429Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,7 +7,7 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-18T07:10:40.298Z",
+    "generatedAt": "2026-08-18T07:41:10.862Z",
     "total": 261,
     "perfect": 253,
     "imperfect": 8,
@@ -2394,14 +2394,14 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-18T07:10:51.699Z",
-    "total": 30,
-    "perfect": 26,
+    "generatedAt": "2026-08-18T07:40:35.065Z",
+    "total": 31,
+    "perfect": 27,
     "imperfect": 4,
     "sets": [],
-    "meanShapeScore": 0.03062580388127374,
+    "meanShapeScore": 0.0296378747238133,
     "worstShapeScore": 0.5800853249389056,
-    "meanPlacementErrorPx": 0.22749999999999987,
+    "meanPlacementErrorPx": 0.22419354838709663,
     "worstPlacementErrorPx": 4.03125,
     "failing": 4,
     "expectedFailures": 4,
@@ -2742,6 +2742,17 @@
         "auditIssues": [],
         "failing": false,
         "image": "torture/30-clipped-circle.png"
+      },
+      {
+        "id": "31-class-style-rules",
+        "label": "Class Style Rules",
+        "shapeScore": 0,
+        "placementErrorPx": 0.125,
+        "elementCount": 8,
+        "trap": "CSS stylesheet class rules declaring `fill: none`, `stroke`, `stroke-width` and `stroke-miterlimit`. Expected: transparent hollow rectangles with exact stroke width, not solid black boxes. A converter that ignores `fill: none` or `stroke-width` in CSS classes fills the rects solid black.",
+        "auditIssues": [],
+        "failing": false,
+        "image": "torture/31-class-style-rules.png"
       }
     ]
   }

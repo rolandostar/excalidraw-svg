@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
-import { getShapeStyle, readViewBoxFromMarkup, refId } from './style';
+import { getShapeStyle, parseCssStylesheet, readViewBoxFromMarkup, refId } from './style';
 
 const parse = (body: string): Document =>
   new DOMParser().parseFromString(
@@ -13,6 +13,34 @@ const fillOf = (body: string): string => {
   const shape = doc.querySelector('rect')!;
   return getShapeStyle(shape, {}, doc).fill;
 };
+
+describe('parseCssStylesheet & getShapeStyle class rules', () => {
+  it('parses fill: none and stroke-width from class declarations', () => {
+    const doc = parse(`
+      <defs>
+        <style>
+          .cls-1 { fill: none; stroke: #020202; stroke-width: 1.92px; stroke-miterlimit: 10; }
+        </style>
+      </defs>
+      <rect class="cls-1" x="3" y="3" width="10" height="10" />
+    `);
+    const styleMap = parseCssStylesheet(doc);
+    expect(styleMap['cls-1']).toEqual({
+      fill: 'none',
+      stroke: '#020202',
+      strokeWidth: '1.92px',
+      strokeMiterlimit: '10',
+    });
+
+    const shape = doc.querySelector('rect')!;
+    const style = getShapeStyle(shape, styleMap, doc);
+    expect(style.isFillNone).toBe(true);
+    expect(style.fill).toBe('transparent');
+    expect(style.stroke).toBe('#020202');
+    expect(style.strokeWidth).toBe(1.92);
+    expect(style.miterLimit).toBe(10);
+  });
+});
 
 describe('refId', () => {
   // The `)` and `\s` in the character class are the whole point: a
