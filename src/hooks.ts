@@ -108,6 +108,23 @@ export function asPartialOf<T extends Record<string, unknown>>(defaults: T) {
 }
 
 // ---------------------------------------------------------------------------
+// useDocumentTitle
+// ---------------------------------------------------------------------------
+
+/**
+ * Updates the document title on route mount, restoring the previous title on unmount.
+ */
+export function useDocumentTitle(title: string) {
+  useEffect(() => {
+    const prev = document.title;
+    document.title = title;
+    return () => {
+      document.title = prev;
+    };
+  }, [title]);
+}
+
+// ---------------------------------------------------------------------------
 // useTheme
 // ---------------------------------------------------------------------------
 

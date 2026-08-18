@@ -1,0 +1,16 @@
+{
+  "name": "SVG to Excalidraw",
+  "short_name": "svg→excalidraw",
+  "description": "Convert any SVG vector file into real, editable Excalidraw shapes. Includes 261 Google Cloud icons.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

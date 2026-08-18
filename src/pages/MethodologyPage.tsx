@@ -5,6 +5,7 @@ import { TrapTable, type TrapRow } from '../components/TrapTable';
 import { ExternalA, Stat , plural } from '../components/ui';
 import { listIconSets } from '../library/iconSets';
 import { listSupportRules } from '../convert/support';
+import { useDocumentTitle } from '../hooks';
 import {
   evidenceImageUrl,
   loadEvidence,
@@ -232,6 +233,7 @@ function Gauge({
 }
 
 export function MethodologyPage() {
+  useDocumentTitle('Test Methodology & Evidence — SVG to Excalidraw');
   const [manifest, setManifest] = useState<EvidenceManifest | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);

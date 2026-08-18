@@ -5,8 +5,10 @@ import { SvgDropzone, type SvgInput } from '../components/SvgDropzone';
 import { NextCard, Stat , plural } from '../components/ui';
 import { STATS, formatPct } from '../site';
 import { listIconSets, totalIconCount } from '../library/iconSets';
+import { useDocumentTitle } from '../hooks';
 
 export function ConvertPage() {
+  useDocumentTitle('SVG to Excalidraw — convert any SVG to editable shapes');
   const [input, setInput] = useState<SvgInput | null>(null);
   const setCount = listIconSets().length;
   const iconCount = totalIconCount();

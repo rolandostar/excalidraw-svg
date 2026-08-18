@@ -11,7 +11,7 @@ import type { ExcalidrawOptions } from '../types/options';
 import type { IconAsset, IconSet, IconSetSummary } from '../types/icons';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from '../router';
-import { asBoolean, asPartialOf, asString, asStringArray, storageKey, usePersistentState } from '../hooks';
+import { asBoolean, asPartialOf, asString, asStringArray, storageKey, useDocumentTitle, usePersistentState } from '../hooks';
 import {
   DEFAULT_EXCALIDRAW_OPTIONS,
   OPTIONS_STORAGE_VERSION,
@@ -365,6 +365,7 @@ export function IconsPage({ setId }: IconsPageProps) {
    * would mean opening with the wrong look and then snapping.
    */
   const summary = useMemo(() => findIconSetSummary(setId), [setId]);
+  useDocumentTitle(`${summary?.name ?? setId} — SVG to Excalidraw`);
 
   const { set, isLoading, icons } = useIconSetData(setId);
   const [options, setOptions] = useIconSetOptions(setId, summary);

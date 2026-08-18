@@ -4,6 +4,7 @@ import { Link, iconSetPath } from '../router';
 import { WIKI_URL } from '../site';
 import { ExternalA, NextCard , plural } from '../components/ui';
 import { listIconSets, totalIconCount } from '../library/iconSets';
+import { useDocumentTitle } from '../hooks';
 
 /**
  * Gallery of every icon set found on disk.
@@ -14,6 +15,7 @@ import { listIconSets, totalIconCount } from '../library/iconSets';
  * card rather than another second of SVGO.
  */
 export function IconSetsPage() {
+  useDocumentTitle('Icon Sets — SVG to Excalidraw');
   const sets = useMemo(() => listIconSets(), []);
   const total = useMemo(() => totalIconCount(), []);
 
