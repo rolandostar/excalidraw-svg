@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-12T05:00:33.445Z",
+  "builtAt": "2026-08-18T06:38:56.970Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -7,7 +7,7 @@
   },
   "icons": {
     "name": "icons",
-    "generatedAt": "2026-08-12T04:09:15.408Z",
+    "generatedAt": "2026-08-18T06:38:41.854Z",
     "total": 261,
     "perfect": 253,
     "imperfect": 8,
@@ -35,7 +35,7 @@
   },
   "torture": {
     "name": "torture",
-    "generatedAt": "2026-08-12T04:09:27.094Z",
+    "generatedAt": "2026-08-18T06:38:55.480Z",
     "total": 30,
     "perfect": 26,
     "imperfect": 4,
