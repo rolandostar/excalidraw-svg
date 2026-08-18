@@ -19,3 +19,9 @@ nul
 # Local UI review screenshots
 .screenshots/
 .verify/
+
+# Work-in-progress icon sets. Anything under svg/ is discovered by
+# vite/icon-sets.ts and shipped, so a set that is not ready to publish is
+# parked here instead - the folder's presence under svg/ is the only enable
+# switch there is.
+svg-wip/

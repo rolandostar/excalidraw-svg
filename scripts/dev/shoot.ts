@@ -124,7 +124,7 @@ const SHOTS: Shot[] = [
    */
   {
     name: 'icons-side-label',
-    route: '/icons/category-icons',
+    route: '/icons/category-icons-gcp',
     theme: 'light',
     width: 1440,
     height: 800,

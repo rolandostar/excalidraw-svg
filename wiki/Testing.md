@@ -116,8 +116,8 @@ checks nothing. It scores the files, lists them, and **fails**:
 
 ```
 NOT GATED - 45 file(s) have no baseline entry:
-  category-icons  26 file(s)
-  unique-icons  19 file(s)
+  category-icons-gcp  26 file(s)
+  unique-icons-gcp  19 file(s)
   Nothing is checking these, so the run fails. Read the scores above,
   then re-run with --update-baseline to accept them.
 ```

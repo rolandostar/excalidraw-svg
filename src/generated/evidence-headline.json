@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-18T09:00:41.857Z",
+  "builtAt": "2026-08-18T18:14:32.726Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -17,11 +17,11 @@
         "count": 216
       },
       {
-        "id": "category-icons",
+        "id": "category-icons-gcp",
         "count": 26
       },
       {
-        "id": "unique-icons",
+        "id": "unique-icons-gcp",
         "count": 19
       }
     ],

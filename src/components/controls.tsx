@@ -213,7 +213,7 @@ export const TEXT_COLORS = [
  * Ensures the picker always contains the value it is meant to be showing.
  *
  * Sets choose their own label and frame colours, and nothing constrains those
- * to this palette - `unique-icons` labels in its own accent. The custom-colour
+ * to this palette - `unique-icons-gcp` labels in its own accent. The custom-colour
  * field can produce anything at all. Without this the active swatch simply
  * would not be in the row, so the control would look unset and there would be
  * no way back to it after trying another colour.

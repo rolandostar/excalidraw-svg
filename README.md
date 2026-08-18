@@ -52,7 +52,7 @@ read a failure.
 | icons | 261 | **0.001 %** | 0.13 % | 0.200 px | **0** |
 | torture | 31 | 2.96 % | 58 % | — | 4 of 4 expected |
 
-That is every set: 216 legacy-gcp, 26 category-icons, 19 unique-icons. 253 of the 261 icons are a
+That is every set: 216 legacy-gcp, 26 category-icons-gcp, 19 unique-icons-gcp. 253 of the 261 icons are a
 pixel-exact match; the rest differ by a few pixels along a curved edge, and all
 8 are published in full on the
 [methodology page](https://rolandostar.com/excalidraw-svg/methodology).
@@ -98,8 +98,8 @@ tests/
 svg/
   legacy-gcp/                216 pre-2026 GCP product marks
     set.json                 name, categories, match rules, search synonyms
-  category-icons/            26 category marks (2026 refresh)
-  unique-icons/              19 product marks (2026 refresh)
+  category-icons-gcp/        26 category marks (2026 refresh)
+  unique-icons-gcp/          19 product marks (2026 refresh)
   <your-set>/                any folder here becomes /icons/<your-set>
 wiki/                        the GitHub wiki, published by CI
 ```

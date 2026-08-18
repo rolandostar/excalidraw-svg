@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-18T09:00:41.857Z",
+  "builtAt": "2026-08-18T18:14:32.726Z",
   "thresholds": {
     "shapeScore": 0.02,
     "placementErrorPx": 0.5,
@@ -17,11 +17,11 @@
         "count": 216
       },
       {
-        "id": "category-icons",
+        "id": "category-icons-gcp",
         "count": 26
       },
       {
-        "id": "unique-icons",
+        "id": "unique-icons-gcp",
         "count": 19
       }
     ],
@@ -34,7 +34,7 @@
     "auditIssueCount": 0,
     "cases": [
       {
-        "id": "category-icons__Agents",
+        "id": "category-icons-gcp__Agents",
         "label": "Agents",
         "shapeScore": 0,
         "placementErrorPx": 0.0049999999999954525,
@@ -43,7 +43,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__AI-Machine-Learning",
+        "id": "category-icons-gcp__AI-Machine-Learning",
         "label": "AI & Machine Learning",
         "shapeScore": 0,
         "placementErrorPx": 0.10250000000000625,
@@ -52,7 +52,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Business-Intelligence",
+        "id": "category-icons-gcp__Business-Intelligence",
         "label": "Business Intelligence",
         "shapeScore": 0,
         "placementErrorPx": 0.005000000000002558,
@@ -61,7 +61,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Collaboration",
+        "id": "category-icons-gcp__Collaboration",
         "label": "Collaboration",
         "shapeScore": 0,
         "placementErrorPx": 0.11499999999999488,
@@ -70,7 +70,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Compute",
+        "id": "category-icons-gcp__Compute",
         "label": "Compute",
         "shapeScore": 0,
         "placementErrorPx": 0.015000000000000568,
@@ -79,7 +79,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Containers",
+        "id": "category-icons-gcp__Containers",
         "label": "Containers",
         "shapeScore": 0,
         "placementErrorPx": 0.1424999999999983,
@@ -88,7 +88,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Data-Analytics",
+        "id": "category-icons-gcp__Data-Analytics",
         "label": "Data Analytics",
         "shapeScore": 0,
         "placementErrorPx": 0.005000000000002558,
@@ -97,7 +97,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Databases",
+        "id": "category-icons-gcp__Databases",
         "label": "Databases",
         "shapeScore": 0,
         "placementErrorPx": 0.0049999999999954525,
@@ -106,7 +106,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Developer-Tools",
+        "id": "category-icons-gcp__Developer-Tools",
         "label": "Developer Tools",
         "shapeScore": 0,
         "placementErrorPx": 0.13250000000000028,
@@ -115,7 +115,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__DevOps",
+        "id": "category-icons-gcp__DevOps",
         "label": "DevOps",
         "shapeScore": 0,
         "placementErrorPx": 0.005000000000002558,
@@ -124,7 +124,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Hybrid-Multicloud",
+        "id": "category-icons-gcp__Hybrid-Multicloud",
         "label": "Hybrid & Multicloud",
         "shapeScore": 0,
         "placementErrorPx": 0.09875000000000966,
@@ -133,7 +133,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Integration-Services",
+        "id": "category-icons-gcp__Integration-Services",
         "label": "Integration Services",
         "shapeScore": 0,
         "placementErrorPx": 0.11249999999999716,
@@ -142,7 +142,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Management-Tools",
+        "id": "category-icons-gcp__Management-Tools",
         "label": "Management Tools",
         "shapeScore": 0,
         "placementErrorPx": 0.005000000000002558,
@@ -151,7 +151,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Maps-Geospatial",
+        "id": "category-icons-gcp__Maps-Geospatial",
         "label": "Maps & Geospatial",
         "shapeScore": 0,
         "placementErrorPx": 0.10250000000000625,
@@ -160,7 +160,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Marketplace",
+        "id": "category-icons-gcp__Marketplace",
         "label": "Marketplace",
         "shapeScore": 0,
         "placementErrorPx": 0.005000000000002558,
@@ -169,7 +169,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Media-Services",
+        "id": "category-icons-gcp__Media-Services",
         "label": "Media Services",
         "shapeScore": 0,
         "placementErrorPx": 0.005000000000002558,
@@ -178,7 +178,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Migration",
+        "id": "category-icons-gcp__Migration",
         "label": "Migration",
         "shapeScore": 0,
         "placementErrorPx": 0.11249999999999716,
@@ -187,7 +187,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Mixed-Reality",
+        "id": "category-icons-gcp__Mixed-Reality",
         "label": "Mixed Reality",
         "shapeScore": 0,
         "placementErrorPx": 0.12250000000000227,
@@ -196,7 +196,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Networking",
+        "id": "category-icons-gcp__Networking",
         "label": "Networking",
         "shapeScore": 0,
         "placementErrorPx": 0.10249999999999204,
@@ -205,7 +205,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Observability",
+        "id": "category-icons-gcp__Observability",
         "label": "Observability",
         "shapeScore": 0,
         "placementErrorPx": 0.09250000000000114,
@@ -214,7 +214,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Operations",
+        "id": "category-icons-gcp__Operations",
         "label": "Operations",
         "shapeScore": 0,
         "placementErrorPx": 0.005000000000002558,
@@ -223,7 +223,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Security-Identity",
+        "id": "category-icons-gcp__Security-Identity",
         "label": "Security Identity",
         "shapeScore": 0,
         "placementErrorPx": 0.09250000000000114,
@@ -232,7 +232,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Serverless-Computing",
+        "id": "category-icons-gcp__Serverless-Computing",
         "label": "Serverless Computing",
         "shapeScore": 0,
         "placementErrorPx": 0.03249999999999886,
@@ -241,7 +241,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Storage",
+        "id": "category-icons-gcp__Storage",
         "label": "Storage",
         "shapeScore": 0,
         "placementErrorPx": 0.0049999999999954525,
@@ -250,7 +250,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Web-Mobile",
+        "id": "category-icons-gcp__Web-Mobile",
         "label": "Web & Mobile",
         "shapeScore": 0,
         "placementErrorPx": 0.012500000000000178,
@@ -259,7 +259,7 @@
         "failing": false
       },
       {
-        "id": "category-icons__Web3",
+        "id": "category-icons-gcp__Web3",
         "label": "Web3",
         "shapeScore": 0,
         "placementErrorPx": 0.16249999999999432,
@@ -2217,17 +2217,17 @@
         "failing": false
       },
       {
-        "id": "unique-icons__AI-Hypercomputer",
+        "id": "unique-icons-gcp__AI-Hypercomputer",
         "label": "AI Hypercomputer",
         "shapeScore": 0.000050477007722982184,
         "placementErrorPx": 0.13250000000000028,
         "elementCount": 7,
         "auditIssues": [],
         "failing": false,
-        "image": "icons/unique-icons__AI-Hypercomputer.png"
+        "image": "icons/unique-icons-gcp__AI-Hypercomputer.png"
       },
       {
-        "id": "unique-icons__AlloyDB",
+        "id": "unique-icons-gcp__AlloyDB",
         "label": "AlloyDB",
         "shapeScore": 0,
         "placementErrorPx": 0.13250000000000028,
@@ -2236,7 +2236,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Anthos",
+        "id": "unique-icons-gcp__Anthos",
         "label": "Anthos",
         "shapeScore": 0,
         "placementErrorPx": 0.09250000000000114,
@@ -2245,17 +2245,17 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Apigee",
+        "id": "unique-icons-gcp__Apigee",
         "label": "Apigee",
         "shapeScore": 0.0012701772955808414,
         "placementErrorPx": 0.005000000000002558,
         "elementCount": 13,
         "auditIssues": [],
         "failing": false,
-        "image": "icons/unique-icons__Apigee.png"
+        "image": "icons/unique-icons-gcp__Apigee.png"
       },
       {
-        "id": "unique-icons__BigQuery",
+        "id": "unique-icons-gcp__BigQuery",
         "label": "BigQuery",
         "shapeScore": 0,
         "placementErrorPx": 0.03250000000000597,
@@ -2264,7 +2264,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Cloud-Run",
+        "id": "unique-icons-gcp__Cloud-Run",
         "label": "Cloud Run",
         "shapeScore": 0,
         "placementErrorPx": 0.01750000000000007,
@@ -2273,7 +2273,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Cloud-Spanner",
+        "id": "unique-icons-gcp__Cloud-Spanner",
         "label": "Cloud Spanner",
         "shapeScore": 0,
         "placementErrorPx": 0.05250000000000199,
@@ -2282,7 +2282,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Cloud-SQL",
+        "id": "unique-icons-gcp__Cloud-SQL",
         "label": "Cloud SQL",
         "shapeScore": 0,
         "placementErrorPx": 0.005000000000002558,
@@ -2291,7 +2291,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Cloud-Storage",
+        "id": "unique-icons-gcp__Cloud-Storage",
         "label": "Cloud Storage",
         "shapeScore": 0,
         "placementErrorPx": 0.028750000000002274,
@@ -2300,7 +2300,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Compute-Engine",
+        "id": "unique-icons-gcp__Compute-Engine",
         "label": "Compute Engine",
         "shapeScore": 0,
         "placementErrorPx": 0.03249999999999886,
@@ -2309,7 +2309,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Distributed-Cloud",
+        "id": "unique-icons-gcp__Distributed-Cloud",
         "label": "Distributed Cloud",
         "shapeScore": 0,
         "placementErrorPx": 0.09250000000000114,
@@ -2318,17 +2318,17 @@
         "failing": false
       },
       {
-        "id": "unique-icons__GKE",
+        "id": "unique-icons-gcp__GKE",
         "label": "GKE",
         "shapeScore": 0.00005734273754229027,
         "placementErrorPx": 0.13249999999999318,
         "elementCount": 11,
         "auditIssues": [],
         "failing": false,
-        "image": "icons/unique-icons__GKE.png"
+        "image": "icons/unique-icons-gcp__GKE.png"
       },
       {
-        "id": "unique-icons__Hyperdisk",
+        "id": "unique-icons-gcp__Hyperdisk",
         "label": "Hyperdisk",
         "shapeScore": 0,
         "placementErrorPx": 0.015000000000000568,
@@ -2337,7 +2337,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Looker",
+        "id": "unique-icons-gcp__Looker",
         "label": "Looker",
         "shapeScore": 0,
         "placementErrorPx": 0.045000000000001705,
@@ -2346,7 +2346,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Mandiant",
+        "id": "unique-icons-gcp__Mandiant",
         "label": "Mandiant",
         "shapeScore": 0,
         "placementErrorPx": 0.1424999999999983,
@@ -2355,7 +2355,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Security-Command-Center",
+        "id": "unique-icons-gcp__Security-Command-Center",
         "label": "Security Command Center",
         "shapeScore": 0,
         "placementErrorPx": 0.1424999999999983,
@@ -2364,7 +2364,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Security-Operations",
+        "id": "unique-icons-gcp__Security-Operations",
         "label": "Security Operations",
         "shapeScore": 0,
         "placementErrorPx": 0.1424999999999983,
@@ -2373,7 +2373,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Threat-Intelligence",
+        "id": "unique-icons-gcp__Threat-Intelligence",
         "label": "Threat Intelligence",
         "shapeScore": 0,
         "placementErrorPx": 0.07500000000000284,
@@ -2382,7 +2382,7 @@
         "failing": false
       },
       {
-        "id": "unique-icons__Vertex-AI",
+        "id": "unique-icons-gcp__Vertex-AI",
         "label": "Vertex AI",
         "shapeScore": 0,
         "placementErrorPx": 0.015000000000000568,
