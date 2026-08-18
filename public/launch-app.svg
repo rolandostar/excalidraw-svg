@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 56" width="340" height="56">
+  <defs>
+    <linearGradient id="btnBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#1d4ed8" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <rect width="340" height="56" rx="14" fill="url(#btnBg)" filter="url(#shadow)" stroke="#60a5fa" stroke-width="1.5" />
+
+  <!-- Button Label -->
+  <text x="170" y="34" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0.2">
+    🚀 Access Web App
+  </text>
+</svg>

@@ -6,6 +6,12 @@ and resolution-independent.
 
 ![SVG to Excalidraw Demo](./public/demo.gif)
 
+<p align="center">
+  <a href="https://rolandostar.github.io/excalidraw-svg/" target="_blank">
+    <img src="./public/launch-app.svg" alt="Open the Web App — rolandostar.github.io/excalidraw-svg" height="52" />
+  </a>
+</p>
+
 Ships with 261 Google Cloud icons across three sets, but the conversion
 pipeline is general: any SVG folder can be run through it. Icon sets are just folders —
 drop one into `svg/` and it appears on the site at `/icons/<folder-name>`,
