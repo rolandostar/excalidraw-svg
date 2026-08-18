@@ -4,6 +4,8 @@ Converts SVG artwork into **native Excalidraw elements** — real polygons and
 ellipses, not an embedded bitmap — so pasted icons stay editable, restyleable
 and resolution-independent.
 
+![SVG to Excalidraw Demo](./public/demo.gif)
+
 Ships with 261 Google Cloud icons across three sets, but the conversion
 pipeline is general: any SVG folder can be run through it. Icon sets are just folders —
 drop one into `svg/` and it appears on the site at `/icons/<folder-name>`,
