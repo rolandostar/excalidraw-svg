@@ -28,7 +28,7 @@ export function ConvertPage() {
 
         <p className="hero-privacy">
           <ShieldCheck size={14} aria-hidden="true" />
-          Runs entirely in your browser. Your file is never uploaded.
+          Runs entirely in your browser. <span className="hero-privacy-nobr">Your file is never uploaded.</span>
         </p>
       </section>
 

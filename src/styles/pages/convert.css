@@ -33,9 +33,13 @@
    the sentence wraps on narrow viewports. */
 .hero-privacy {
   margin: 0.9rem auto 0;
-  max-width: 40ch;
+  max-width: 65ch;
   font-size: 0.78rem;
   color: var(--text-muted);
+}
+
+.hero-privacy-nobr {
+  white-space: nowrap;
 }
 
 .hero-privacy svg {
