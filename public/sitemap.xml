@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://rolandostar.github.io/excalidraw-svg/</loc>
+    <loc>https://rolandostar.com/excalidraw-svg/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://rolandostar.github.io/excalidraw-svg/icons</loc>
+    <loc>https://rolandostar.com/excalidraw-svg/icons</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://rolandostar.github.io/excalidraw-svg/icons/legacy-gcp</loc>
+    <loc>https://rolandostar.com/excalidraw-svg/icons/legacy-gcp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://rolandostar.github.io/excalidraw-svg/icons/category-icons</loc>
+    <loc>https://rolandostar.com/excalidraw-svg/icons/category-icons</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://rolandostar.github.io/excalidraw-svg/icons/unique-icons</loc>
+    <loc>https://rolandostar.com/excalidraw-svg/icons/unique-icons</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://rolandostar.github.io/excalidraw-svg/methodology</loc>
+    <loc>https://rolandostar.com/excalidraw-svg/methodology</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

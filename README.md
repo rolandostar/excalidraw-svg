@@ -7,8 +7,8 @@ and resolution-independent.
 ![SVG to Excalidraw Demo](./public/demo.gif)
 
 <p align="center">
-  <a href="https://rolandostar.github.io/excalidraw-svg/" target="_blank">
-    <img src="./public/launch-app.svg" alt="Open the Web App — rolandostar.github.io/excalidraw-svg" height="52" />
+  <a href="https://rolandostar.com/excalidraw-svg/">
+    <img src="./public/launch-app.svg" alt="Access Web App — rolandostar.com/excalidraw-svg" height="52" />
   </a>
 </p>
 
@@ -55,7 +55,7 @@ read a failure.
 That is every set: 216 legacy-gcp, 26 category-icons, 19 unique-icons. 253 of the 261 icons are a
 pixel-exact match; the rest differ by a few pixels along a curved edge, and all
 8 are published in full on the
-[methodology page](https://rolandostar.github.io/excalidraw-svg/methodology).
+[methodology page](https://rolandostar.com/excalidraw-svg/methodology).
 
 <!-- claims:end -->
 
@@ -160,8 +160,8 @@ see [Architecture](../../wiki/Architecture).
 Pushes to `main` build the site and publish it to GitHub Pages via
 `.github/workflows/deploy.yml`. Wiki- and markdown-only commits are skipped.
 
-The site lives at **https://rolandostar.github.io/excalidraw-svg/** — a Pages
-*project* page, so it is served from a sub-path, not the domain root.
+The site lives at **https://rolandostar.com/excalidraw-svg/** — served via
+GitHub Pages under a custom domain.
 
 That sub-path is `base` in `vite.config.ts`, and it is named after the
 repository. **Rename the repo and it has to change with it**, in four places:

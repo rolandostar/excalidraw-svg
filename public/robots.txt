@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rolandostar.github.io/excalidraw-svg/sitemap.xml
+Sitemap: https://rolandostar.com/excalidraw-svg/sitemap.xml

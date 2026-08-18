@@ -37,7 +37,7 @@ export function renderClaimsBlock(headline: EvidenceHeadline): string {
     `That is every set: ${sets}. ${icons.perfect} of the ${icons.total} icons are a`,
     'pixel-exact match; the rest differ by a few pixels along a curved edge, and all',
     `${icons.imperfect} are published in full on the`,
-    '[methodology page](https://rolandostar.github.io/excalidraw-svg/methodology).',
+    '[methodology page](https://rolandostar.com/excalidraw-svg/methodology).',
     '',
     CLAIMS_END,
   ].join('\n');
